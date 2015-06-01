@@ -1,0 +1,21 @@
+{
+  "name": "staticbuild",
+  "version": "0.0.0",
+  "description": "A static website development server.",
+  "keywords": ["development", "frontend", "static"],
+  "preferGlobal": true,
+  "homepage": "https://github.com/devoptix/staticbuild",
+  "license": "MIT",
+  "author": "Wayne Bloss <waynebloss@gmail.com> (https://github.com/devoptix)",
+  "repository": {
+    "type": "git", 
+    "url": "https://github.com/devoptix/staticbuild.git"
+  },
+  "bugs": {
+    "url": "https://github.com/devoptix/staticbuild/issues"
+  },
+  "main": "staticbuild.js",
+  "scripts": {
+    "start": "node staticbuild.js"
+  }
+}
