@@ -1,0 +1,9 @@
+﻿#!/usr/bin/env node
+
+'use strict';
+
+process.title = 'staticdev';
+
+var staticdev = require('../lib/staticdev.js');
+
+staticdev.run();

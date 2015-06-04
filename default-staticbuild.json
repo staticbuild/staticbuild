@@ -1,0 +1,24 @@
+{
+  "verbose":  false,
+  "build": "build",
+  "data":  "build/data.json",
+  "host":  null,
+  "port":  8080,
+  "source":  "src",
+  "template": {
+    "index":  "index",
+    "engine":  "nunjucks",
+    "extension": "htm",
+    "globals": "build/templates.js",
+    "locals": "*.htm.js",
+    "options": {
+      "autoescape": true
+    }
+  },
+  "css": {
+    "map": {
+      "enabled":  true,
+      "inline":  false
+    }
+  }
+}
