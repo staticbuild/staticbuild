@@ -2,8 +2,8 @@
 
 'use strict';
 
-process.title = 'staticdev';
+process.title = 'staticbuild';
 
-var staticdev = require('../lib/staticdev.js');
+var staticbuild = require('../lib/staticbuild.js');
 
-staticdev.run();
+staticbuild.run();
