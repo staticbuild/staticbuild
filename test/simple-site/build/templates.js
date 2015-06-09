@@ -17,3 +17,10 @@ function sayHi() {
   return 'Hi';
 }
 functions.sayHi = sayHi;
+
+function docwrite(js) {
+  return '<script type="text/javascript">document.write(' + 
+    js + 
+  ');</script>';
+}
+functions.docwrite = docwrite;

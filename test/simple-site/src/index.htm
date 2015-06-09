@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Index</title>
   <link rel="stylesheet" href="css/site.css" />
+  <script type="text/javascript" src="js/index.js"></script>
 </head>
 <body>
   <div style="margin-bottom:200px;">
@@ -14,6 +15,7 @@
   <ul  style="margin-bottom:200px;">
     <li>Test filter: {{author|ellipsis(5)}}</li>
     <li>Test function: {{sayHi()}}</li>
+    <li>Test client: {{docwrite('scriptThing()') | safe}}</li>
   </ul>
   <em>Copyright @ {{author}} 2015 </em>
 </body>
