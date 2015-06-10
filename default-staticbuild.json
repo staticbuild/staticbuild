@@ -1,15 +1,14 @@
 {
   "verbose":  false,
-  "build": "build",
-  "data":  "build/data.json",
+  "data":  "staticbuild.data.json",
   "host":  null,
   "port":  8080,
-  "source":  "src",
+  "root":  "site",
   "template": {
     "index":  "index",
     "engine":  "nunjucks",
     "extension": "htm",
-    "globals": "build/templates.js",
+    "globals": "staticbuild.htm.js",
     "locals": "*.htm.js",
     "options": {
       "autoescape": true
@@ -21,7 +20,7 @@
       "inline":  false
     }
   },
-  "ignore":  [
+  "ignore": [
     "*.layout.htm"
   ]
 }
