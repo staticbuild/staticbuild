@@ -9,12 +9,11 @@
 <body>
   <div>
     <p>Error</p>
-    <pre>
-block content
-    h1= message
-    h2= error.status
-    pre #{error.stack}
-        </pre>
+{% block content %}
+    <h1>{{message}}</h1>
+    <h2>error.status</h2>
+    <pre>{% raw %}error.stack{% endraw %}</pre>
+{% endblock %}
   </div>
 </body>
 </html>

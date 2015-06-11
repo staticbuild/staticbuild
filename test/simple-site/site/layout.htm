@@ -4,11 +4,17 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Layout</title>
+  <title>{{page_title}}</title>
+  <link rel="stylesheet" href="css/site.css" />
+  <script type="text/javascript" src="js/index.js"></script>
 </head>
 <body>
-  <div>
-    <p>Layout</p>
+  <div style="min-height:100px;">
+    <h3>{{page_title}}</h3>
   </div>
+  {% block content %}
+  <p><em>Warning: content block not specified!</em></p>
+  {% endblock %}
+  <em>Copyright @ {{author}} 2015 </em>
 </body>
 </html>

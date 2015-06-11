@@ -13,6 +13,11 @@ function ellipsis(str, to) {
 }
 filters.ellipsis = ellipsis;
 
+function or(str, defaultValue) {
+  return str || defaultValue;
+}
+filters.or = or;
+
 function sayHi() {
   return 'Hi';
 }
