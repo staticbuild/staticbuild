@@ -51,6 +51,9 @@
     <Content Include="test\simple-site\site\css\site.less" />
     <Content Include="test\simple-site\site\error.htm" />
     <Content Include="test\simple-site\site\favicon.ico" />
+    <Content Include="test\simple-site\site\img\loop.gif" />
+    <Content Include="test\simple-site\site\img\pattern.png" />
+    <Content Include="test\simple-site\site\img\tiger.jpg" />
     <Content Include="test\simple-site\site\index.htm" />
     <Content Include="test\simple-site\site\layout.htm" />
     <Content Include="test\simple-site\staticbuild.data.json" />
@@ -62,6 +65,7 @@
     <Folder Include="test\simple-site\" />
     <Folder Include="test\simple-site\site\" />
     <Folder Include="test\simple-site\site\css\" />
+    <Folder Include="test\simple-site\site\img\" />
     <Folder Include="test\simple-site\site\js\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->

@@ -9,14 +9,21 @@
   <script type="text/javascript" src="js/index.js"></script>
 </head>
 <body>
-  <div style="margin-bottom:200px;">
+  <div style="min-height:100px;">
     <h3>{{app.name}}</h3>
   </div>
-  <ul  style="margin-bottom:200px;">
+  <h4>Templating and Javascript</h4>
+  <ul  style="min-height:100px;">
     <li>Test filter: {{author|ellipsis(5)}}</li>
     <li>Test function: {{sayHi()}}</li>
     <li>Test client: {{docwrite('scriptThing()') | safe}}</li>
   </ul>
+  <div style="min-height:100px;">
+    <h4>Images</h4>
+    <div><img src="img/loop.gif" /></div>
+    <div><img src="img/pattern.png" /></div>
+    <div><img src="img/tiger.jpg" /></div>
+  </div>
   <em>Copyright @ {{author}} 2015 </em>
 </body>
 </html>
