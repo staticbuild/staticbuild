@@ -16,6 +16,7 @@
     }
   },
   "css": {
+    "preprocessor": "less",
     "map": {
       "enabled":  true,
       "inline":  false
