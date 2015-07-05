@@ -8,7 +8,7 @@
     <DebuggerPort>5859</DebuggerPort>
     <Environment>
     </Environment>
-    <ScriptArguments>test/simple-site --verbose</ScriptArguments>
+    <ScriptArguments>/fbt/fbt-www-site --verbose --no-restart</ScriptArguments>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -35,38 +35,21 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="index.js" />
     <Compile Include="lib\app.js" />
     <Compile Include="lib\cli.js" />
     <Compile Include="lib\config.js" />
     <Compile Include="lib\info.js" />
     <Compile Include="lib\misc.js" />
-    <Compile Include="lib\staticbuild.js" />
-    <Compile Include="bin\staticbuild" />
-    <Compile Include="index.js" />
-    <Compile Include="test\simple-site\site\js\index.js" />
-    <Compile Include="test\simple-site\staticbuild.htm.js" />
+    <Compile Include="lib\staticdev.js" />
+    <Compile Include="bin\staticdev" />
     <Content Include="package.json" />
     <Content Include="readme.md" />
     <Content Include="default-staticbuild.json" />
-    <Content Include="test\simple-site\site\css\site.less" />
-    <Content Include="test\simple-site\site\error.htm" />
-    <Content Include="test\simple-site\site\favicon.ico" />
-    <Content Include="test\simple-site\site\img\loop.gif" />
-    <Content Include="test\simple-site\site\img\pattern.png" />
-    <Content Include="test\simple-site\site\img\tiger.jpg" />
-    <Content Include="test\simple-site\site\index.htm" />
-    <Content Include="test\simple-site\site\layout.htm" />
-    <Content Include="test\simple-site\staticbuild.data.json" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="lib\" />
     <Folder Include="bin\" />
-    <Folder Include="test\" />
-    <Folder Include="test\simple-site\" />
-    <Folder Include="test\simple-site\site\" />
-    <Folder Include="test\simple-site\site\css\" />
-    <Folder Include="test\simple-site\site\img\" />
-    <Folder Include="test\simple-site\site\js\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />
