@@ -1,20 +1,32 @@
-# Static Development Server
+# staticbuild
 
-A basic front-end development server built with Express, less and nunjucks.
+Static front-end build tools with an Express development server, Less, 
+Nunjucks and Gulp.
 
 ## Getting Started
 
 Install
 
-`npm install -g staticdev`
+`npm install staticbuild`
 
 Run
 
-`staticdev path/to/project`
+In the `package.json` file for your project, add one of the following and then
+run it with `npm run dev`.
+
+```json
+"scripts": {
+  "dev": "staticbuild ."
+}
+```
 
 or
 
-`staticdev path/to/project/staticbuild.json`
+```json
+"scripts": {
+  "dev": "staticbuild path/to/staticbuild.json"
+}
+```
 
 ## Project Directory
 
@@ -114,11 +126,11 @@ token instead in a custom pattern to target the file name without extension.
 ## Command Line Interface
 
 ```
-staticdev: A static website development server.
+staticbuild: A static website development server.
 
 Syntax:
 
-    staticdev [options | path]
+    staticbuild [options | path]
 
 Options:
 

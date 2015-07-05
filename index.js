@@ -1,10 +1,10 @@
 ﻿'use strict';
 
 // # Alternate entry-script executed by nodemon.
-// See ./bin/staticdev
+// See ./bin/staticbuild
 
-process.title = 'staticdev';
+process.title = 'staticbuild';
 
-var staticdev = require('./lib/staticdev.js');
+var staticbuild = require('./lib/staticbuild.js');
 
-staticdev.run();
+staticbuild.run();

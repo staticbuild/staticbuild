@@ -41,8 +41,8 @@
     <Compile Include="lib\config.js" />
     <Compile Include="lib\info.js" />
     <Compile Include="lib\misc.js" />
-    <Compile Include="lib\staticdev.js" />
-    <Compile Include="bin\staticdev" />
+    <Compile Include="lib\staticbuild.js" />
+    <Content Include="bin\staticbuild" />
     <Content Include="package.json" />
     <Content Include="readme.md" />
     <Content Include="default-staticbuild.json" />

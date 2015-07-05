@@ -1,30 +1,30 @@
 {
-  "name": "staticdev",
+  "name": "staticbuild",
   "version": "0.2.3",
-  "description": "A static website development server.",
+  "description": "Static front-end build tools with an Express development server, Less, Nunjucks and Gulp.",
   "keywords": [
     "development",
     "frontend",
     "static"
   ],
   "preferGlobal": true,
-  "homepage": "https://github.com/devoptix/staticdev",
+  "homepage": "https://github.com/devoptix/staticbuild",
   "license": "MIT",
   "author": "Wayne Bloss <waynebloss@gmail.com> (https://github.com/devoptix)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/devoptix/staticdev.git"
+    "url": "https://github.com/devoptix/staticbuild.git"
   },
   "bugs": {
-    "url": "https://github.com/devoptix/staticdev/issues"
+    "url": "https://github.com/devoptix/staticbuild/issues"
   },
-  "main": "bin/staticdev",
+  "main": "bin/staticbuild",
   "bin": {
-    "staticdev": "bin/staticdev"
+    "staticbuild": "bin/staticbuild"
   },
   "scripts": {
-    "try-default-config": "node bin/staticdev test/default-config-site --verbose",
-    "try-sub-config": "node bin/staticdev test/sub-config-site/config --verbose"
+    "try-default-config": "node bin/staticbuild test/default-config-site --verbose",
+    "try-sub-config": "node bin/staticbuild test/sub-config-site/config --verbose"
   },
   "dependencies": {
     "body-parser": "~1.8.1",
