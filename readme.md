@@ -125,8 +125,13 @@ token instead in a custom pattern to target the file name without extension.
 
 ## Command Line Interface
 
+The default command right now is to just run the development server.
+That may change in the future and more commands will be added to generate
+files like a gulp or grunt file.
+
 ```
-staticbuild: A static website development server.
+staticbuild: Static front-end build tools with an Express development server,
+Less, Nunjucks and Gulp.
 
 Syntax:
 
