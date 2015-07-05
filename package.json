@@ -7,7 +7,6 @@
     "frontend",
     "static"
   ],
-  "preferGlobal": true,
   "homepage": "https://github.com/devoptix/staticbuild",
   "license": "MIT",
   "author": "Wayne Bloss <waynebloss@gmail.com> (https://github.com/devoptix)",
