@@ -1,0 +1,19 @@
+﻿{% extends "../layout.htm" %}
+{% set page_title = "Layout Sample" %}
+{% block content %}
+  <h4>Templating and Javascript</h4>
+  <script type="text/javascript" src="/page-app.js"></script>
+  <ul style="min-height:100px;">
+    <li>Test global filter: {{author|ellipsis(5)}}</li>
+    <li>Test global function: {{globalTemplateFn()}}</li>
+    <li>Test site function: {{docwrite('siteFn()') | safe}}</li>
+    <li>Test site-app function: {{docwrite('siteAppFn()') | safe}}</li>
+    <li>Test page-app function: {{docwrite('pageAppFn()') | safe}}</li>
+  </ul>
+  <div style="min-height:100px;">
+    <h4>Images</h4>
+    <div><img src="/lib/img/loop.gif" /></div>
+    <div><img src="/lib/img/pattern.png" /></div>
+    <div><img src="/lib/img/tiger.jpg" /></div>
+  </div>
+{% endblock %}

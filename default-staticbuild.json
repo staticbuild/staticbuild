@@ -1,16 +1,15 @@
 {
-  "verbose":  false,
-  "data":  "staticbuild.data.json",
-  "host":  null,
-  "port":  8080,
-  "root":  "site",
-  "favicon":  "favicon.ico",
+  "data": "./lib/build-info.js",
+  "host": null,
+  "port": 8080,
+  "src": "src",
+  "dest": "dist",
   "template": {
-    "index":  "index",
-    "engine":  "nunjucks",
+    "engine": "nunjucks",
     "extension": "htm",
-    "globals": "staticbuild.htm.js",
-    "locals": "*.htm.js",
+    "filters": "./lib/view-filters.js",
+    "functions": "./lib/view-functions.js",
+    "locals": false,
     "options": {
       "autoescape": true
     }
@@ -18,13 +17,20 @@
   "css": {
     "preprocessor": "less",
     "map": {
-      "enabled":  true,
-      "inline":  false
+      "enabled": true,
+      "inline": false
     }
   },
+  "defaultLocale": "en",
+  "localesdir": "locales",
+  "locales": [
+    "en"
+  ],
+  "salt": "nEHBlpXF4nwtTERNVKc6DQQkoylVKLnv",
   "ignore": [
     ".gitignore",
     "*.layout.htm",
+    "*.part.htm",
     "*.map"
   ]
 }

@@ -1,0 +1,50 @@
+﻿#!/usr/bin/env node
+
+'use strict';
+
+process.title = 'staticdev';
+
+var cli = require('../lib/cli.js');
+var cargs = cli.args;
+var path = require('path');
+
+if (cargs.help 
+  || cargs.version
+  || cargs.initDefault
+  || !cargs.restart)
+  run();
+else
+  runWithNodemon();
+
+function run() {
+  var staticdev = require('../lib/staticdev.js');
+  staticdev.run();
+}
+
+function runWithNodemon() {
+  var config = require('../lib/config.js');
+  if (!config.load())
+    return;
+  var misc = require('../lib/misc.js');
+  if (!misc.chdir(config.basedir, true))
+    return;
+  var nodemon = require('nodemon');
+  var args = [];
+
+  if (cli.args.verbose)
+    args.push('--verbose');
+  args.push(cli.args.path);
+  var opts = {
+    script: path.resolve(__dirname, '../index.js'),
+    args: args,
+    watch: config.getWatchPaths(),
+    ext: 'coffee,jade,js,json,litcoffee'
+  };
+  if (cli.args.restartDelay)
+    opts.delay = cli.args.restartDelay;
+  if (config.verbose) {
+    console.log('Running nodemon with options:');
+    console.dir(opts);
+  }
+  nodemon(opts);
+}

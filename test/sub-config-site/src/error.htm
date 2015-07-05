@@ -1,0 +1,19 @@
+﻿<!DOCTYPE html>
+<html lang="en" dir="auto">
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Error</title>
+</head>
+<body>
+  <div>
+    <p>Error</p>
+{% block content %}
+    <h1>{{message}}</h1>
+    <h2>error.status</h2>
+    <pre>{% raw %}error.stack{% endraw %}</pre>
+{% endblock %}
+  </div>
+</body>
+</html>

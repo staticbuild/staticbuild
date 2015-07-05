@@ -18,10 +18,10 @@ function or(str, defaultValue) {
 }
 filters.or = or;
 
-function sayHi() {
+function globalTemplateFn() {
   return 'Hi';
 }
-functions.sayHi = sayHi;
+functions.globalTemplateFn = globalTemplateFn;
 
 function docwrite(js) {
   return '<script type="text/javascript">document.write(' + 
