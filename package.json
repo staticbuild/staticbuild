@@ -1,6 +1,6 @@
 {
   "name": "staticbuild",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Static front-end build tools with an Express development server, Less, Nunjucks and Gulp.",
   "keywords": [
     "development",
