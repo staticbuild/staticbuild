@@ -7,7 +7,7 @@ Nunjucks and Gulp.
 
 Install
 
-`npm install staticbuild`
+`npm install --save-dev staticbuild`
 
 Run
 
