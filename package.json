@@ -18,7 +18,12 @@
   "bugs": {
     "url": "https://github.com/devoptix/staticbuild/issues"
   },
-  "main": "bin/staticbuild",
+  "files": [
+    "index.js",
+    "bin",
+    "lib"
+  ],
+  "main": "index.js",
   "bin": {
     "staticbuild": "bin/staticbuild"
   },
