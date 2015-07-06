@@ -17,7 +17,7 @@ else
   runWithNodemon();
 
 function run() {
-  var staticbuild = require('../lib/staticbuild.js');
+  var staticbuild = require('../lib/main.js');
   staticbuild.run();
 }
 
@@ -35,7 +35,7 @@ function runWithNodemon() {
     args.push('--verbose');
   args.push(cli.args.path);
   var opts = {
-    script: path.resolve(__dirname, '../index.js'),
+    script: path.resolve(__dirname, '../devserver/nodemon.js'),
     args: args,
     watch: config.getWatchPaths(),
     ext: 'coffee,jade,js,json,litcoffee'
