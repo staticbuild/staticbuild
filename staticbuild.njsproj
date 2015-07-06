@@ -36,9 +36,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="lib\main.js" />
-    <Compile Include="devserver\nodemon.js" />
+    <Compile Include="lib\devserver\nodemon.js" />
     <Compile Include="index.js" />
-    <Compile Include="devserver\index.js" />
+    <Compile Include="lib\devserver\index.js" />
     <Compile Include="lib\cli.js" />
     <Compile Include="lib\config.js" />
     <Compile Include="lib\info.js" />
@@ -51,7 +51,7 @@
   <ItemGroup>
     <Folder Include="lib\" />
     <Folder Include="bin\" />
-    <Folder Include="devserver\" />
+    <Folder Include="lib\devserver\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />

@@ -35,7 +35,7 @@ function runWithNodemon() {
     args.push('--verbose');
   args.push(cli.args.path);
   var opts = {
-    script: path.resolve(__dirname, '../devserver/nodemon.js'),
+    script: path.resolve(__dirname, '../lib/devserver/nodemon.js'),
     args: args,
     watch: config.getWatchPaths(),
     ext: 'coffee,jade,js,json,litcoffee'
