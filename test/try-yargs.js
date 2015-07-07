@@ -23,8 +23,6 @@ function run() {
     })
 
   .help('h', 'Show help.').alias('h', 'help')
-  .epilogue('  path           Path to a staticbuild.json file or directory to find one.\n' +
-  '                 If no path is supplied, the current directory is used.')
   .argv;
 
   console.dir(argv);
@@ -32,7 +30,7 @@ function run() {
 
 function runDevServer(yargs) {
   argv = configureYargs(yargs)
-  .usage(commandUsage('dev', '[options] [path]', 'Development server.'))
+  .usage(commandUsage('dev', '[options] <path>', 'Development server.'))
   .option('n', {
     alias: 'norestart',
     description: 'Disables the built-in nodemon server restart.',
@@ -54,7 +52,7 @@ function runDevServer(yargs) {
 
 function runSetup(yargs) {
   argv = configureYargs(yargs)
-  .usage(commandUsage('setup', '[options] [path]', 'Setup.'))
+  .usage(commandUsage('setup', '[options] <path>', 'Setup.'))
   .help('h', 'Show help.').alias('h', 'help')
   .epilogue('  path           Path for a new staticbuild.json file or project directory.')
   .argv;
@@ -75,7 +73,7 @@ function configureYargs(yargs) {
 }
 
 function mainUsage() {
-  return commandUsage('<command>', '[options] [path]', pkg.description);
+  return commandUsage('<command>', '[options]', pkg.description);
 }
 
 function titleVersion() {
