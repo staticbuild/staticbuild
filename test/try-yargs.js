@@ -14,7 +14,7 @@ function run() {
   .alias('v', 'version')
 
   .command('dev', 'Run the development web server.', runDevServer)
-
+  
   .command('setup', 'Setup a new project.', runSetup)
 
   .option('V', {
@@ -24,13 +24,20 @@ function run() {
 
   .help('h', 'Show help.').alias('h', 'help')
   .argv;
-
+  
   console.dir(argv);
 }
 
 function runDevServer(yargs) {
+  var requirements = [
+    '\n',
+    'Required:',
+    '  path           Path to a staticbuild.json file or directory to find one.',
+    '                 If no path is supplied, the current directory is used.'
+  ].join('\n');
+
   argv = configureYargs(yargs)
-  .usage(commandUsage('dev', '[options] <path>', 'Development server.'))
+  .usage(commandUsage('dev', '[options] <path>' + requirements, 'Development server.'))
   .option('n', {
     alias: 'norestart',
     description: 'Disables the built-in nodemon server restart.',
@@ -42,12 +49,16 @@ function runDevServer(yargs) {
     type: 'number'
   })
   .help('h', 'Show help.').alias('h', 'help')
-  .epilogue('  path           Path to a staticbuild.json file or directory to find one.\n' +
-'                 If no path is supplied, the current directory is used.')
   .argv;
   
   console.log('running dev server...');
+  
+  if (argv._.length < 2)
+    console.error('Path required. See `staticbuild dev -h`.');
+  argv.path = argv._[1];
 
+  console.log('Operating on path: ' + argv.path);
+  console.log('');
 }
 
 function runSetup(yargs) {
@@ -73,7 +84,7 @@ function configureYargs(yargs) {
 }
 
 function mainUsage() {
-  return commandUsage('<command>', '[options]', pkg.description);
+  return commandUsage('[command]', '[options]', pkg.description);
 }
 
 function titleVersion() {
