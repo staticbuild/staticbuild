@@ -9,7 +9,7 @@ _This project is under development._
 - [Roadmap](#roadmap)
 - [Getting Started](#getting-started)
 - [Project Directory](#project-directory)
-- [Configuration](#configration)
+- [Configuration](#configuration)
   - [Default Configuration](#default-configuration)
   - [Files](#files)
   - [Template](#template)
