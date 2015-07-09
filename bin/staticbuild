@@ -27,10 +27,7 @@ function runWithNodemon() {
     return;
   var nodemon = require('nodemon');
   
-  var args = Array.prototype.slice.call(process.argv); // [];
-  //if (cli.args.verbose)
-  //  args.push('--verbose');
-  //args.push(cli.args.path);
+  var args = Array.prototype.slice.call(process.argv, 2);
 
   var opts = {
     script: path.resolve(__dirname, '../lib/devserver/nodemon.js'),
