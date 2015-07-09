@@ -6,6 +6,19 @@ Tools for creating static sites with Less, Nunjucks and Gulp.
 
 _This project is under development._
 
+- [Roadmap](#roadmap)
+- [Getting Started](#getting-started)
+- [Project Directory](#project-directory)
+- [Configuration](#configration)
+  - [Default Configuration](#default-configuration)
+  - [Files](#files)
+  - [Template](#template)
+- [Command Line Interface](#command-line-interface)
+  - [Help](#help)
+  - [Development Server](#development-server)
+  - [Setup](#setup)
+
+
 ## Roadmap
 
 - Create libs to expose build information to template environment and gulpfile.
@@ -63,15 +76,22 @@ this:
 	- [staticbuild.json]
 ```
 
-The `src/` sub-directory is the root of the site which can contain static `.html`,
-`.js` and `.css` files as well as `.less` and `.htm` (nunjucks) files.
+The `src/` sub-directory is the root of the site which can contain static 
+`.html`, `.js` and `.css` files as well as `.less` and `.htm` (nunjucks) files.
 
-## Default Configuration
+## Configuration
 
-The default configured template engine and css preprocessor are the only supported options right now.
+Configuration is primarly read from a JSON file, named `staticbuild.json` by 
+default.
 
-Here is a look at the default configuration (at the time of 
-this writing):
+_The following sections may be incomplete. lib/config.js holds the truth._
+
+### Default Configuration
+
+The default configured template engine and css preprocessor are the only 
+supported options right now.
+
+Here is the default configuration (_at the time of this writing_):
 
 ```json
 {
@@ -108,16 +128,14 @@ this writing):
 }
 ```
 
-## Configuration Values
-
-_This section is incomplete._
+### Files
 
 - **source** _(default: "src")_ String. Root source folder containing 
 templates and static files.
 - **data** _(default: {})_ Ojbect. Global data merged into the Nunjucks render 
 context.
 
-### Template Configuration
+### Template
 
 - **extension** _(default: ".html")_ String. File extension to output.
 - **extensions** _(default: {})_ Object. Global extensions added to the 
@@ -165,7 +183,7 @@ Options:
   -V, --verbose  Enables verbose output.  [count]
 ```
 
-### Dev Server
+### Development Server
 ```
 staticbuild v0.2.5 - Development server.
 
