@@ -30,7 +30,7 @@ _This project is under development._
     - File/path renaming.
   - Default filters and functions for template environment.
 - Create interactive setup.
-  - Change [Getting Started](#getting-Started) section to recommend a global 
+  - Change [Getting Started](#getting-started) section to recommend a global 
 install and then the setup command. The setup command should also install 
 staticbuild locally, similar to the way gulp works.
 
