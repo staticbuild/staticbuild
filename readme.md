@@ -10,7 +10,7 @@ _This project is under development._
 
 - Create libs to expose build information to template environment and gulpfile.
   - Devmode.
-  - Locale, Locals.
+  - Locale, Locales.
   - Other staticbuild config values.
 - Create libs to consolidate and expose common build functions.
   - Cache busting using hash of package version by default.
