@@ -1,7 +1,24 @@
 # staticbuild
 
-Static front-end build tools with an Express development server, Less, 
-Nunjucks and Gulp.
+Tools for creating static sites with Less, Nunjucks and Gulp.
+
+## Alpha
+
+_This project is under development._
+
+## Roadmap
+
+- Create libs to expose build information to template environment and gulpfile.
+  - Devmode.
+  - Locale, Locals.
+  - Other staticbuild config values.
+- Create libs to consolidate and expose common build functions.
+  - Cache busting using hash of package version by default.
+    - File/path renaming.
+  - Default filters and functions for template environment.
+- Create interactive setup.
+  - Change [Getting Started](#Getting-Started) section to recommend a global 
+install and then the setup command.
 
 ## Getting Started
 
@@ -16,7 +33,7 @@ run it with `npm run dev`.
 
 ```json
 "scripts": {
-  "dev": "staticbuild ."
+  "dev": "staticbuild dev ."
 }
 ```
 
@@ -24,7 +41,7 @@ or
 
 ```json
 "scripts": {
-  "dev": "staticbuild path/to/staticbuild.json"
+  "dev": "staticbuild dev path/to/staticbuild.json"
 }
 ```
 
@@ -129,24 +146,58 @@ The default command right now is to just run the development server.
 That may change in the future and more commands will be added to generate
 files like a gulp or grunt file.
 
+### Help
 ```
-staticbuild: Static front-end build tools with an Express development server,
-Less, Nunjucks and Gulp.
+staticbuild v0.2.5 - Tools for creating static sites with Less, Nunjucks and 
+Gulp.
 
-Syntax:
+Usage:
+  staticbuild [command] [options]
 
-    staticbuild [options | path]
+Commands:
+  dev    Run the development web server.
+  setup  Setup a new project.
 
 Options:
+  -v, --version  Show version number.  [boolean]
+  -h, --help     Show help.  [boolean]
+  -V, --verbose  Enables verbose output.  [count]
+```
 
-    --help      -h    Prints this help message.
-    --init-default    Writes the default config file to the given path
-    --no-restart      Disables the built-in nodemon server restart.
-    --restart-delay   Number of seconds to delay nodemon restart when global 
-                      script and data files change.
-    --verbose   -V    Prints verbose messages.
-    --version   -v    Prints version information.
+### Dev Server
+```
+staticbuild v0.2.5 - Development server.
 
-      path            Path to a staticbuild.json file or directory to find one.
-                      If no path is supplied, the current directory is used.
+    Runs a local http server to dynamically render static content during 
+development.
+
+Usage:
+  staticbuild dev [options] <path>
+
+Required:
+  path           Path to a staticbuild.json file or directory to find one.
+                 If no path is supplied, the current directory is used.
+
+Options:
+  -r, --restart  Number of seconds to delay nodemon restarts.  [default: 1]
+  --no-restart   Disables the built-in nodemon server restart.
+  -h, --help     Show help.  [boolean]
+  -V, --verbose  Enables verbose output.  [count]
+```
+
+### Setup
+```
+staticbuild v0.2.5 - Setup.
+
+    Interactive setup to create a new project.
+
+Usage:
+  staticbuild setup [options] <path>
+
+Required:
+  path           Path for a new staticbuild.json file or project directory.
+
+Options:
+  -h, --help     Show help.  [boolean]
+  -V, --verbose  Enables verbose output.  [count]
 ```
