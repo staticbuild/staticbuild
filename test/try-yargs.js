@@ -8,24 +8,28 @@ var pkg = require('../package.json');
 var argv;
 
 function run() {
-  argv = configureYargs()
+  var yargs = configureYargs()
   .usage(mainUsage())
   .version(titleVersion(), 'v', 'Show version number.')
   .alias('v', 'version')
 
+  .help('h', 'Show help.').alias('h', 'help')
+
   .command('dev', 'Run the development web server.', runDevServer)
   
-  .command('setup', 'Setup a new project.', runSetup)
-
-  .option('V', {
-      alias: 'verbose',
-      description: 'Enables verbose output.'
-    })
-
-  .help('h', 'Show help.').alias('h', 'help')
-  .argv;
+  .command('setup', 'Setup a new project.', runSetup);
   
+  configureVerbosity(yargs);
+
+  // The yargs.argv property getter triggers the command functions :(
+  var mainArgv = yargs.argv;
+  argv = argv || mainArgv;
+
+  console.log('Using args:');
   console.dir(argv);
+  exports.argv = argv;
+
+  return argv;
 }
 
 function runDevServer(yargs) {
@@ -35,8 +39,8 @@ function runDevServer(yargs) {
     '  path           Path to a staticbuild.json file or directory to find one.',
     '                 If no path is supplied, the current directory is used.'
   ].join('\n');
-
-  argv = configureYargs(yargs)
+  
+  var yargs = configureYargs(yargs)
   .usage(commandUsage('dev', '[options] <path>' + requirements, 'Development server.'))
   .option('n', {
     alias: 'norestart',
@@ -46,19 +50,24 @@ function runDevServer(yargs) {
   .option('r', {
     alias: 'restart-delay',
     description: 'Number of seconds to delay nodemon restarts.',
-    type: 'number'
+    type: 'number',
+    requiresArg: true
   })
-  .help('h', 'Show help.').alias('h', 'help')
-  .argv;
+  .help('h', 'Show help.').alias('h', 'help');
   
+  configureVerbosity(yargs);
+  
+  argv = yargs.argv;
+
   console.log('running dev server...');
   
-  if (argv._.length < 2)
+  if (argv._.length < 2) {
     console.error('Path required. See `staticbuild dev -h`.');
+    process.exit(1001);
+    return;
+  }
   argv.path = argv._[1];
-
-  console.log('Operating on path: ' + argv.path);
-  console.log('');
+  
 }
 
 function runSetup(yargs) {
@@ -81,6 +90,12 @@ function commandUsage(command, options, description) {
 function configureYargs(yargs) {
   yargs = yargs || Yargs;
   return yargs.wrap(null);
+}
+
+function configureVerbosity(yargs) {
+  return yargs.count('verbose')
+  .alias('V', 'verbose')
+  .describe('V', 'Enables verbose output.');
 }
 
 function mainUsage() {

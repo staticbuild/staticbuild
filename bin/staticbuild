@@ -8,17 +8,14 @@ var cli = require('../lib/cli.js');
 var cargs = cli.args;
 var path = require('path');
 
-if (cargs.help 
-  || cargs.version
-  || cargs.initDefault
-  || !cargs.restart)
+if (!cargs.dev || !cargs.restart)
   run();
 else
   runWithNodemon();
 
 function run() {
-  var staticbuild = require('../lib/main.js');
-  staticbuild.run();
+  var main = require('../lib/main.js');
+  main.run();
 }
 
 function runWithNodemon() {
@@ -29,11 +26,12 @@ function runWithNodemon() {
   if (!misc.chdir(config.basedir, true))
     return;
   var nodemon = require('nodemon');
-  var args = [];
+  
+  var args = Array.prototype.slice.call(process.argv); // [];
+  //if (cli.args.verbose)
+  //  args.push('--verbose');
+  //args.push(cli.args.path);
 
-  if (cli.args.verbose)
-    args.push('--verbose');
-  args.push(cli.args.path);
   var opts = {
     script: path.resolve(__dirname, '../lib/devserver/nodemon.js'),
     args: args,
