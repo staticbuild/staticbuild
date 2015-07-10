@@ -2,44 +2,5 @@
 
 'use strict';
 
-process.title = 'staticbuild';
-
-var cli = require('../lib/cli.js');
-var cargs = cli.args;
-var path = require('path');
-
-if (!cargs.dev || !cargs.restart)
-  run();
-else
-  runWithNodemon();
-
-function run() {
-  var main = require('../lib/main.js');
-  main.run();
-}
-
-function runWithNodemon() {
-  var config = require('../lib/config.js');
-  if (!config.load())
-    return;
-  var misc = require('../lib/misc.js');
-  if (!misc.chdir(config.basedir, true))
-    return;
-  var nodemon = require('nodemon');
-  
-  var args = Array.prototype.slice.call(process.argv, 2);
-
-  var opts = {
-    script: path.resolve(__dirname, '../lib/devserver/nodemon.js'),
-    args: args,
-    watch: config.getWatchPaths(),
-    ext: 'coffee,jade,js,json,litcoffee'
-  };
-  if (cli.args.restartDelay)
-    opts.delay = cli.args.restartDelay;
-  if (config.verbose) {
-    console.log('Running nodemon with options:');
-    console.dir(opts);
-  }
-  nodemon(opts);
-}
+var main = require('../lib/main.js');
+main();
