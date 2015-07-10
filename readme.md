@@ -167,7 +167,7 @@ files like a gulp or grunt file.
 
 ### Help
 ```
-staticbuild v0.2.5 - Tools for creating static sites with Less, Nunjucks and 
+staticbuild v0.3.0 - Tools for creating static sites with Less, Nunjucks and 
 Gulp.
 
 Usage:
@@ -185,7 +185,7 @@ Options:
 
 ### Development Server
 ```
-staticbuild v0.2.5 - Development server.
+staticbuild v0.3.0 - Development server.
 
     Runs a local http server to dynamically render static content during 
 development.
@@ -206,7 +206,7 @@ Options:
 
 ### Setup
 ```
-staticbuild v0.2.5 - Setup.
+staticbuild v0.3.0 - Setup.
 
     Interactive setup to create a new project.
 
