@@ -36,13 +36,17 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="lib\devserver\index.js" />
+    <Compile Include="lib\locale.js" />
     <Compile Include="lib\main.js" />
     <Compile Include="lib\devserver\nodemon.js" />
     <Compile Include="index.js" />
     <Compile Include="lib\devserver\app.js" />
     <Compile Include="lib\cli.js" />
     <Compile Include="lib\config.js" />
+    <Compile Include="lib\nunjucks\filters.js" />
+    <Compile Include="lib\nunjucks\functions.js" />
     <Compile Include="lib\setup\index.js" />
+    <Compile Include="lib\util.js" />
     <Content Include="bin\staticbuild" />
     <Content Include="package.json" />
     <Content Include="readme.md" />
@@ -52,6 +56,7 @@
     <Folder Include="lib\" />
     <Folder Include="bin\" />
     <Folder Include="lib\devserver\" />
+    <Folder Include="lib\nunjucks\" />
     <Folder Include="lib\setup\" />
     <Folder Include="test\" />
   </ItemGroup>
