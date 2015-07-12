@@ -65,7 +65,7 @@ var loaded = false;
 
 // #region Load
 
-function load(args) {
+function loadConfig(args) {
   if (loaded === true)
     return true;
   
@@ -84,7 +84,7 @@ function load(args) {
   
   return true;
 }
-exports.loadConfig = load;
+exports.loadConfig = loadConfig;
 
 function loadConfigValues(data) {
   
@@ -288,7 +288,6 @@ function loadTemplateGlobals() {
   g.filters = lodash.merge(g.filters || {}, result.filters.obj);
   g.functions = lodash.merge(g.functions || {}, result.functions.obj);
 }
-exports.reloadGlobals = loadTemplateGlobals;
 
 // #endregion
 
