@@ -69,14 +69,12 @@ function loadConfig(args) {
   if (loaded === true)
     return true;
   
-  var result = {};
-  
   normalizePathArgs(args);
   lodash.assign(config, args);
   
+  var result = {};
   if (!requireFile(config.filepath, result))
     return false;
-  
   if (!loadConfigValues(result.obj))
     return false;
   
@@ -141,8 +139,6 @@ function loadConfigDirectories(data) {
 }
 
 function loadConfigDataFile(cfgdata) {
-  var result = {};
-  
   // data | datafile
   if (istype('String', cfgdata.data))
     config.datafile = cfgdata.data;
@@ -152,9 +148,9 @@ function loadConfigDataFile(cfgdata) {
     config.datafile = null;
     config.data = cfgdata.data;
   }
-  
   if (!config.datafile)
     return;
+  var result = {};
   if (requireFile(resolvePath(config.datafile), result))
     config.data = result.obj;
 }
@@ -417,7 +413,7 @@ function requireFile(filepath, result) {
   }
   return false;
 }
-config.requireFile = requireFile;
+exports.requireFile = requireFile;
 
 
 // #endregion
