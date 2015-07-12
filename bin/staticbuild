@@ -2,5 +2,8 @@
 
 'use strict';
 
-var main = require('../lib/main.js');
-main();
+// This is the primary entry point for the bin command.
+// An alternate entry executed by nodemon is lib/devserver/nodemon.js.
+
+var bincmd = require('../lib/bincmd/index.js');
+bincmd();
