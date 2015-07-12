@@ -74,6 +74,7 @@ i18n.configure({
 i18n.setLocale(currentLocale);
 
 function translate(str, etc) {
+  /*jshint unused:false*/
   var args = Array.prototype.slice.call(arguments);
   updateLocaleIfChanged();
   return i18n.__.apply(i18n, args);
@@ -81,6 +82,7 @@ function translate(str, etc) {
 exports.translate = translate;
 
 function translateNumeric(singular, plural, value) {
+  /*jshint unused:false*/
   var args = Array.prototype.slice.call(arguments);
   updateLocaleIfChanged();
   return i18n.__n.apply(i18n, args);
