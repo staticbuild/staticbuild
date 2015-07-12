@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-var config = require('./config.js');
+var config = require('./lib/config.js');
 var i18n = require('i18n');
 var lodash = require('lodash');
 var path = require('path');
