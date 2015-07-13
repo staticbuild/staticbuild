@@ -12,8 +12,8 @@ var requireNew = require('require-new');
 // #endregion
 
 /** staticbuild @namespace */
-var sbld = {};
-exports = module.exports = sbld;
+var staticbuild = {};
+exports = module.exports = staticbuild;
 
 // #region Hashids
 
