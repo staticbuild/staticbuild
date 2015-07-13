@@ -129,12 +129,14 @@ function appendFilenamePart(filepath, part) {
 }
 StaticBuild.appendFilenamePart = appendFilenamePart;
 
-StaticBuild.prototype.appendFilenameVersion = function (filepath, version) {
+StaticBuild.prototype.appendFilenameVersion = 
+function (filepath, version) {
   var ev = this.encodeVersion(version);
   return StaticBuild.appendFilenamePart(filepath, ev);
 };
 
-StaticBuild.prototype.encodeVersion = function (version) {
+StaticBuild.prototype.encodeVersion = 
+function (version) {
   var verint = StaticBuild.versionToInt(version);
   return this.hashids.current.encode(verint);
 };
@@ -384,14 +386,16 @@ function loadWebHost(build, data) {
 
 var currentLocale;
 
-StaticBuild.prototype.translate = function (str, etc) {
+StaticBuild.prototype.translate = 
+function (str, etc) {
   /*jshint unused:false*/
   var args = Array.prototype.slice.call(arguments);
   updateLocaleIfChanged(this);
   return i18n.__.apply(i18n, args);
 };
 
-StaticBuild.prototype.translateNumeric = function (singular, plural, value) {
+StaticBuild.prototype.translateNumeric = 
+function (singular, plural, value) {
   /*jshint unused:false*/
   var args = Array.prototype.slice.call(arguments);
   updateLocaleIfChanged(this);
@@ -441,7 +445,8 @@ function normalizePathOptions(opt) {
 
 // #region Paths
 
-StaticBuild.prototype.getWatchPaths = function () {
+StaticBuild.prototype.getWatchPaths = 
+function () {
   var paths = [
     this.filepath
   ];
@@ -459,11 +464,13 @@ StaticBuild.prototype.getWatchPaths = function () {
   return paths;
 };
 
-StaticBuild.prototype.resolvePath = function (to) {
+StaticBuild.prototype.resolvePath = 
+function (to) {
   return path.resolve(this.basedir, to);
 };
 
-StaticBuild.prototype.resolveSrcPath = function (to) {
+StaticBuild.prototype.resolveSrcPath = 
+function (to) {
   return path.resolve(this.sourcedir, to);
 };
 
@@ -487,7 +494,8 @@ StaticBuild.tryRequireNew = tryRequireNew;
 
 // #region Write
 
-StaticBuild.prototype.writeFileSync = function (tofile) {
+StaticBuild.prototype.writeFileSync = 
+function (tofile) {
   var result;
   var INDENT = 2;
   
