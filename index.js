@@ -1,12 +1,10 @@
 ﻿'use strict';
 
 // #region Imports
-var fs = require('fs');
 var Hashids = require('hashids');
 var i18n = require('i18n');
 var lodash = require('lodash');
 var path = require('path');
-var istype = require('type-check').typeCheck;
 var requireNew = require('require-new');
 // #endregion
 
@@ -76,8 +74,6 @@ exports.versionToInt = versionToInt;
 
 // #endregion
 
-// #region Configuration
-
 // #region Paths
 
 function getWatchPaths() {
@@ -109,21 +105,21 @@ function resolveSrcPath(to) {
 }
 exports.resolveSrcPath = resolveSrcPath;
 
-// #endregion
-
-function requireFile(filepath, result) {
+function tryRequireNew(filepath, result) {
   if (filepath === undefined || filepath === null)
     return false;
   try {
     result.obj = requireNew(filepath);
     return true;
-  }
-  catch (err) {
-    config.warnings.push('File not found: ' + filepath);
+  } catch (err) {
+    if (err.code === 'MODULE_NOT_FOUND')
+      result.message = 'File not found: ' + filepath;
+    else
+      result.message = err.toString();
   }
   return false;
 }
-exports.requireFile = requireFile;
+exports.tryRequireNew = tryRequireNew;
 
 // #endregion
 
