@@ -1,7 +1,6 @@
 ﻿'use strict';
 
 // #region Imports
-var config = require('./lib/config.js');
 var fs = require('fs');
 var Hashids = require('hashids');
 var i18n = require('i18n');
@@ -15,6 +14,8 @@ var requireNew = require('require-new');
 var staticbuild = {};
 exports = module.exports = staticbuild;
 
+require('./lib/config.js');
+
 // #region Hashids
 
 function createHashids() {
@@ -25,6 +26,7 @@ function createHashids() {
     ch.alphabet
   );
 }
+exports.createHashids = createHashids;
 
 // #endregion
 
@@ -76,249 +78,7 @@ exports.versionToInt = versionToInt;
 
 // #region Configuration
 
-exports.config = config;
-
-var defaults = lodash.cloneDeep(config);
-var loaded = false;
-
-// #region Load
-
-function loadConfig(args) {
-  if (loaded === true)
-    return true;
-  
-  normalizePathArgs(args);
-  lodash.assign(config, args);
-  
-  var result = {};
-  if (!requireFile(config.filepath, result))
-    return false;
-  if (!loadConfigValues(result.obj))
-    return false;
-  
-  loaded = true;
-  
-  return true;
-}
-exports.loadConfig = loadConfig;
-
-function loadConfigValues(data) {
-  
-  // priority loaders
-  loadConfigVerbosity(data);
-  loadConfigHashids(data);
-  loadConfigLocales(data);
-  loadConfigDirectories(data);
-  
-  // secondary loaders
-  loadConfigCss(data);
-  loadConfigDataFile(data);
-  loadConfigTemplates(data);
-  loadConfigWebHost(data);
-  
-  if (config.warnings.length > 0)
-    return false;
-  
-  return true;
-}
-
-function loadConfigCss(data) {
-  // css
-  var css = data.css;
-  if (istype('Object', css)) {
-    // preprocessor
-    if (istype('String', css.preprocessor))
-      config.css.preprocessor = css.preprocessor;
-    if (istype('Object', css.map)) {
-      // enabled
-      if (istype('Boolean', css.map.enabled))
-        config.css.map.enabled = css.map.enabled === true;
-      // inline
-      if (istype('Boolean', css.map.inline))
-        config.css.map.inline = css.map.inline === true;
-    }
-  }
-}
-
-function loadConfigDirectories(data) {
-  // source | sourcedir
-  if (istype('String', data.sourcedir))
-    config.sourcedir = data.sourcedir;
-  else if (istype('String', data.source))
-    config.sourcedir = data.source;
-  config.sourcedir = resolvePath(config.sourcedir);
-  
-  // dest | destdir
-  if (istype('String', data.destdir))
-    config.destdir = data.destdir;
-  else if (istype('String', data.dest))
-    config.destdir = data.dest;
-  config.destdir = resolvePath(config.destdir);
-}
-
-function loadConfigDataFile(cfgdata) {
-  // data | datafile
-  if (istype('String', cfgdata.data))
-    config.datafile = cfgdata.data;
-  else if (istype('String', cfgdata.datafile))
-    config.datafile = cfgdata.datafile;
-  else if (istype('Object', cfgdata.data)) {
-    config.datafile = null;
-    config.data = cfgdata.data;
-  }
-  if (!config.datafile)
-    return;
-  var result = {};
-  if (requireFile(resolvePath(config.datafile), result))
-    config.data = result.obj;
-}
-
-function loadConfigHashids(data) {
-  var ch = config.hashids;
-  var hi = data.hashids;
-  if (istype('Object', hi)) {
-    // alphabet
-    if (istype('String', hi.alphabet))
-      ch.alphabet = hi.alphabet;
-    // minLength
-    if (istype('Number', hi.minLength))
-      ch.minLength = hi.minLength;
-    // salt
-    if (istype('String', hi.salt))
-      ch.salt = hi.salt;
-  }
-  exports.hashids = createHashids();
-}
-
-function loadConfigLocales(data) {
-  // defaultLocale
-  if (istype('String', data.defaultLocale)) {
-    config.defaultLocale = data.defaultLocale;
-    config.locale = config.defaultLocale;
-  }
-  // localesdir
-  if (istype('String', data.localesdir))
-    config.localesdir = data.localesdir;
-  config.localesdir = resolvePath(config.localesdir);
-  // TODO: Read locales array from directory if it exists.
-  // locales
-  if (istype('Array', data.locales))
-    config.locales = Array.prototype.slice.call(data.locales);
-}
-
-function loadConfigTemplates(data) {
-  // template
-  var tpl = data.template;
-  if (istype('Object', tpl)) {
-    
-    // engine
-    if (istype('String', tpl.engine))
-      config.template.engine = tpl.engine;
-    
-    // extension
-    if (istype('String', tpl.extension))
-      config.template.extension = tpl.extension;
-    
-    // index | indexfile
-    if (istype('String', tpl.index))
-      config.template.indexfile = tpl.index;
-    else if (istype('String', tpl.indexfile))
-      config.template.indexfile = tpl.indexfile;
-    
-    // extensions, filters and functions.
-    if (istype('String', tpl.extensions))
-      config.template.extensionsfile = tpl.extensions;
-    
-    if (istype('String', tpl.filters))
-      config.template.filtersfile = tpl.filters;
-    
-    if (istype('String', tpl.functions))
-      config.template.functionsfile = tpl.functions;
-    
-    // globals | globalfiles
-    if (istype('String', tpl.globals))
-      config.template.globalsfile = tpl.globals;
-    else if (istype('String', tpl.globalsfile))
-      config.template.globalsfile = tpl.globalsfile;
-    
-    // locals | localsfile
-    if (tpl.locals === true || tpl.localsfile === true)
-      config.template.localsfile = '<filename>.+(js|json)';
-    if (istype('String', tpl.locals))
-      config.template.localsfile = tpl.locals;
-    else if (istype('String', tpl.localsfile))
-      config.template.localsfile = tpl.localsfile;
-    
-    // options
-    if (istype('Object', tpl.options))
-      config.template.options = lodash.cloneDeep(tpl.options);
-  }
-  loadTemplateGlobals();
-}
-
-function loadConfigVerbosity(data) {
-  // verbose
-  // - Can only be turned ON from config, not off.
-  if (data.verbose === true || data.verbose > 0)
-    config.verbose = data.verbose;
-}
-
-function loadConfigWebHost(data) {
-  // host
-  if (istype('String', data.host))
-    config.host = data.host;
-  // port
-  if (istype('Number', data.port))
-    config.port = data.port;
-  // favicon
-  if (istype('String', data.favicon))
-    config.favicon = data.favicon;
-}
-
-function loadTemplateGlobals() {
-  var tpl = config.template;
-  var result = {
-    extensions: {},
-    filters: {},
-    functions: {},
-    globals: {}
-  };
-  // Read extensions, filters and functions.
-  if (tpl.extensionsfile)
-    requireFile(resolvePath(tpl.extensionsfile), result.extensions);
-  if (tpl.filtersfile)
-    requireFile(resolvePath(tpl.filtersfile), result.filters);
-  if (tpl.functionsfile)
-    requireFile(resolvePath(tpl.functionsfile), result.functions);
-  // Read globalsfile.
-  if (tpl.globalsfile)
-    requireFile(resolvePath(tpl.globalsfile), result.globals);
-  // Merge extensions, filters and functions into config.template.globals.
-  var g = tpl.globals = lodash.merge(tpl.globals || {}, result.globals.obj);
-  g.extensions = lodash.merge(g.extensions || {}, result.extensions.obj);
-  g.filters = lodash.merge(g.filters || {}, result.filters.obj);
-  g.functions = lodash.merge(g.functions || {}, result.functions.obj);
-}
-
-// #endregion
-
 // #region Paths
-
-function filePathFromPathArgs(args) {
-  if (args.filepath !== undefined)
-    return true;
-  if (args.path === undefined)
-    return false;
-  try {
-    var stat = fs.statSync(args.path);
-    if (stat.isFile()) {
-      args.filepath = path.resolve(args.path);
-      return true;
-    }
-  } catch (err) {
-  }
-  return false;
-}
 
 function getWatchPaths() {
   var paths = [
@@ -339,18 +99,6 @@ function getWatchPaths() {
 }
 exports.getWatchPaths = getWatchPaths;
 
-function normalizePathArgs(args) {
-  if (filePathFromPathArgs(args)) {
-    args.basedir = path.resolve(path.dirname(args.filepath));
-    args.filename = path.basename(args.filepath);
-  }
-  else if (args.path !== undefined) {
-    args.filename = args.filename || 'staticbuild.json';
-    args.basedir = path.resolve(args.basedir || process.cwd(), args.path);
-    args.filepath = path.join(args.basedir, args.filename);
-  }
-}
-
 function resolvePath(to) {
   return path.resolve(config.basedir, to);
 }
@@ -360,59 +108,6 @@ function resolveSrcPath(to) {
   return path.resolve(config.sourcedir, to);
 }
 exports.resolveSrcPath = resolveSrcPath;
-
-// #endregion
-
-// #region Write
-
-function writeConfig(cfg, to) {
-  var result;
-  var INDENT = 2;
-  
-  cfg = lodash.cloneDeep(cfg || config);
-  to = to || cfg.filepath;
-  
-  // Delete object data, make absolute paths relative.
-  if (cfg.verbose !== true && cfg.verbose < 1)
-    delete cfg.verbose;
-  
-  delete cfg.devmode;
-  
-  cfg.sourcedir = path.relative(cfg.basedir, cfg.sourcedir);
-  delete cfg.basedir;
-  delete cfg.path;
-  
-  cfg.data = cfg.datafile;
-  delete cfg.datafile;
-  
-  cfg.localesdir = path.relative(cfg.basedir, cfg.localesdir);
-  delete cfg.locale;
-  
-  delete cfg.filepath;
-  delete cfg.filename;
-  
-  delete cfg.restart;
-  delete cfg.restartDelay;
-  
-  delete cfg.template.globals;
-  
-  delete cfg.warnings;
-  
-  result = JSON.stringify(cfg, null, INDENT);
-  
-  fs.writeFileSync(to, result);
-}
-exports.writeConfig = writeConfig;
-
-function writeConfigFile(to) {
-  return writeConfig(config, to);
-}
-exports.writeConfigFile = writeConfigFile;
-
-function writeDefaultConfigFile(to) {
-  return writeConfig(defaults, to || config.filepath);
-}
-exports.writeDefaultConfigFile = writeDefaultConfigFile;
 
 // #endregion
 
@@ -429,7 +124,6 @@ function requireFile(filepath, result) {
   return false;
 }
 exports.requireFile = requireFile;
-
 
 // #endregion
 
