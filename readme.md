@@ -84,7 +84,7 @@ The `src/` sub-directory is the root of the site which can contain static
 Configuration is primarly read from a JSON file, named `staticbuild.json` by 
 default.
 
-_The following sections may be incomplete. lib/config.js holds the truth._
+_The following sections may be incomplete. The source holds the truth._
 
 ### Default Configuration
 

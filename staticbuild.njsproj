@@ -41,7 +41,6 @@
     <Compile Include="index.js" />
     <Compile Include="lib\devserver\app.js" />
     <Compile Include="lib\bincmd\cli.js" />
-    <Compile Include="lib\config.js" />
     <Compile Include="lib\nunjucks\filters.js" />
     <Compile Include="lib\nunjucks\functions.js" />
     <Compile Include="lib\setup\index.js" />
