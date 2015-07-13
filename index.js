@@ -11,8 +11,26 @@ var istype = require('type-check').typeCheck;
 var requireNew = require('require-new');
 // #endregion
 
+/** staticbuild @namespace */
+var sbld = {};
+exports = module.exports = sbld;
+
+// #region Hashids
+
+function createHashids() {
+  var ch = config.hashids;
+  return new Hashids(
+    ch.salt,
+    ch.minLength,
+    ch.alphabet
+  );
+}
+
+// #endregion
+
 // #region Cache Busting
 
+/** Appends a value to the file name, before the extension. */
 function appendFilename(filepath, valueToAppend) {
   var pfile = path.parse(filepath);
   var result = Array.prototype.join.call([
@@ -39,7 +57,7 @@ exports.appendFilenameVersion = appendFilenameVersion;
 
 function encodeVersion(version) {
   var verint = versionToInt(version);
-  return config.hashids.current.encode(verint);
+  return exports.hashids.encode(verint);
 }
 exports.encodeVersion = encodeVersion;
 
@@ -156,23 +174,20 @@ function loadConfigDataFile(cfgdata) {
 }
 
 function loadConfigHashids(data) {
+  var ch = config.hashids;
   var hi = data.hashids;
   if (istype('Object', hi)) {
     // alphabet
     if (istype('String', hi.alphabet))
-      config.hashids.alphabet = hi.alphabet;
+      ch.alphabet = hi.alphabet;
     // minLength
     if (istype('Number', hi.minLength))
-      config.hashids.minLength = hi.minLength;
+      ch.minLength = hi.minLength;
     // salt
     if (istype('String', hi.salt))
-      config.hashids.salt = hi.salt;
+      ch.salt = hi.salt;
   }
-  config.hashids.current = new Hashids(
-    config.hashids.salt,
-    config.hashids.minLength,
-    config.hashids.alphabet
-  );
+  exports.hashids = createHashids();
 }
 
 function loadConfigLocales(data) {
