@@ -10,12 +10,12 @@ var path = require('path');
 var requireNew = require('require-new');
 // #endregion
 
-function StaticBuild(pathOrOptions, opt) {
+function StaticBuild(pathOrOpt, opt) {
   // #region Options
   opt = lodash.assign({
     // Required
-    path: (istype('String', pathOrOptions) ? 
-      String.prototype.trim.call(pathOrOptions) : ''),
+    path: (istype('String', pathOrOpt) ? 
+      String.prototype.trim.call(pathOrOpt) : ''),
     // Optional
     devmode: false,
     verbose: 0,
