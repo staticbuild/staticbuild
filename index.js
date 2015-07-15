@@ -123,11 +123,13 @@ function appendFilename(filepath, valueToAppend) {
   return result;
 }
 StaticBuild.appendFilename = appendFilename;
+StaticBuild.prototype.appendFilename = appendFilename;
 
 function appendFilenamePart(filepath, part) {
   return StaticBuild.appendFilename(filepath, '-' + part);
 }
 StaticBuild.appendFilenamePart = appendFilenamePart;
+StaticBuild.prototype.appendFilenamePart = appendFilenamePart;
 
 StaticBuild.prototype.appendFilenameVersion = 
 function (filepath, version) {
@@ -151,6 +153,7 @@ function versionToInt(version) {
   return parseInt(version, 10);
 }
 StaticBuild.versionToInt = versionToInt;
+StaticBuild.prototype.versionToInt = versionToInt;
 
 // #endregion
 
@@ -489,6 +492,7 @@ function tryRequireNew(filepath, result) {
   return false;
 }
 StaticBuild.tryRequireNew = tryRequireNew;
+StaticBuild.prototype.tryRequireNew = tryRequireNew;
 
 // #endregion
 
