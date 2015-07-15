@@ -103,8 +103,9 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   load(this, opt);
-  
   StaticBuild.current = this;
+  loadData(this);
+  loadTemplateGlobals(this);
 }
 module.exports = StaticBuild;
 
@@ -177,7 +178,7 @@ function load(build, opt) {
     
     // secondary loaders
     loadCss(build, data);
-    loadDataFile(build, data);
+    loadDataConfig(build, data);
     loadTemplates(build, data);
     loadWebHost(build, data);
   }
@@ -217,7 +218,16 @@ function loadDirectories(build, data) {
   build.destdir = build.resolvePath(build.destdir);
 }
 
-function loadDataFile(build, cfgdata) {
+function loadData(build) {
+  if (!build.datafile)
+    return;
+  var result = {};
+  var fullpath = build.resolvePath(build.datafile);
+  if (tryRequireNew(fullpath, result))
+    build.data = result.obj;
+}
+
+function loadDataConfig(build, cfgdata) {
   // data | datafile
   if (istype('String', cfgdata.data))
     build.datafile = cfgdata.data;
@@ -227,12 +237,6 @@ function loadDataFile(build, cfgdata) {
     build.datafile = null;
     build.data = cfgdata.data;
   }
-  if (!build.datafile)
-    return;
-  var result = {};
-  var fullpath = build.resolvePath(build.datafile);
-  if (tryRequireNew(fullpath, result))
-    build.data = result.obj;
 }
 
 function loadHashids(build, data) {
@@ -332,7 +336,6 @@ function loadTemplates(build, data) {
     if (istype('Object', tpl.options))
       build.template.options = lodash.cloneDeep(tpl.options);
   }
-  loadTemplateGlobals(build);
 }
 
 function loadTemplateGlobals(build) {
