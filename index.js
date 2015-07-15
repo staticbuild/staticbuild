@@ -63,6 +63,7 @@ function StaticBuild(pathOrOpt, opt) {
   
   // #region Template
   this.template = {
+    buildvar: 'build',
     engine: 'nunjucks',
     extension: 'htm',
     extensionsfile: '',
@@ -294,6 +295,10 @@ function loadTemplates(build, data) {
   var tpl = data.template;
   if (istype('Object', tpl)) {
     
+    // buildvar
+    if (istype('String', tpl.buildvar))
+      build.template.buildvar = tpl.buildvar;
+
     // engine
     if (istype('String', tpl.engine))
       build.template.engine = tpl.engine;

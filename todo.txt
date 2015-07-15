@@ -1,6 +1,6 @@
 ﻿
 - Add a new `buildvar` setting to specify the name to expose the current build.
-- Expose `buildvar` directly via global data.
+- Expose StaticBuild instance as `buildvar` directly via global data.
 - Add code in bincmd to load the package.json file in the target directory.
 - Add a new `package|packagefile` setting, path to a package.json file.
 - Load `packagefile` setting as property `pkg` property of StaticBuild instance.
