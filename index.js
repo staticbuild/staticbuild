@@ -360,11 +360,20 @@ function loadTemplateGlobals(build) {
   if (tpl.globalsfile)
     tryRequireNew(
       build.resolvePath(tpl.globalsfile), result.globals);
+  
   // Merge extensions, filters and functions into build.template.globals.
+  // TODO: Correct the merging here so that built-in globals are always at the 
+  // base/merged first.
   var g = tpl.globals = lodash.merge(tpl.globals || {}, result.globals.obj);
   g.extensions = lodash.merge(g.extensions || {}, result.extensions.obj);
-  g.filters = lodash.merge(g.filters || {}, result.filters.obj);
-  g.functions = lodash.merge(g.functions || {}, result.functions.obj);
+  
+  var baseFilters = require('./lib/nunjucks/filters.js').createForBuild(build);
+  g.filters = lodash.merge(g.filters || {}, baseFilters)
+  g.filters = lodash.merge(g.filters, result.filters.obj);
+  
+  var baseFns = require('./lib/nunjucks/functions.js').createForBuild(build);
+  g.functions = lodash.merge(g.functions || {}, baseFns);
+  g.functions = lodash.merge(g.functions, result.functions.obj);
 }
 
 function loadVerbosity(build, data) {
