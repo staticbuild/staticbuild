@@ -21,14 +21,14 @@ _This project is under development._
 
 ## Roadmap
 
-- Create libs to expose build information to template environment and gulpfile.
-  - Devmode.
-  - Locale, Locales.
-  - Other staticbuild config values.
-- Create libs to consolidate and expose common build functions.
-  - Cache busting using hash of package version by default.
-    - File/path renaming.
-  - Default filters and functions for template environment.
+- ~~Create libs to expose build information to template environment and gulpfile.~~
+  - ~~Devmode.~~
+  - ~~Locale, Locales.~~
+  - ~~Other staticbuild config values.~~
+- ~~Create libs to consolidate and expose common build functions.~~
+  - ~~Cache busting using hash of package version by default.~~
+    - ~~File/path renaming.~~
+  - ~~Default filters and functions for template environment.~~
 - Create interactive setup.
   - Change [Getting Started](#getting-started) section to recommend a global 
 install and then the setup command. The setup command should also install 
