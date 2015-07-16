@@ -38,7 +38,6 @@ function StaticBuild(pathOrOpt, opt) {
   this.filepath = '';
   this.packagefile = 'package.json';
   this.pkg = {};
-  this.version = '0.0.0';
   this.path = process.cwd();
   this.verbose = false;
   // #endregion
@@ -150,7 +149,7 @@ StaticBuild.prototype.appendFilenamePart = appendFilenamePart;
 
 StaticBuild.prototype.appendFilenameVersion = 
 function (filepath, version) {
-  var ev = this.encodeVersion(version);
+  var ev = this.encodeVersion(version || this.pkg.version);
   return StaticBuild.appendFilenamePart(filepath, ev);
 };
 

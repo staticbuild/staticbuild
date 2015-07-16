@@ -33,7 +33,6 @@ _This project is under development._
 - ~~Expose StaticBuild instance as `buildvar` directly via global data.~~
 - ~~Add a new `package|packagefile` setting, path to a package.json file.~~
 - ~~Load `packagefile` setting as property `pkg` property of StaticBuild instance.~~
-- Change bincmd to load the package.json file in the target directory.
 - Add support for Jade templates.
 - Create API documentation.
 - Update staticbuild.json documentation.
