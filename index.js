@@ -373,7 +373,7 @@ function loadTemplateGlobals(build) {
   g.extensions = lodash.merge(g.extensions || {}, result.extensions.obj);
   
   var baseFilters = require('./lib/nunjucks/filters.js').createForBuild(build);
-  g.filters = lodash.merge(g.filters || {}, baseFilters)
+  g.filters = lodash.merge(g.filters || {}, baseFilters);
   g.filters = lodash.merge(g.filters, result.filters.obj);
   
   var baseFns = require('./lib/nunjucks/functions.js').createForBuild(build);
