@@ -11,6 +11,11 @@ var requireNew = require('require-new');
 // #endregion
 
 function StaticBuild(pathOrOpt, opt) {
+  // #region Non-Constructor Call Handling
+  if (!(this instanceof StaticBuild))
+    return new StaticBuild(pathOrOpt, opt);
+  // #endregion
+
   // #region Options
   opt = lodash.assign({
     // Required
