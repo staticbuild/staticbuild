@@ -117,7 +117,6 @@ module.exports = StaticBuild;
 
 // #region Cache Busting
 
-/** Appends a value to the file name, before the extension. */
 function appendFilename(filepath, valueToAppend) {
   var pfile = path.parse(filepath);
   var result = Array.prototype.join.call([
