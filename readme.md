@@ -35,6 +35,8 @@ _This project is under development._
 - Load `packagefile` setting as property `pkg` property of StaticBuild instance.
 - Change bincmd to load the package.json file in the target directory.
 - Add support for Jade templates.
+- Create API documentation.
+- Update staticbuild.json documentation.
 - Create interactive setup.
   - Change [Getting Started](#getting-started) section to recommend a global 
 install and then the setup command. The setup command should also install 
