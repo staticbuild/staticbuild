@@ -503,6 +503,8 @@ function () {
     paths.push(this.resolvePath(tpl.functionsfile));
   if (this.datafile)
     paths.push(this.resolvePath(this.datafile));
+  if (this.packagefile)
+    paths.push(this.resolvePath(this.packagefile));
   return paths;
 };
 
