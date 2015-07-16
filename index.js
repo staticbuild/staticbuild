@@ -170,23 +170,20 @@ function load(build, opt) {
   normalizePathOptions(opt);
   lodash.assign(build, opt);
   
-  var result = {};
-  if (!tryRequireNew(build.filepath, result))
-    build.warnings.push(result.message);
-  else {
-    var data = result.obj;
-    // priority loaders
-    loadVerbosity(build, data);
-    loadHashids(build, data);
-    loadLocales(build, data);
-    loadDirectories(build, data);
+  var data = build.tryRequireNew(build.filepath);
+  if (!data)
+    return;
+  // priority loaders
+  loadVerbosity(build, data);
+  loadHashids(build, data);
+  loadLocales(build, data);
+  loadDirectories(build, data);
     
-    // secondary loaders
-    loadCss(build, data);
-    loadDataConfig(build, data);
-    loadTemplates(build, data);
-    loadWebHost(build, data);
-  }
+  // secondary loaders
+  loadCss(build, data);
+  loadDataConfig(build, data);
+  loadTemplates(build, data);
+  loadWebHost(build, data);
 }
 
 function loadCss(build, data) {
@@ -226,10 +223,10 @@ function loadDirectories(build, data) {
 function loadData(build) {
   if (!build.datafile)
     return;
-  var result = {};
   var fullpath = build.resolvePath(build.datafile);
-  if (tryRequireNew(fullpath, result))
-    build.data = result.obj;
+  var data = build.tryRequireNew(fullpath);
+  if (data)
+    build.data = data;
 }
 
 function loadDataConfig(build, cfgdata) {
@@ -349,7 +346,7 @@ function loadTemplates(build, data) {
 
 function loadTemplateGlobals(build) {
   var tpl = build.template;
-  var result = {
+  var loaded = {
     extensions: {},
     filters: {},
     functions: {},
@@ -357,32 +354,28 @@ function loadTemplateGlobals(build) {
   };
   // Read extensions, filters and functions.
   if (tpl.extensionsfile)
-    tryRequireNew(
-      build.resolvePath(tpl.extensionsfile), result.extensions);
+    loaded.extensions = build.tryRequireNew(tpl.extensionsfile);
   if (tpl.filtersfile)
-    tryRequireNew(
-      build.resolvePath(tpl.filtersfile), result.filters);
+    loaded.filters = build.tryRequireNew(tpl.filtersfile);
   if (tpl.functionsfile)
-    tryRequireNew(
-      build.resolvePath(tpl.functionsfile), result.functions);
+    loaded.functions = build.tryRequireNew(tpl.functionsfile);
   // Read globalsfile.
   if (tpl.globalsfile)
-    tryRequireNew(
-      build.resolvePath(tpl.globalsfile), result.globals);
+    loaded.globals = build.tryRequireNew(tpl.globalsfile);
   
   // Merge extensions, filters and functions into build.template.globals.
   // TODO: Correct the merging here so that built-in globals are always at the 
   // base/merged first.
-  var g = tpl.globals = lodash.merge(tpl.globals || {}, result.globals.obj);
-  g.extensions = lodash.merge(g.extensions || {}, result.extensions.obj);
+  var g = tpl.globals = lodash.merge(tpl.globals || {}, loaded.globals);
+  g.extensions = lodash.merge(g.extensions || {}, loaded.extensions);
   
   var baseFilters = require('./lib/nunjucks/filters.js').createForBuild(build);
   g.filters = lodash.merge(g.filters || {}, baseFilters);
-  g.filters = lodash.merge(g.filters, result.filters.obj);
+  g.filters = lodash.merge(g.filters, loaded.filters);
   
   var baseFns = require('./lib/nunjucks/functions.js').createForBuild(build);
   g.functions = lodash.merge(g.functions || {}, baseFns);
-  g.functions = lodash.merge(g.functions, result.functions.obj);
+  g.functions = lodash.merge(g.functions, loaded.functions);
 }
 
 function loadVerbosity(build, data) {
@@ -498,19 +491,22 @@ function (to) {
   return path.resolve(this.sourcedir, to);
 };
 
-function tryRequireNew(filepath, result) {
+function tryRequireNew(filepath) {
+  var build, errMsg;
   if (filepath === undefined || filepath === null)
-    return false;
+    return;
   try {
-    result.obj = requireNew(filepath);
-    return true;
+    return requireNew(filepath);
   } catch (err) {
-    if (err.code === 'MODULE_NOT_FOUND')
-      result.message = 'File not found: ' + filepath;
+    errMsg = err.code === 'MODULE_NOT_FOUND' ? 
+        'File not found: ' + filepath :
+        'Error loading file ' + filepath + ' - ' + err.toString();
+    build = this instanceof StaticBuild ? this : StaticBuild.current;
+    if (build)
+      build.warnings.push(errMsg);
     else
-      result.message = err.toString();
+      console.error(errMsg);
   }
-  return false;
 }
 StaticBuild.tryRequireNew = tryRequireNew;
 StaticBuild.prototype.tryRequireNew = tryRequireNew;
@@ -521,7 +517,6 @@ StaticBuild.prototype.tryRequireNew = tryRequireNew;
 
 StaticBuild.prototype.writeFileSync = 
 function (tofile) {
-  var result;
   var INDENT = 2;
   
   var config = lodash.cloneDeep(this);
@@ -552,9 +547,9 @@ function (tofile) {
   
   delete config.warnings;
   
-  result = JSON.stringify(config, null, INDENT);
+  var jsonStr = JSON.stringify(config, null, INDENT);
   
-  fs.writeFileSync(tofile, result);
+  fs.writeFileSync(tofile, jsonStr);
 };
 
 // #endregion
