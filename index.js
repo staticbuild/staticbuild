@@ -10,6 +10,8 @@ var path = require('path');
 var requireNew = require('require-new');
 // #endregion
 
+// TODO: Resolve paths once, after the configuration is loaded (if any).
+
 function StaticBuild(pathOrOpt, opt) {
   // #region Non-Constructor Call Handling
   if (!(this instanceof StaticBuild))
@@ -29,20 +31,28 @@ function StaticBuild(pathOrOpt, opt) {
   }, opt);
   // #endregion
   
-  // #region Core
+  // #region Base
   this.basedir = process.cwd();
-  this.data = {};
-  this.datafile = '';
-  this.destdir = 'dest';
   this.devmode = false;
   this.filename = 'staticbuild.json';
   this.filepath = '';
-  this.path = process.cwd();
-  this.sourcedir = 'src';
-  this.verbose = false;
+  this.packagefile = 'package.json';
+  this.pkg = {};
   this.version = '0.0.0';
+  this.path = process.cwd();
+  this.verbose = false;
   // #endregion
   
+  // #region Data
+  this.data = {};
+  this.datafile = '';
+  // #endregion
+  
+  // #region Directories
+  this.destdir = 'dest';
+  this.sourcedir = 'src';
+  // #endregion
+
   // #region Hashids
   this.hashids = {
     alphabet: '0123456789abcdefghijklmnopqrstuvwxyz',
@@ -110,6 +120,7 @@ function StaticBuild(pathOrOpt, opt) {
   
   load(this, opt);
   StaticBuild.current = this;
+  loadPackage(this);
   loadData(this);
   loadTemplateGlobals(this);
 }
@@ -173,17 +184,31 @@ function load(build, opt) {
   var data = build.tryRequireNew(build.filepath);
   if (!data)
     return;
+
   // priority loaders
-  loadVerbosity(build, data);
+  loadBase(build, data);
   loadHashids(build, data);
   loadLocales(build, data);
   loadDirectories(build, data);
-    
+  
   // secondary loaders
   loadCss(build, data);
   loadDataConfig(build, data);
   loadTemplates(build, data);
   loadWebHost(build, data);
+}
+
+function loadBase(build, data) {
+  // verbose
+  // - Can only be turned ON from build, not off.
+  if (data.verbose === true || data.verbose > 0)
+    build.verbose = data.verbose;
+  // package | packagefile
+  if (istype('String', data["package"]))
+    build.packagefile = data["package"];
+  else if (istype('String', data.packagefile))
+    build.destdir = data.packagefile;
+  build.packagefile = build.resolvePath(build.packagefile);
 }
 
 function loadCss(build, data) {
@@ -291,6 +316,14 @@ function loadLocales(build, data) {
   currentLocale = build.locale;
 }
 
+function loadPackage(build) {
+  if (!build.packagefile)
+    return;
+  var data = build.tryRequireNew(build.packagefile);
+  if (data)
+    build.pkg = data;
+}
+
 function loadTemplates(build, data) {
   // template
   var tpl = data.template;
@@ -376,13 +409,6 @@ function loadTemplateGlobals(build) {
   var baseFns = require('./lib/nunjucks/functions.js').createForBuild(build);
   g.functions = lodash.merge(g.functions || {}, baseFns);
   g.functions = lodash.merge(g.functions, loaded.functions);
-}
-
-function loadVerbosity(build, data) {
-  // verbose
-  // - Can only be turned ON from build, not off.
-  if (data.verbose === true || data.verbose > 0)
-    build.verbose = data.verbose;
 }
 
 function loadWebHost(build, data) {
