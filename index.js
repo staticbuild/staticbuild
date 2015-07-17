@@ -387,10 +387,10 @@ function load(build) {
     build.localesdir = build.resolvePath(build.localesdir);
   if (build.datafile)
     build.datafile = build.resolvePath(build.datafile);
-  if (build.template.extensionsfile)
-    build.template.extensionsfile = build.resolvePath(build.template.extensionsfile);
-  if (build.template.filtersfile)
-    build.template.filtersfile = build.resolvePath(build.template.filtersfile);
+  if (build.template.engine.nunjucks.extensionsfile)
+    build.template.engine.nunjucks.extensionsfile = build.resolvePath(build.template.engine.nunjucks.extensionsfile);
+  if (build.template.engine.nunjucks.filtersfile)
+    build.template.engine.nunjucks.filtersfile = build.resolvePath(build.template.engine.nunjucks.filtersfile);
   if (build.template.functionsfile)
     build.template.functionsfile = build.resolvePath(build.template.functionsfile);
   if (build.template.globalsfile)
@@ -427,10 +427,10 @@ function loadTemplateGlobals(build) {
     globals: {}
   };
   // Read extensions, filters and functions.
-  if (tpl.extensionsfile)
-    loaded.extensions = build.tryRequireNew(tpl.extensionsfile);
-  if (tpl.filtersfile)
-    loaded.filters = build.tryRequireNew(tpl.filtersfile);
+  if (tpl.engine.nunjucks.extensionsfile)
+    loaded.extensions = build.tryRequireNew(tpl.engine.nunjucks.extensionsfile);
+  if (tpl.engine.nunjucks.filtersfile)
+    loaded.filters = build.tryRequireNew(tpl.engine.nunjucks.filtersfile);
   if (tpl.functionsfile)
     loaded.functions = build.tryRequireNew(tpl.functionsfile);
   // Read globalsfile.
@@ -535,10 +535,10 @@ function () {
   var tpl = this.template;
   if (tpl.globalsfile)
     paths.push(tpl.globalsfile);
-  if (tpl.extensionsfile)
-    paths.push(tpl.extensionsfile);
-  if (tpl.filtersfile)
-    paths.push(tpl.filtersfile);
+  if (tpl.engine.nunjucks.extensionsfile)
+    paths.push(tpl.engine.nunjucks.extensionsfile);
+  if (tpl.engine.nunjucks.filtersfile)
+    paths.push(tpl.engine.nunjucks.filtersfile);
   if (tpl.functionsfile)
     paths.push(tpl.functionsfile);
   if (this.datafile)
