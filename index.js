@@ -365,15 +365,24 @@ function configureWebHost(build, data) {
 
 function load(build) {
   // Resolve all paths.
-  build.packagefile = build.resolvePath(build.packagefile);
-  build.sourcedir = build.resolvePath(build.sourcedir);
-  build.destdir = build.resolvePath(build.destdir);
-  build.localesdir = build.resolvePath(build.localesdir);
-  build.datafile = build.resolvePath(build.datafile);
-  build.template.extensionsfile = build.resolvePath(build.template.extensionsfile);
-  build.template.filtersfile = build.resolvePath(build.template.filtersfile);
-  build.template.functionsfile = build.resolvePath(build.template.functionsfile);
-  build.template.globalsfile = build.resolvePath(build.template.globalsfile);
+  if (build.packagefile)
+    build.packagefile = build.resolvePath(build.packagefile);
+  if (build.sourcedir)
+    build.sourcedir = build.resolvePath(build.sourcedir);
+  if (build.destdir)
+    build.destdir = build.resolvePath(build.destdir);
+  if (build.localesdir)
+    build.localesdir = build.resolvePath(build.localesdir);
+  if (build.datafile)
+    build.datafile = build.resolvePath(build.datafile);
+  if (build.template.extensionsfile)
+    build.template.extensionsfile = build.resolvePath(build.template.extensionsfile);
+  if (build.template.filtersfile)
+    build.template.filtersfile = build.resolvePath(build.template.filtersfile);
+  if (build.template.functionsfile)
+    build.template.functionsfile = build.resolvePath(build.template.functionsfile);
+  if (build.template.globalsfile)
+    build.template.globalsfile = build.resolvePath(build.template.globalsfile);
   // Load stuff.
   loadPackage(build);
   // TODO: A function to read locales from directory if it exists.
@@ -536,7 +545,7 @@ StaticBuild.prototype.relativePattern =
 function (to, pattern) {
   if (pattern === undefined || pattern === null || !pattern.length)
     return this.relativePath(to);
-  var prefix = prefix.charAt(0);
+  var prefix = pattern.charAt(0);
   if (prefix === '!')
     return prefix + this.relativePath(to) + pattern.substr(1);
   else
