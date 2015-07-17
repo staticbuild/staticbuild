@@ -117,11 +117,9 @@ function StaticBuild(pathOrOpt, opt) {
   ];
   // #endregion
   
-  load(this, opt);
+  configure(this, opt);
   StaticBuild.current = this;
-  loadPackage(this);
-  loadData(this);
-  loadTemplateGlobals(this);
+  load(this);
 }
 module.exports = StaticBuild;
 
@@ -173,31 +171,29 @@ StaticBuild.prototype.versionToInt = versionToInt;
 
 // #endregion
 
-// #region Load
+// #region Configuration
 
-function load(build, opt) {
-  
+function configure(build, opt) {
+  // Normalize and apply options.
   normalizePathOptions(opt);
   lodash.assign(build, opt);
-  
+  // Configure from file.
   var data = build.tryRequireNew(build.filepath);
-  if (!data)
-    return;
+  if (data) {
+    configureBase(build, data);
+    configureHashids(build, data);
+    configureLocales(build, data);
+    configureDirectories(build, data);
+    configureCss(build, data);
+    configureData(build, data);
+    configureTemplates(build, data);
+    configureWebHost(build, data);
+  }
+  // Resolve all paths once.
 
-  // priority loaders
-  loadBase(build, data);
-  loadHashids(build, data);
-  loadLocales(build, data);
-  loadDirectories(build, data);
-  
-  // secondary loaders
-  loadCss(build, data);
-  loadDataConfig(build, data);
-  loadTemplates(build, data);
-  loadWebHost(build, data);
 }
 
-function loadBase(build, data) {
+function configureBase(build, data) {
   // verbose
   // - Can only be turned ON from build, not off.
   if (data.verbose === true || data.verbose > 0)
@@ -210,7 +206,7 @@ function loadBase(build, data) {
   build.packagefile = build.resolvePath(build.packagefile);
 }
 
-function loadCss(build, data) {
+function configureCss(build, data) {
   // css
   var css = data.css;
   if (istype('Object', css)) {
@@ -228,7 +224,7 @@ function loadCss(build, data) {
   }
 }
 
-function loadDirectories(build, data) {
+function configureDirectories(build, data) {
   // source | sourcedir
   if (istype('String', data.sourcedir))
     build.sourcedir = data.sourcedir;
@@ -244,16 +240,7 @@ function loadDirectories(build, data) {
   build.destdir = build.resolvePath(build.destdir);
 }
 
-function loadData(build) {
-  if (!build.datafile)
-    return;
-  var fullpath = build.resolvePath(build.datafile);
-  var data = build.tryRequireNew(fullpath);
-  if (data)
-    build.data = data;
-}
-
-function loadDataConfig(build, cfgdata) {
+function configureData(build, cfgdata) {
   // data | datafile
   if (istype('String', cfgdata.data))
     build.datafile = cfgdata.data;
@@ -265,7 +252,7 @@ function loadDataConfig(build, cfgdata) {
   }
 }
 
-function loadHashids(build, data) {
+function configureHashids(build, data) {
   var ch = build.hashids;
   var hi = data.hashids;
   if (istype('Object', hi)) {
@@ -286,7 +273,7 @@ function loadHashids(build, data) {
   );
 }
 
-function loadLocales(build, data) {
+function configureLocales(build, data) {
   // defaultLocale
   if (istype('String', data.defaultLocale)) {
     build.defaultLocale = data.defaultLocale;
@@ -315,15 +302,7 @@ function loadLocales(build, data) {
   currentLocale = build.locale;
 }
 
-function loadPackage(build) {
-  if (!build.packagefile)
-    return;
-  var data = build.tryRequireNew(build.packagefile);
-  if (data)
-    build.pkg = data;
-}
-
-function loadTemplates(build, data) {
+function configureTemplates(build, data) {
   // template
   var tpl = data.template;
   if (istype('Object', tpl)) {
@@ -376,6 +355,45 @@ function loadTemplates(build, data) {
   }
 }
 
+function configureWebHost(build, data) {
+  // host
+  if (istype('String', data.host))
+    build.host = data.host;
+  // port
+  if (istype('Number', data.port))
+    build.port = data.port;
+  // favicon
+  if (istype('String', data.favicon))
+    build.favicon = data.favicon;
+}
+
+// #endregion
+
+// #region Load
+
+function load(build) {
+  loadPackage(build);
+  loadData(build);
+  loadTemplateGlobals(build);
+}
+
+function loadData(build) {
+  if (!build.datafile)
+    return;
+  var fullpath = build.resolvePath(build.datafile);
+  var data = build.tryRequireNew(fullpath);
+  if (data)
+    build.data = data;
+}
+
+function loadPackage(build) {
+  if (!build.packagefile)
+    return;
+  var data = build.tryRequireNew(build.packagefile);
+  if (data)
+    build.pkg = data;
+}
+
 function loadTemplateGlobals(build) {
   var tpl = build.template;
   var loaded = {
@@ -408,18 +426,6 @@ function loadTemplateGlobals(build) {
   var baseFns = require('./lib/nunjucks/functions.js').createForBuild(build);
   g.functions = lodash.merge(g.functions || {}, baseFns);
   g.functions = lodash.merge(g.functions, loaded.functions);
-}
-
-function loadWebHost(build, data) {
-  // host
-  if (istype('String', data.host))
-    build.host = data.host;
-  // port
-  if (istype('Number', data.port))
-    build.port = data.port;
-  // favicon
-  if (istype('String', data.favicon))
-    build.favicon = data.favicon;
 }
 
 // #endregion
