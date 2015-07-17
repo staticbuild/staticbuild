@@ -74,20 +74,26 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Template
+
   this.template = {
     buildvar: 'build',
-    engine: 'nunjucks',
-    extension: 'htm',
-    extensionsfile: '',
-    filtersfile: '',
+    engine: {
+      jade: {
+        extension: 'jade',
+        options: { pretty: true, cache: false }
+      },
+      nunjucks: {
+        extension: 'htm',
+        extensionsfile: '',
+        filtersfile: '',
+        options: { autoescape: true }
+      }
+    },
     functionsfile: '',
     globals: {},
     globalsfile: '',
     indexfile: 'index',
-    localsfile: '',
-    options: {
-      autoescape: true
-    }
+    localsfile: ''
   };
   // #endregion
   
@@ -297,6 +303,7 @@ function configureLocales(build, data) {
 function configureTemplates(build, data) {
   // template
   var tpl = data.template;
+  var eng;
   if (istype('Object', tpl)) {
     
     // buildvar
@@ -304,26 +311,35 @@ function configureTemplates(build, data) {
       build.template.buildvar = tpl.buildvar;
 
     // engine
-    if (istype('String', tpl.engine))
-      build.template.engine = tpl.engine;
-    
-    // extension
-    if (istype('String', tpl.extension))
-      build.template.extension = tpl.extension;
-    
+    if (istype('Object', tpl.engine)) {
+      // jade
+      if (istype('Object', tpl.engine.jade)) {
+        eng = tpl.engine.jade;
+        if (istype('String', eng.extension))
+          build.template.engine.jade.extension = eng.extension;
+        if (istype('Object', eng.options))
+          lodash.merge(build.template.engine.jade.options, eng.options);
+      }
+      // nunjucks
+      if (istype('Object', tpl.engine.nunjucks)) {
+        eng = tpl.engine.nunjucks;
+        if (istype('String', eng.extension))
+          build.template.engine.nunjucks.extension = eng.extension;
+        if (istype('String', eng.extensions))
+          build.template.engine.nunjucks.extensionsfile = eng.extensions;
+        if (istype('String', eng.filters))
+          build.template.engine.nunjucks.filtersfile = eng.filters;
+        if (istype('Object', eng.options))
+          lodash.merge(build.template.engine.nunjucks.options, eng.options);
+      }
+    }
     // index | indexfile
     if (istype('String', tpl.index))
       build.template.indexfile = tpl.index;
     else if (istype('String', tpl.indexfile))
       build.template.indexfile = tpl.indexfile;
     
-    // extensions, filters and functions.
-    if (istype('String', tpl.extensions))
-      build.template.extensionsfile = tpl.extensions;
-    
-    if (istype('String', tpl.filters))
-      build.template.filtersfile = tpl.filters;
-    
+    // functions.
     if (istype('String', tpl.functions))
       build.template.functionsfile = tpl.functions;
     
@@ -340,10 +356,6 @@ function configureTemplates(build, data) {
       build.template.localsfile = tpl.locals;
     else if (istype('String', tpl.localsfile))
       build.template.localsfile = tpl.localsfile;
-    
-    // options
-    if (istype('Object', tpl.options))
-      build.template.options = lodash.cloneDeep(tpl.options);
   }
 }
 
