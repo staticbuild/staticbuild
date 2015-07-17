@@ -10,8 +10,6 @@ var path = require('path');
 var requireNew = require('require-new');
 // #endregion
 
-// TODO: Resolve paths once, after the configuration is loaded (if any).
-
 function StaticBuild(pathOrOpt, opt) {
   // #region Non-Constructor Call Handling
   if (!(this instanceof StaticBuild))
@@ -498,6 +496,16 @@ function normalizePathOptions(opt) {
 
 // #region Paths
 
+StaticBuild.prototype.dest =
+function (pattern) {
+  return this.relativePattern(this.destdir, pattern);
+};
+
+StaticBuild.prototype.destLocale =
+function (pattern) {
+  return this.relativePattern(path.join(this.destdir, this.locale), pattern);
+};
+
 StaticBuild.prototype.getWatchPaths = 
 function () {
   var paths = [
@@ -519,6 +527,22 @@ function () {
   return paths;
 };
 
+StaticBuild.prototype.relativePath =
+function (to) {
+  return path.relative(this.basedir, to).replace('\\', '/');
+};
+
+StaticBuild.prototype.relativePattern =
+function (to, pattern) {
+  if (pattern === undefined || pattern === null || !pattern.length)
+    return this.relativePath(to);
+  var prefix = prefix.charAt(0);
+  if (prefix === '!')
+    return prefix + this.relativePath(to) + pattern.substr(1);
+  else
+    return this.relativePath(to) + pattern;
+};
+
 StaticBuild.prototype.resolvePath = 
 function (to) {
   return path.resolve(this.basedir, to);
@@ -527,6 +551,11 @@ function (to) {
 StaticBuild.prototype.resolveSrcPath = 
 function (to) {
   return path.resolve(this.sourcedir, to);
+};
+
+StaticBuild.prototype.src =
+function (pattern) {
+  return this.relativePattern(this.sourcedir, pattern);
 };
 
 function tryRequireNew(filepath) {
