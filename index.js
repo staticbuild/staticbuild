@@ -179,18 +179,16 @@ function configure(build, opt) {
   lodash.assign(build, opt);
   // Configure from file.
   var data = build.tryRequireNew(build.filepath);
-  if (data) {
-    configureBase(build, data);
-    configureHashids(build, data);
-    configureLocales(build, data);
-    configureDirectories(build, data);
-    configureCss(build, data);
-    configureData(build, data);
-    configureTemplates(build, data);
-    configureWebHost(build, data);
-  }
-  // Resolve all paths once.
-
+  if (!data)
+    return;
+  configureBase(build, data);
+  configureHashids(build, data);
+  configureLocales(build, data);
+  configureDirectories(build, data);
+  configureCss(build, data);
+  configureData(build, data);
+  configureTemplates(build, data);
+  configureWebHost(build, data);
 }
 
 function configureBase(build, data) {
@@ -203,7 +201,6 @@ function configureBase(build, data) {
     build.packagefile = data["package"];
   else if (istype('String', data.packagefile))
     build.destdir = data.packagefile;
-  build.packagefile = build.resolvePath(build.packagefile);
 }
 
 function configureCss(build, data) {
@@ -230,14 +227,12 @@ function configureDirectories(build, data) {
     build.sourcedir = data.sourcedir;
   else if (istype('String', data.source))
     build.sourcedir = data.source;
-  build.sourcedir = build.resolvePath(build.sourcedir);
   
   // dest | destdir
   if (istype('String', data.destdir))
     build.destdir = data.destdir;
   else if (istype('String', data.dest))
     build.destdir = data.dest;
-  build.destdir = build.resolvePath(build.destdir);
 }
 
 function configureData(build, cfgdata) {
@@ -282,8 +277,7 @@ function configureLocales(build, data) {
   // localesdir
   if (istype('String', data.localesdir))
     build.localesdir = data.localesdir;
-  build.localesdir = build.resolvePath(build.localesdir);
-  // TODO: Read locales array from directory if it exists.
+  
   // locales
   if (istype('Array', data.locales))
     build.locales = Array.prototype.slice.call(data.locales);
@@ -372,7 +366,19 @@ function configureWebHost(build, data) {
 // #region Load
 
 function load(build) {
+  // Resolve all paths.
+  build.packagefile = build.resolvePath(build.packagefile);
+  build.sourcedir = build.resolvePath(build.sourcedir);
+  build.destdir = build.resolvePath(build.destdir);
+  build.localesdir = build.resolvePath(build.localesdir);
+  build.datafile = build.resolvePath(build.datafile);
+  build.template.extensionsfile = build.resolvePath(build.template.extensionsfile);
+  build.template.filtersfile = build.resolvePath(build.template.filtersfile);
+  build.template.functionsfile = build.resolvePath(build.template.functionsfile);
+  build.template.globalsfile = build.resolvePath(build.template.globalsfile);
+  // Load stuff.
   loadPackage(build);
+  // TODO: A function to read locales from directory if it exists.
   loadData(build);
   loadTemplateGlobals(build);
 }
@@ -380,8 +386,7 @@ function load(build) {
 function loadData(build) {
   if (!build.datafile)
     return;
-  var fullpath = build.resolvePath(build.datafile);
-  var data = build.tryRequireNew(fullpath);
+  var data = build.tryRequireNew(build.datafile);
   if (data)
     build.data = data;
 }
@@ -500,17 +505,17 @@ function () {
   ];
   var tpl = this.template;
   if (tpl.globalsfile)
-    paths.push(this.resolvePath(tpl.globalsfile));
+    paths.push(tpl.globalsfile);
   if (tpl.extensionsfile)
-    paths.push(this.resolvePath(tpl.extensionsfile));
+    paths.push(tpl.extensionsfile);
   if (tpl.filtersfile)
-    paths.push(this.resolvePath(tpl.filtersfile));
+    paths.push(tpl.filtersfile);
   if (tpl.functionsfile)
-    paths.push(this.resolvePath(tpl.functionsfile));
+    paths.push(tpl.functionsfile);
   if (this.datafile)
-    paths.push(this.resolvePath(this.datafile));
+    paths.push(this.datafile);
   if (this.packagefile)
-    paths.push(this.resolvePath(this.packagefile));
+    paths.push(this.packagefile);
   return paths;
 };
 
