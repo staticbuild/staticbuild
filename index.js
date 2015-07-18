@@ -108,6 +108,7 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Status
+  this.errors = [];
   this.info = [];
   this.warnings = [];
   // #endregion
@@ -607,32 +608,43 @@ StaticBuild.prototype.writeFileSync =
 function (tofile) {
   var INDENT = 2;
   
+  tofile = tofile || 'staticbuild.json';
+
   var config = lodash.cloneDeep(this);
   
-  // Delete object data, make absolute paths relative.
-  if (config.verbose !== true && config.verbose < 1)
-    delete config.verbose;
+  //
+  if (config.datafile)
+    config.data = config.datafile;
+  else
+    config.data = "";
   
-  delete config.devmode;
-  
-  config.sourcedir = path.relative(config.basedir, config.sourcedir);
-  delete config.basedir;
-  delete config.path;
-  
-  config.data = config.datafile;
-  delete config.datafile;
-  
+  // Make absolute paths relative.
+  config.dest = path.relative(config.basedir, config.destdir);
   config.localesdir = path.relative(config.basedir, config.localesdir);
-  delete config.locale;
-  
+  config.source = path.relative(config.basedir, config.sourcedir);
+
+  // Delete object data.
+  delete config.basedir;
+  delete config.destdir;
+  delete config.devmode;
   delete config.filepath;
   delete config.filename;
+  delete config.pkg;
+  delete config.packagefile;
+  delete config.path;
+  delete config.sourcedir;
+  delete config.verbose;
+  
+  delete config.hashids.current;
+  delete config.datafile;
+  delete config.locale;
+  delete config.template.globals;
   
   delete config.restart;
   delete config.restartDelay;
   
-  delete config.template.globals;
-  
+  delete config.errors;
+  delete config.info;
   delete config.warnings;
   
   var jsonStr = JSON.stringify(config, null, INDENT);
