@@ -204,7 +204,7 @@ function configureBase(build, data) {
   if (istype('String', data["package"]))
     build.packagefile = data["package"];
   else if (istype('String', data.packagefile))
-    build.destdir = data.packagefile;
+    build.packagefile = data.packagefile;
 }
 
 function configureCss(build, data) {
