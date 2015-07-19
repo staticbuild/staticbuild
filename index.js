@@ -15,7 +15,7 @@ function StaticBuild(pathOrOpt, opt) {
   if (!(this instanceof StaticBuild))
     return new StaticBuild(pathOrOpt, opt);
   // #endregion
-
+  
   // #region Options
   opt = lodash.assign({
     // Required
@@ -46,12 +46,12 @@ function StaticBuild(pathOrOpt, opt) {
   this.restart = false;
   this.restartDelay = 0;
   // #endregion
-
+  
   // #region Directories
   this.destdir = 'dest';
   this.sourcedir = 'src';
   // #endregion
-
+  
   // #region Hashids
   this.hashids = {
     alphabet: '0123456789abcdefghijklmnopqrstuvwxyz',
@@ -68,6 +68,7 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Engine
+  this.defaultEngineName = 'jade';
   this.engine = {
     jade: {
       extension: 'jade',
@@ -79,9 +80,9 @@ function StaticBuild(pathOrOpt, opt) {
     },
     nunjucks: {
       extension: 'htm',
-      extensions: {},
+      extensions: undefined,
       extensionsfile: '',
-      filters: {},
+      filters: undefined,
       filtersfile: '',
       options: { autoescape: true }
     }
@@ -220,11 +221,17 @@ function configureDirectories(build, data) {
 }
 
 function configureEngine(build, data) {
-  if (!istype('Object', data.engine))
-    return;
-  configureJade(build, data.engine);
-  configureLESS(build, data.engine);
-  configureNunjucks(build, data.engine);
+  if (istype('Object', data.engine)) {
+    configureJade(build, data.engine);
+    configureLESS(build, data.engine);
+    configureNunjucks(build, data.engine);
+  }
+  if (
+    istype('String', data.defaultEngine) 
+    && data.defaultEngine in build.engine 
+    && data.defaultEngine !== build.defaultEngineName 
+  )
+    build.defaultEngineName = data.defaultEngine;
 }
 
 function configureHashids(build, data) {
@@ -399,22 +406,19 @@ function loadPackage(build) {
 
 function loadNunjucksFiles(build) {
   var nunjucks = build.engine.nunjucks;
-  var loaded = {
-    extensions: {},
-    filters: {}
-  };
+  var loaded = {};
   // Read extensions and filters.
   if (nunjucks.extensionsfile)
     loaded.extensions = build.tryRequireNew(nunjucks.extensionsfile);
   if (nunjucks.filtersfile)
     loaded.filters = build.tryRequireNew(nunjucks.filtersfile);
   
-  //CONSIDER: If adding any default extensions, do: 
-  // nunjucks.filters = require('./lib/nunjucks/extensions.js').createForBuild(build);
-  nunjucks.extensions = lodash.merge(nunjucks.extensions || {}, loaded.extensions);
-
+  if (loaded.extensions)
+    nunjucks.extensions = lodash.merge(nunjucks.extensions, loaded.extensions);
+  
   nunjucks.filters = require('./lib/nunjucks/filters.js').createForBuild(build);
-  lodash.merge(nunjucks.filters || {}, loaded.filters);
+  if (loaded.filters)
+    nunjucks.filters = lodash.merge(nunjucks.filters, loaded.filters);
 }
 
 // #endregion
@@ -482,6 +486,14 @@ function normalizePathOptions(opt) {
 
 // #region Paths
 
+StaticBuild.prototype.cssFile =
+function (srcpath) {
+  if (!this.devmode)
+    srcpath = this.appendFilenameVersion(srcpath, this.pkg.version);
+  var ml = '<link rel="stylesheet" type="text/css" href="' + srcpath + '"/>';
+  return ml;
+};
+
 StaticBuild.prototype.dest =
 function (pattern) {
   return this.relativePattern(this.destdir, pattern);
@@ -506,6 +518,14 @@ function () {
   if (this.packagefile)
     paths.push(this.packagefile);
   return paths;
+};
+
+StaticBuild.prototype.jsFile =
+function (srcpath) {
+  if (!this.devmode)
+    srcpath = this.appendFilenameVersion(srcpath, this.pkg.version);
+  var ml = '<script type="text/javascript" src="' + srcpath + '"></script>';
+  return ml;
 };
 
 StaticBuild.prototype.relativePath =
@@ -568,7 +588,7 @@ function (tofile) {
   var INDENT = 2;
   
   tofile = tofile || 'staticbuild.json';
-
+  
   var config = lodash.cloneDeep(this);
   
   //
@@ -581,7 +601,7 @@ function (tofile) {
   config.dest = path.relative(config.basedir, config.destdir);
   config.localesdir = path.relative(config.basedir, config.localesdir);
   config.source = path.relative(config.basedir, config.sourcedir);
-
+  
   // Delete object data.
   delete config.basedir;
   delete config.destdir;
