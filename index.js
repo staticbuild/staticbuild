@@ -297,19 +297,6 @@ function configureLocales(build, data) {
   // locales
   if (istype('Array', data.locales))
     build.locales = Array.prototype.slice.call(data.locales);
-  
-  i18n.configure({
-    extension: '.json',
-    indent: '  ',
-    locales: build.locales,
-    defaultLocale: build.defaultLocale,
-    directory: build.localesdir,
-    objectNotation: true,
-    prefix: '',
-    updateFiles: true
-  });
-  i18n.setLocale(build.locale);
-  currentLocale = build.locale;
 }
 
 function configureNunjucks(build, data) {
@@ -371,29 +358,33 @@ function load(build) {
     build.destdir = build.resolvePath(build.destdir);
   if (build.localesdir)
     build.localesdir = build.resolvePath(build.localesdir);
-  if (build.datafile)
-    build.datafile = build.resolvePath(build.datafile);
   if (build.engine.nunjucks.extensionsfile)
     build.engine.nunjucks.extensionsfile = build.resolvePath(build.engine.nunjucks.extensionsfile);
   if (build.engine.nunjucks.filtersfile)
     build.engine.nunjucks.filtersfile = build.resolvePath(build.engine.nunjucks.filtersfile);
-  if (build.functionsfile)
-    build.functionsfile = build.resolvePath(build.functionsfile);
-  if (build.globalsfile)
-    build.globalsfile = build.resolvePath(build.globalsfile);
+  if (build.contextfile)
+    build.globalsfile = build.resolvePath(build.contextfile);
   // Load stuff.
   loadPackage(build);
-  // TODO: loadLocales(build); // To load locale names if localesdir exists.
+  loadLocales(build);
   loadViewContext(build);
   loadNunjucksFiles(build);
 }
 
-function loadViewContext(build) {
-  if (!build.contextfile)
-    return;
-  var data = build.tryRequireNew(build.contextfile);
-  if (data)
-    build.context = data;
+function loadLocales(build) {
+  // TODO: Load locale names from localesdir if it exists.
+  i18n.configure({
+    extension: '.json',
+    indent: '  ',
+    locales: build.locales,
+    defaultLocale: build.defaultLocale,
+    directory: build.localesdir,
+    objectNotation: true,
+    prefix: '',
+    updateFiles: true
+  });
+  i18n.setLocale(build.locale);
+  currentLocale = build.locale;
 }
 
 function loadPackage(build) {
@@ -419,6 +410,14 @@ function loadNunjucksFiles(build) {
   nunjucks.filters = require('./lib/nunjucks/filters.js').createForBuild(build);
   if (loaded.filters)
     nunjucks.filters = lodash.merge(nunjucks.filters, loaded.filters);
+}
+
+function loadViewContext(build) {
+  if (!build.contextfile)
+    return;
+  var data = build.tryRequireNew(build.contextfile);
+  if (data)
+    build.context = data;
 }
 
 // #endregion
