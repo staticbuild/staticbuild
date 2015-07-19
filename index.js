@@ -40,11 +40,13 @@ function StaticBuild(pathOrOpt, opt) {
   this.verbose = false;
   // #endregion
   
-  // #region Data
-  this.data = {};
-  this.datafile = '';
+  // #region Dev Server
+  this.devhost = undefined;
+  this.devport = 8080;
+  this.restart = false;
+  this.restartDelay = 0;
   // #endregion
-  
+
   // #region Directories
   this.destdir = 'dest';
   this.sourcedir = 'src';
@@ -65,46 +67,33 @@ function StaticBuild(pathOrOpt, opt) {
   this.localesdir = 'locales';
   // #endregion
   
-  // #region Web Host
+  // #region Engine
+  this.engine = {
+    jade: {
+      extension: 'jade',
+      options: { pretty: true, cache: false }
+    },
+    less: {
+      extension: 'less',
+      map: { enabled: true, inline: false }
+    },
+    nunjucks: {
+      extension: 'htm',
+      extensions: {},
+      extensionsfile: '',
+      filters: {},
+      filtersfile: '',
+      options: { autoescape: true }
+    }
+  };
+  // #endregion
+  
+  // #region Views
+  this.buildvar = 'build';
+  this.context = {};
+  this.contextfile = '';
+  this.defaultView = 'index';
   this.favicon = 'favicon.ico';
-  this.host = process.env.HOST || undefined;
-  this.port = process.env.PORT || 8080;
-  this.restart = false;
-  this.restartDelay = 0;
-  // #endregion
-  
-  // #region Template
-
-  this.template = {
-    buildvar: 'build',
-    engine: {
-      jade: {
-        extension: 'jade',
-        options: { pretty: true, cache: false }
-      },
-      nunjucks: {
-        extension: 'htm',
-        extensionsfile: '',
-        filtersfile: '',
-        options: { autoescape: true }
-      }
-    },
-    functionsfile: '',
-    globals: {},
-    globalsfile: '',
-    indexfile: 'index',
-    localsfile: ''
-  };
-  // #endregion
-  
-  // #region CSS
-  this.css = {
-    map: {
-      enabled: true,
-      inline: false
-    },
-    preprocessor: 'less'
-  };
   // #endregion
   
   // #region Status
@@ -187,13 +176,12 @@ function configure(build, opt) {
   if (!data)
     return;
   configureBase(build, data);
+  configureDevServer(build, data);
+  configureDirectories(build, data);
+  configureEngine(build, data);
   configureHashids(build, data);
   configureLocales(build, data);
-  configureDirectories(build, data);
-  configureCss(build, data);
-  configureData(build, data);
-  configureTemplates(build, data);
-  configureWebHost(build, data);
+  configureViews(build, data);
 }
 
 function configureBase(build, data) {
@@ -208,22 +196,13 @@ function configureBase(build, data) {
     build.packagefile = data.packagefile;
 }
 
-function configureCss(build, data) {
-  // css
-  var css = data.css;
-  if (istype('Object', css)) {
-    // preprocessor
-    if (istype('String', css.preprocessor))
-      build.css.preprocessor = css.preprocessor;
-    if (istype('Object', css.map)) {
-      // enabled
-      if (istype('Boolean', css.map.enabled))
-        build.css.map.enabled = css.map.enabled === true;
-      // inline
-      if (istype('Boolean', css.map.inline))
-        build.css.map.inline = css.map.inline === true;
-    }
-  }
+function configureDevServer(build, data) {
+  // devhost
+  if (istype('String', data.devhost))
+    build.devhost = data.devhost;
+  // devport
+  if (istype('Number', data.devport))
+    build.devport = data.devport;
 }
 
 function configureDirectories(build, data) {
@@ -240,16 +219,12 @@ function configureDirectories(build, data) {
     build.destdir = data.dest;
 }
 
-function configureData(build, cfgdata) {
-  // data | datafile
-  if (istype('String', cfgdata.data))
-    build.datafile = cfgdata.data;
-  else if (istype('String', cfgdata.datafile))
-    build.datafile = cfgdata.datafile;
-  else if (istype('Object', cfgdata.data)) {
-    build.datafile = null;
-    build.data = cfgdata.data;
-  }
+function configureEngine(build, data) {
+  if (!istype('Object', data.engine))
+    return;
+  configureJade(build, data.engine);
+  configureLESS(build, data.engine);
+  configureNunjucks(build, data.engine);
 }
 
 function configureHashids(build, data) {
@@ -271,6 +246,35 @@ function configureHashids(build, data) {
     ch.minLength,
     ch.alphabet
   );
+}
+
+function configureJade(build, data) {
+  var jade = data.jade;
+  if (!istype('Object', jade))
+    return;
+  // extension
+  if (istype('String', jade.extension))
+    build.engine.jade.extension = jade.extension;
+  // options
+  if (istype('Object', data.options))
+    lodash.merge(build.engine.jade.options, data.options);
+}
+
+function configureLESS(build, data) {
+  var less = data.less;
+  if (!istype('Object', less))
+    return;
+  // extension
+  if (istype('String', less.extension))
+    build.engine.less.extension = less.extension;
+  if (istype('Object', less.map)) {
+    // enabled
+    if (istype('Boolean', less.map.enabled))
+      build.engine.less.map.enabled = less.map.enabled === true;
+    // inline
+    if (istype('Boolean', less.map.inline))
+      build.engine.less.map.inline = less.map.inline === true;
+  }
 }
 
 function configureLocales(build, data) {
@@ -301,72 +305,46 @@ function configureLocales(build, data) {
   currentLocale = build.locale;
 }
 
-function configureTemplates(build, data) {
-  // template
-  var tpl = data.template;
-  var eng;
-  if (istype('Object', tpl)) {
-    
-    // buildvar
-    if (istype('String', tpl.buildvar))
-      build.template.buildvar = tpl.buildvar;
-
-    // engine
-    if (istype('Object', tpl.engine)) {
-      // jade
-      if (istype('Object', tpl.engine.jade)) {
-        eng = tpl.engine.jade;
-        if (istype('String', eng.extension))
-          build.template.engine.jade.extension = eng.extension;
-        if (istype('Object', eng.options))
-          lodash.merge(build.template.engine.jade.options, eng.options);
-      }
-      // nunjucks
-      if (istype('Object', tpl.engine.nunjucks)) {
-        eng = tpl.engine.nunjucks;
-        if (istype('String', eng.extension))
-          build.template.engine.nunjucks.extension = eng.extension;
-        if (istype('String', eng.extensions))
-          build.template.engine.nunjucks.extensionsfile = eng.extensions;
-        if (istype('String', eng.filters))
-          build.template.engine.nunjucks.filtersfile = eng.filters;
-        if (istype('Object', eng.options))
-          lodash.merge(build.template.engine.nunjucks.options, eng.options);
-      }
-    }
-    // index | indexfile
-    if (istype('String', tpl.index))
-      build.template.indexfile = tpl.index;
-    else if (istype('String', tpl.indexfile))
-      build.template.indexfile = tpl.indexfile;
-    
-    // functions.
-    if (istype('String', tpl.functions))
-      build.template.functionsfile = tpl.functions;
-    
-    // globals | globalfiles
-    if (istype('String', tpl.globals))
-      build.template.globalsfile = tpl.globals;
-    else if (istype('String', tpl.globalsfile))
-      build.template.globalsfile = tpl.globalsfile;
-    
-    // locals | localsfile
-    if (tpl.locals === true || tpl.localsfile === true)
-      build.template.localsfile = '<filename>.+(js|json)';
-    if (istype('String', tpl.locals))
-      build.template.localsfile = tpl.locals;
-    else if (istype('String', tpl.localsfile))
-      build.template.localsfile = tpl.localsfile;
-  }
+function configureNunjucks(build, data) {
+  var nunjucks = data.nunjucks;
+  if (!istype('Object', nunjucks))
+    return;
+  // extension
+  if (istype('String', nunjucks.extension))
+    build.engine.nunjucks.extension = nunjucks.extension;
+  // extensions | extensionsfile
+  if (istype('String', nunjucks.extensions))
+    build.engine.nunjucks.extensionsfile = nunjucks.extensions;
+  else if (istype('String', nunjucks.extensionsfile))
+    build.engine.nunjucks.extensionsfile = nunjucks.extensionsfile;
+  // filters | filtersfile
+  if (istype('String', nunjucks.filters))
+    build.engine.nunjucks.filtersfile = nunjucks.filters;
+  else if (istype('String', nunjucks.filtersfile))
+    build.engine.nunjucks.filtersfile = nunjucks.filtersfile;
+  // options
+  if (istype('Object', nunjucks.options))
+    lodash.merge(build.engine.nunjucks.options, nunjucks.options);
 }
 
-function configureWebHost(build, data) {
-  // host
-  if (istype('String', data.host))
-    build.host = data.host;
-  // port
-  if (istype('Number', data.port))
-    build.port = data.port;
+function configureViews(build, data) {
+  // buildvar
+  if (istype('String', data.buildvar))
+    build.buildvar = data.buildvar;
+  // context | contextfile
+  if (istype('String', data.context))
+    build.contextfile = data.context;
+  else if (istype('String', data.contextfile))
+    build.contextfile = data.contextfile;
+  else if (istype('Object', data.context)) {
+    build.contextfile = null;
+    build.context = data.context;
+  }
+  // defaultview | defaultView
+  if (istype('String', data.defaultview))
+    build.defaultView = data.defaultview;
+  else if (istype('String', data.defaultView))
+    build.defaultView = data.defaultView;
   // favicon
   if (istype('String', data.favicon))
     build.favicon = data.favicon;
@@ -388,27 +366,27 @@ function load(build) {
     build.localesdir = build.resolvePath(build.localesdir);
   if (build.datafile)
     build.datafile = build.resolvePath(build.datafile);
-  if (build.template.engine.nunjucks.extensionsfile)
-    build.template.engine.nunjucks.extensionsfile = build.resolvePath(build.template.engine.nunjucks.extensionsfile);
-  if (build.template.engine.nunjucks.filtersfile)
-    build.template.engine.nunjucks.filtersfile = build.resolvePath(build.template.engine.nunjucks.filtersfile);
-  if (build.template.functionsfile)
-    build.template.functionsfile = build.resolvePath(build.template.functionsfile);
-  if (build.template.globalsfile)
-    build.template.globalsfile = build.resolvePath(build.template.globalsfile);
+  if (build.engine.nunjucks.extensionsfile)
+    build.engine.nunjucks.extensionsfile = build.resolvePath(build.engine.nunjucks.extensionsfile);
+  if (build.engine.nunjucks.filtersfile)
+    build.engine.nunjucks.filtersfile = build.resolvePath(build.engine.nunjucks.filtersfile);
+  if (build.functionsfile)
+    build.functionsfile = build.resolvePath(build.functionsfile);
+  if (build.globalsfile)
+    build.globalsfile = build.resolvePath(build.globalsfile);
   // Load stuff.
   loadPackage(build);
-  // TODO: A function to read locales from directory if it exists.
-  loadData(build);
-  loadTemplateGlobals(build);
+  // TODO: loadLocales(build); // To load locale names if localesdir exists.
+  loadViewContext(build);
+  loadNunjucksFiles(build);
 }
 
-function loadData(build) {
-  if (!build.datafile)
+function loadViewContext(build) {
+  if (!build.contextfile)
     return;
-  var data = build.tryRequireNew(build.datafile);
+  var data = build.tryRequireNew(build.contextfile);
   if (data)
-    build.data = data;
+    build.context = data;
 }
 
 function loadPackage(build) {
@@ -419,38 +397,24 @@ function loadPackage(build) {
     build.pkg = data;
 }
 
-function loadTemplateGlobals(build) {
-  var tpl = build.template;
+function loadNunjucksFiles(build) {
+  var nunjucks = build.engine.nunjucks;
   var loaded = {
     extensions: {},
-    filters: {},
-    functions: {},
-    globals: {}
+    filters: {}
   };
-  // Read extensions, filters and functions.
-  if (tpl.engine.nunjucks.extensionsfile)
-    loaded.extensions = build.tryRequireNew(tpl.engine.nunjucks.extensionsfile);
-  if (tpl.engine.nunjucks.filtersfile)
-    loaded.filters = build.tryRequireNew(tpl.engine.nunjucks.filtersfile);
-  if (tpl.functionsfile)
-    loaded.functions = build.tryRequireNew(tpl.functionsfile);
-  // Read globalsfile.
-  if (tpl.globalsfile)
-    loaded.globals = build.tryRequireNew(tpl.globalsfile);
+  // Read extensions and filters.
+  if (nunjucks.extensionsfile)
+    loaded.extensions = build.tryRequireNew(nunjucks.extensionsfile);
+  if (nunjucks.filtersfile)
+    loaded.filters = build.tryRequireNew(nunjucks.filtersfile);
   
-  // Merge extensions, filters and functions into build.template.globals.
-  // TODO: Correct the merging here so that built-in globals are always at the 
-  // base/merged first.
-  var g = tpl.globals = lodash.merge(tpl.globals || {}, loaded.globals);
-  g.extensions = lodash.merge(g.extensions || {}, loaded.extensions);
-  
-  var baseFilters = require('./lib/nunjucks/filters.js').createForBuild(build);
-  g.filters = lodash.merge(g.filters || {}, baseFilters);
-  g.filters = lodash.merge(g.filters, loaded.filters);
-  
-  var baseFns = require('./lib/nunjucks/functions.js').createForBuild(build);
-  g.functions = lodash.merge(g.functions || {}, baseFns);
-  g.functions = lodash.merge(g.functions, loaded.functions);
+  //CONSIDER: If adding any default extensions, do: 
+  // nunjucks.filters = require('./lib/nunjucks/extensions.js').createForBuild(build);
+  nunjucks.extensions = lodash.merge(nunjucks.extensions || {}, loaded.extensions);
+
+  nunjucks.filters = require('./lib/nunjucks/filters.js').createForBuild(build);
+  lodash.merge(nunjucks.filters || {}, loaded.filters);
 }
 
 // #endregion
@@ -533,17 +497,12 @@ function () {
   var paths = [
     this.filepath
   ];
-  var tpl = this.template;
-  if (tpl.globalsfile)
-    paths.push(tpl.globalsfile);
-  if (tpl.engine.nunjucks.extensionsfile)
-    paths.push(tpl.engine.nunjucks.extensionsfile);
-  if (tpl.engine.nunjucks.filtersfile)
-    paths.push(tpl.engine.nunjucks.filtersfile);
-  if (tpl.functionsfile)
-    paths.push(tpl.functionsfile);
-  if (this.datafile)
-    paths.push(this.datafile);
+  if (this.contextfile)
+    paths.push(this.contextfile);
+  if (this.engine.nunjucks.extensionsfile)
+    paths.push(this.engine.nunjucks.extensionsfile);
+  if (this.engine.nunjucks.filtersfile)
+    paths.push(this.engine.nunjucks.filtersfile);
   if (this.packagefile)
     paths.push(this.packagefile);
   return paths;
@@ -638,7 +597,6 @@ function (tofile) {
   delete config.hashids.current;
   delete config.datafile;
   delete config.locale;
-  delete config.template.globals;
   
   delete config.restart;
   delete config.restartDelay;
