@@ -1,10 +1,10 @@
 # staticbuild
 
-Tools for creating static sites with Less, Nunjucks and Gulp.
+Tools for creating static sites with Jade, Less, Nunjucks and Gulp.
 
 ## Alpha
 
-_This project is under development._
+_This project is under development and this readme is most likely out of date._
 
 - [Roadmap](#roadmap)
 - [Getting Started](#getting-started)
@@ -21,19 +21,12 @@ _This project is under development._
 
 ## Roadmap
 
-- ~~Create libs to expose build information to template environment and gulpfile.~~
-  - ~~Devmode.~~
-  - ~~Locale, Locales.~~
-  - ~~Other staticbuild config values.~~
-- ~~Create libs to consolidate and expose common build functions.~~
-  - ~~Cache busting using hash of package version by default.~~
-    - ~~File/path renaming.~~
-  - ~~Default filters and functions for template environment.~~
-- ~~Add a new `buildvar` setting to specify the name to expose the current build.~~
-- ~~Expose StaticBuild instance as `buildvar` directly via global data.~~
-- ~~Add a new `package|packagefile` setting, path to a package.json file.~~
-- ~~Load `packagefile` setting as property `pkg` property of StaticBuild instance.~~
-- Add support for Jade templates.
+- Add config settings to disable or change the default view engines.
+- Only init Jade and Nunjucks if they're enabled and/or installed.
+- Consider moving jade and nunjucks into npm devDependencies in this project, 
+forcing the end-developer to install jade and/or nunjucks in their own project.
+- Support other view engines like consolidate.js does, but with the ability to 
+configure them from the staticbuild.json file.
 - Create API documentation.
 - Update staticbuild.json documentation.
 - Create interactive setup.
