@@ -90,6 +90,7 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Views
+  this.autocontext = true;
   this.buildvar = 'build';
   this.context = {};
   this.contextfile = '';
@@ -322,6 +323,9 @@ function configureNunjucks(build, data) {
 }
 
 function configureViews(build, data) {
+  // autocontext
+  if (istype('Boolean', data.autocontext))
+    build.autocontext = data.autocontext;
   // buildvar
   if (istype('String', data.buildvar))
     build.buildvar = data.buildvar;
