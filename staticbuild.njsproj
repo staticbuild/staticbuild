@@ -48,7 +48,6 @@
     <Content Include="bin\staticbuild" />
     <Content Include="package.json" />
     <Content Include="readme.md" />
-    <Content Include="default-staticbuild.json" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="lib\" />
