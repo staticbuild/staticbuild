@@ -1,0 +1,8 @@
+{
+  "site": {
+    "title": "staticbuild-jade",
+    "lang": "en",
+    "greeting": "Welcome to",
+    "copyright": "Copyright @ Devoptix LLC 2015"
+  }
+}
