@@ -48,7 +48,7 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Directories
-  this.destdir = 'dest';
+  this.destdir = 'dist';
   this.sourcedir = 'src';
   // #endregion
   
