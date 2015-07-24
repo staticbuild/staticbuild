@@ -84,6 +84,7 @@ function StaticBuild(pathOrOpt, opt) {
       extensionsfile: '',
       filters: undefined,
       filtersfile: '',
+      functions: undefined,
       options: { autoescape: true }
     }
   };
@@ -414,6 +415,9 @@ function loadNunjucksFiles(build) {
   nunjucks.filters = require('./lib/nunjucks/filters.js').createForBuild(build);
   if (loaded.filters)
     nunjucks.filters = lodash.merge(nunjucks.filters, loaded.filters);
+
+  // Some core functions specialized for nunjucks.
+  nunjucks.functions = require('./lib/nunjucks/functions.js').createForBuild(build);
 }
 
 function loadViewContext(build) {
@@ -434,7 +438,7 @@ StaticBuild.prototype.translate =
 function (str, etc) {
   /*jshint unused:false*/
   var args = Array.prototype.slice.call(arguments);
-  updateLocaleIfChanged(this || StaticBuild.current);
+  updateLocaleIfChanged(this);
   return i18n.__.apply(i18n, args);
 };
 
@@ -442,7 +446,7 @@ StaticBuild.prototype.translateNumeric =
 function (singular, plural, value) {
   /*jshint unused:false*/
   var args = Array.prototype.slice.call(arguments);
-  updateLocaleIfChanged(this || StaticBuild.current);
+  updateLocaleIfChanged(this);
   return i18n.__n.apply(i18n, args);
 };
 
