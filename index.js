@@ -434,7 +434,7 @@ StaticBuild.prototype.translate =
 function (str, etc) {
   /*jshint unused:false*/
   var args = Array.prototype.slice.call(arguments);
-  updateLocaleIfChanged(this);
+  updateLocaleIfChanged(this || StaticBuild.current);
   return i18n.__.apply(i18n, args);
 };
 
@@ -442,7 +442,7 @@ StaticBuild.prototype.translateNumeric =
 function (singular, plural, value) {
   /*jshint unused:false*/
   var args = Array.prototype.slice.call(arguments);
-  updateLocaleIfChanged(this);
+  updateLocaleIfChanged(this || StaticBuild.current);
   return i18n.__n.apply(i18n, args);
 };
 
