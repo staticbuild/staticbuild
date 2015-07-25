@@ -149,7 +149,7 @@ StaticBuild.prototype.appendFilenamePart = appendFilenamePart;
 function appendVinylFileVersion(file) {
   /*jshint validthis: true */
   // This method is bound to the instance in StaticBuild constructor.
-  version = version || this.pkg.version;
+  var version = version || this.pkg.version;
   var encodedVer = versionCache[version] || this.encodeVersion(version);
   file.basename += '-' + encodedVer;
 }
