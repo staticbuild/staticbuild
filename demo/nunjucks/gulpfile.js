@@ -90,7 +90,7 @@ gulp.task('html', function () {
   var optRenderView = {
     src: build.src(),
     autoescape: true,
-    data: { build: build },
+    data: build.context,
     filters: build.engine.nunjucks.filters,
     functions: build.engine.nunjucks.functions,
     locals: false,

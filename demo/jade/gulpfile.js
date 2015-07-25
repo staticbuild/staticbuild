@@ -91,7 +91,7 @@ gulp.task('html', function () {
   // See https://github.com/phated/gulp-jade#usage
   var optRenderView = {
     jade: jade,
-    locals: { build: build, t: build.translate.bind(build), tn: build.translateNumeric.bind(build) }
+    locals: build.context
   };
   // Html-minifier
   // 
