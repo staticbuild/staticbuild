@@ -447,18 +447,6 @@ function loadViewContext(build) {
   }
 }
 
-function createViewContext() {
-  var context = build.context;
-  if (build.autocontext) {
-    // Add some stuff to the global context.
-    if (build.buildvar)
-      context[build.buildvar] = build;
-    context.t = build.translate.bind(build);
-    context.tn = build.translateNumeric.bind(build);
-  }
-  return context;
-}
-
 // #endregion
 
 // #region Locales
