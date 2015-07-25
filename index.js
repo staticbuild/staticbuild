@@ -421,11 +421,29 @@ function loadNunjucksFiles(build) {
 }
 
 function loadViewContext(build) {
-  if (!build.contextfile)
-    return;
-  var data = build.tryRequireNew(build.contextfile);
-  if (data)
-    build.context = data;
+  var context = build.context;
+  if (build.contextfile)
+    context = build.context = 
+      build.tryRequireNew(build.contextfile) || context;
+  if (build.autocontext) {
+    // Add some stuff to the global context.
+    if (build.buildvar)
+      context[build.buildvar] = build;
+    context.t = build.translate.bind(build);
+    context.tn = build.translateNumeric.bind(build);
+  }
+}
+
+function createViewContext() {
+  var context = build.context;
+  if (build.autocontext) {
+    // Add some stuff to the global context.
+    if (build.buildvar)
+      context[build.buildvar] = build;
+    context.t = build.translate.bind(build);
+    context.tn = build.translateNumeric.bind(build);
+  }
+  return context;
 }
 
 // #endregion
