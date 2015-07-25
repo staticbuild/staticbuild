@@ -37,28 +37,12 @@ var mainTasks = [
   'html'
 ];
 
-var versionEncoded = build.encodeVersion(build.pkg.version);
-
-// #region Helpers
-function appendFileVersion(file) {
-  file.basename += '-' + versionEncoded;
-}
-
-function setLocale() {
-  if (!gutil.env.locale)
-    return true;
-  var locale = String.prototype.trim.call(gutil.env.locale);
-  if (Array.prototype.indexOf.call(build.locales, locale) < 0) {
-    gutil.log(new Error('Invalid locale.'));
-    return false;
-  }
-  build.locale = locale;
-  return true;
-}
-// #endregion
-
-if (!setLocale())
+build.trySetLocale(gutil.env.locale, function (err) {
+  if (!err)
+    return;
+  gutil.log(err);
   process.exit(1001);
+});
 
 gulp.task('default', mainTasks);
 
@@ -80,7 +64,7 @@ gulp.task('css', function () {
   ])
   .pipe(less({ compress: true })).on('error', gutil.log)
   .pipe(minifyCss({ keepBreaks: false }))
-  .pipe(rename(appendFileVersion))
+  .pipe(rename(build.appendVinylFileVersion))
   //.pipe(gzip(gzipOpt))
   .pipe(gulp.dest(build.destLocale()));
 });
@@ -130,7 +114,7 @@ gulp.task('javascript', function () {
   .pipe(jshint({ globalstrict: true }))
   .pipe(jshint.reporter('jshint-stylish'))
   .pipe(uglify())
-  .pipe(rename(appendFileVersion))
+  .pipe(rename(build.appendVinylFileVersion))
   //.pipe(gzip(gzipOpt))
   .pipe(gulp.dest(build.destLocale()));
 });

@@ -117,10 +117,14 @@ function StaticBuild(pathOrOpt, opt) {
   configure(this, opt);
   StaticBuild.current = this;
   load(this);
+  // Bind methods which are likely to be called without an instance.
+  this.appendVinylFileVersion = appendVinylFileVersion.bind(this);
 }
 module.exports = StaticBuild;
 
 // #region Cache Busting
+
+var versionCache = {};
 
 function appendFilename(filepath, valueToAppend) {
   var pfile = path.parse(filepath);
@@ -142,10 +146,19 @@ function appendFilenamePart(filepath, part) {
 StaticBuild.appendFilenamePart = appendFilenamePart;
 StaticBuild.prototype.appendFilenamePart = appendFilenamePart;
 
+function appendVinylFileVersion(file) {
+  /*jshint validthis: true */
+  // This method is bound to the instance in StaticBuild constructor.
+  version = version || this.pkg.version;
+  var encodedVer = versionCache[version] || this.encodeVersion(version);
+  file.basename += '-' + encodedVer;
+}
+
 StaticBuild.prototype.appendFilenameVersion = 
 function (filepath, version) {
-  var ev = this.encodeVersion(version || this.pkg.version);
-  return StaticBuild.appendFilenamePart(filepath, ev);
+  version = version || this.pkg.version;
+  var encodedVer = versionCache[version] || this.encodeVersion(version);
+  return StaticBuild.appendFilenamePart(filepath, encodedVer);
 };
 
 StaticBuild.prototype.encodeVersion = 
@@ -474,6 +487,22 @@ function updateLocaleIfChanged(build) {
   i18n.setLocale(build.locale);
   currentLocale = build.locale;
 }
+
+StaticBuild.prototype.trySetLocale = 
+function (locale, errback) {
+  if (!locale)
+    return false;
+  locale = String.prototype.trim.call(locale);
+  if (Array.prototype.indexOf.call(this.locales, locale) < 0) {
+    if (errback)
+      errback(new Error('Invalid locale.'), null);
+    return false;
+  }
+  this.locale = locale;
+  if (errback)
+    errback(null, locale);
+  return true;
+};
 
 // #endregion
 

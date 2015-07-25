@@ -36,9 +36,9 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup>
-	<!-- Specifies the directories which are ignored. Any paths which contain these directory names
+    <!-- Specifies the directories which are ignored. Any paths which contain these directory names
 	will be ignored. The directory name must completely match and no wild cards are allowed -->
-	<AnalysisIgnoredDirectories>bower_components;demo</AnalysisIgnoredDirectories>
+    <AnalysisIgnoredDirectories>bower_components;demo</AnalysisIgnoredDirectories>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="lib\devserver\index.js" />
