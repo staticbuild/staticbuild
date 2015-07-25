@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html lang="{{"site.lang:en"|t}}" dir="auto">
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{page_title}}</title>
+  {{cssFile("/lib/css/site.css")}}
+  {{jsFile("/lib/js/site.js")}}
+</head>
+<body>
+  {% block content %}
+  <p>&nbsp;</p>
+  {% endblock %}
+  <em>{{"site.copyright:Copyright @ Devoptix LLC 2015"|t}}</em>
+</body>
+</html>

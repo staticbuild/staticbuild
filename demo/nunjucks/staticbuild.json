@@ -1,0 +1,5 @@
+{
+  "hashids": { "salt": "VKlUPwjMWkiAmiHSM6N6ekNelE0QG4AX" },
+  "locales": [ "en", "es" ],
+  "localesdir": "locales"
+}
