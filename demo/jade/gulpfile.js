@@ -64,7 +64,7 @@ gulp.task('css', function () {
   ])
   .pipe(less({ compress: true })).on('error', gutil.log)
   .pipe(minifyCss({ keepBreaks: false }))
-  .pipe(rename(build.appendVinylFileVersion))
+  .pipe(rename(build.appendEncPkgVerVinyl))
   //.pipe(gzip(gzipOpt))
   .pipe(gulp.dest(build.destLocale()));
 });
@@ -114,7 +114,7 @@ gulp.task('javascript', function () {
   .pipe(jshint({ globalstrict: true }))
   .pipe(jshint.reporter('jshint-stylish'))
   .pipe(uglify())
-  .pipe(rename(build.appendVinylFileVersion))
+  .pipe(rename(build.appendEncPkgVerVinyl))
   //.pipe(gzip(gzipOpt))
   .pipe(gulp.dest(build.destLocale()));
 });
