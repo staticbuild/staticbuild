@@ -118,7 +118,10 @@ function StaticBuild(pathOrOpt, opt) {
   StaticBuild.current = this;
   load(this);
   // Bind methods which are likely to be called without an instance.
-  this.appendVinylFileVersion = appendVinylFileVersion.bind(this);
+  /** @deprecated Use appendEncPkgVerVinyl instead. */
+  this.appendVinylFileVersion = appendEncPkgVerVinyl.bind(this);
+  /** Appends the encoded package version to the vinyl file basename. */
+  this.appendEncPkgVerVinyl = appendEncPkgVerVinyl.bind(this);
 }
 module.exports = StaticBuild;
 
@@ -146,7 +149,8 @@ function appendFilenamePart(filepath, part) {
 StaticBuild.appendFilenamePart = appendFilenamePart;
 StaticBuild.prototype.appendFilenamePart = appendFilenamePart;
 
-function appendVinylFileVersion(file) {
+/** Appends the encoded package version to the vinyl file basename. */
+function appendEncPkgVerVinyl(file) {
   /*jshint validthis: true */
   // This method is bound to the instance in StaticBuild constructor.
   var version = version || this.pkg.version;
