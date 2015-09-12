@@ -248,9 +248,9 @@ function configureEngine(build, data) {
     configureNunjucks(build, data.engine);
   }
   if (
-    istype('String', data.defaultEngine) 
-    && data.defaultEngine in build.engine 
-    && data.defaultEngine !== build.defaultEngineName 
+    istype('String', data.defaultEngine) && 
+    data.defaultEngine in build.engine && 
+    data.defaultEngine !== build.defaultEngineName 
   )
     build.defaultEngineName = data.defaultEngine;
 }
