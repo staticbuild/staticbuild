@@ -114,14 +114,16 @@ function StaticBuild(pathOrOpt, opt) {
   ];
   // #endregion
   
+  /** @namespace Vinyl file functions. */
+  this.vinyl = {
+    appendEncodedPkgVer: vinylAppendEncodedPkgVer.bind(this)
+  };
+  /** @deprecated Use build.vinyl.appendEncodedPkgVer instead. */
+  this.appendVinylFileVersion = vinylAppendEncodedPkgVer.bind(this);
+
   configure(this, opt);
   StaticBuild.current = this;
   load(this);
-  // Bind methods which are likely to be called without an instance.
-  /** @deprecated Use appendEncPkgVerVinyl instead. */
-  this.appendVinylFileVersion = appendEncPkgVerVinyl.bind(this);
-  /** Appends the encoded package version to the vinyl file basename. */
-  this.appendEncPkgVerVinyl = appendEncPkgVerVinyl.bind(this);
 }
 module.exports = StaticBuild;
 
@@ -149,15 +151,6 @@ function appendFilenamePart(filepath, part) {
 StaticBuild.appendFilenamePart = appendFilenamePart;
 StaticBuild.prototype.appendFilenamePart = appendFilenamePart;
 
-/** Appends the encoded package version to the vinyl file basename. */
-function appendEncPkgVerVinyl(file) {
-  /*jshint validthis: true */
-  // This method is bound to the instance in StaticBuild constructor.
-  var version = version || this.pkg.version;
-  var encodedVer = versionCache[version] || this.encodeVersion(version);
-  file.basename += '-' + encodedVer;
-}
-
 StaticBuild.prototype.appendFilenameVersion = 
 function (filepath, version) {
   version = version || this.pkg.version;
@@ -182,6 +175,15 @@ function versionToInt(version) {
 }
 StaticBuild.versionToInt = versionToInt;
 StaticBuild.prototype.versionToInt = versionToInt;
+
+/** Appends the encoded package version to the vinyl file basename. */
+function vinylAppendEncodedPkgVer(file) {
+  /*jshint validthis: true */
+  // This method is bound to the instance in StaticBuild constructor.
+  var version = version || this.pkg.version;
+  var encodedVer = versionCache[version] || this.encodeVersion(version);
+  file.basename += '-' + encodedVer;
+}
 
 // #endregion
 
