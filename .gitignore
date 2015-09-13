@@ -10,6 +10,7 @@
 .idea/
 
 ## - Visual Studio - Probably Ignore
+.vs/
 _ReSharper*/
 ipch/
 obj/
