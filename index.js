@@ -567,43 +567,43 @@ function gulpRenameFile(file) {
 }
 
 StaticBuild.prototype.relativePath =
-function (to) {
-  return path.relative(this.basedir, to).replace('\\', '/');
+function (basePath) {
+  return path.relative(this.basedir, basePath).replace('\\', '/');
 };
 
 StaticBuild.prototype.relativePattern =
-function (to, pattern) {
+function (basePath, pattern) {
   if (pattern === undefined || pattern === null || !pattern.length)
-    return this.relativePath(to);
+    return this.relativePath(basePath);
   var prefix = pattern.charAt(0);
   if (prefix === '!')
-    return prefix + this.relativePath(to) + pattern.substr(1);
+    return prefix + this.relativePath(basePath) + pattern.substr(1);
   else
-    return this.relativePath(to) + pattern;
+    return this.relativePath(basePath) + pattern;
 };
 
 /** Returns a relative url src path to use at runtime. */
 StaticBuild.prototype.runtimePath = 
-function (to) {
+function (srcPath) {
   var versionStr;
   if (!this.devmode) {
     // TODO: Use regex replace instead of relying on the order of operations.
     // (Replacing `$pv` before `$pvh` here would cause a bug.)
     // TODO: Loop over a set of regex tokens.
-    to = to.replace(this.tokens.packageVersionHashid, this.pvh);
-    to = to.replace(this.tokens.packageVersion, this.pvh);
+    srcPath = srcPath.replace(this.tokens.packageVersionHashid, this.pvh);
+    srcPath = srcPath.replace(this.tokens.packageVersion, this.pvh);
   }
-  return to;
+  return srcPath;
 };
 
 StaticBuild.prototype.resolvePath = 
-function (to) {
-  return path.resolve(this.basedir, to);
+function (basePath) {
+  return path.resolve(this.basedir, basePath);
 };
 
 StaticBuild.prototype.resolveSrcPath = 
-function (to) {
-  return path.resolve(this.sourcedir, to);
+function (srcPath) {
+  return path.resolve(this.sourcedir, srcPath);
 };
 
 StaticBuild.prototype.src =
@@ -687,16 +687,16 @@ function (tofile) {
 // #region HTML
 
 StaticBuild.prototype.cssFrom =
-function (to) {
-  to = this.runtimePath(to);
-  var ml = '<link rel="stylesheet" type="text/css" href="' + to + '"/>';
+function (srcPath) {
+  srcPath = this.runtimePath(srcPath);
+  var ml = '<link rel="stylesheet" type="text/css" href="' + srcPath + '"/>';
   return ml;
 };
 
 StaticBuild.prototype.jsFrom =
-function (to) {
-  to = this.runtimePath(to);
-  var ml = '<script type="text/javascript" src="' + to + '"></script>';
+function (srcPath) {
+  srcPath = this.runtimePath(srcPath);
+  var ml = '<script type="text/javascript" src="' + srcPath + '"></script>';
   return ml;
 };
 
