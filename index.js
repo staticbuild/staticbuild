@@ -30,12 +30,27 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Base
-  this.basedir = process.cwd();
   this.devmode = false;
+  this.verbose = false;
+  this.tokens = {
+    packageVersion: '$pv',
+    packageVersionHashid: '$pvh'
+  };
+  // #endregion
+  
+  // #region Paths
+  this.basedir = process.cwd();
   this.filename = 'staticbuild.json';
   this.filepath = '';
   this.path = process.cwd();
-  this.verbose = false;
+  this.destdir = 'dist';
+  this.sourcedir = 'src';
+  this.ignore = [
+    '.gitignore',
+    '*.layout.htm',
+    '*.part.htm',
+    '*.map'
+  ];
   // #endregion
   
   // #region Package
@@ -53,21 +68,6 @@ function StaticBuild(pathOrOpt, opt) {
   this.devport = 8080;
   this.restart = false;
   this.restartDelay = 0;
-  // #endregion
-  
-  // #region Paths
-  this.destdir = 'dist';
-  this.sourcedir = 'src';
-  this.ignore = [
-    '.gitignore',
-    '*.layout.htm',
-    '*.part.htm',
-    '*.map'
-  ];
-  this.tokens = {
-    packageVersion: '$pv',
-    packageVersionHashid: '$pvh'
-  };
   // #endregion
   
   // #region Hashids
@@ -172,6 +172,7 @@ function configure(build, opt) {
   if (!data)
     return;
   configureBase(build, data);
+  configurePackage(build, data);
   configureDevServer(build, data);
   configureDirectories(build, data);
   configureEngine(build, data);
@@ -181,15 +182,15 @@ function configure(build, opt) {
 }
 
 function configureBase(build, data) {
+  // devmode
+  // - Not configurable except through the command line 
   // verbose
   // - Can only be turned ON from build, not off.
   if (data.verbose === true || data.verbose > 0)
     build.verbose = data.verbose;
-  // package | packagefile
-  if (istype('String', data["package"]))
-    build.packagefile = data["package"];
-  else if (istype('String', data.packagefile))
-    build.packagefile = data.packagefile;
+  // tokens
+  if (istype('Object', data.tokens))
+    lodash.merge(build.tokens, data.tokens);
 }
 
 function configureDevServer(build, data) {
@@ -314,6 +315,14 @@ function configureNunjucks(build, data) {
   // options
   if (istype('Object', nunjucks.options))
     lodash.merge(build.engine.nunjucks.options, nunjucks.options);
+}
+
+function configurePackage(build, data) {
+  // package | packagefile
+  if (istype('String', data["package"]))
+    build.packagefile = data["package"];
+  else if (istype('String', data.packagefile))
+    build.packagefile = data.packagefile;
 }
 
 function configureViews(build, data) {
