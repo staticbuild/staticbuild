@@ -34,17 +34,20 @@ function StaticBuild(pathOrOpt, opt) {
   this.devmode = false;
   this.filename = 'staticbuild.json';
   this.filepath = '';
-  this.packagefile = 'package.json';
   this.path = process.cwd();
+  this.verbose = false;
+  // #endregion
+  
+  // #region Package
+  this.packagefile = 'package.json';
   /** Data from package.json */
   this.pkg = {};
   /** Package Version */
   this.pv = '';
   /** Package Version Hashid */
   this.pvh = '';
-  this.verbose = false;
   // #endregion
-  
+
   // #region Dev Server
   this.devhost = undefined;
   this.devport = 8080;
@@ -52,9 +55,19 @@ function StaticBuild(pathOrOpt, opt) {
   this.restartDelay = 0;
   // #endregion
   
-  // #region Directories
+  // #region Paths
   this.destdir = 'dist';
   this.sourcedir = 'src';
+  this.ignore = [
+    '.gitignore',
+    '*.layout.htm',
+    '*.part.htm',
+    '*.map'
+  ];
+  this.tokens = {
+    packageVersion: '$pv',
+    packageVersionHashid: '$pvh'
+  };
   // #endregion
   
   // #region Hashids
@@ -110,16 +123,7 @@ function StaticBuild(pathOrOpt, opt) {
   this.info = [];
   this.warnings = [];
   // #endregion
-  
-  // #region Ignore Files
-  this.ignore = [
-    '.gitignore',
-    '*.layout.htm',
-    '*.part.htm',
-    '*.map'
-  ];
-  // #endregion
-  
+    
   /** @namespace Gulp related functions. */
   this.gulp = {
     renameFile: gulpRenameFile.bind(this)
@@ -558,8 +562,8 @@ function () {
 function gulpRenameFile(file) {
   /*jshint validthis: true */
   // This method is bound to the instance in StaticBuild constructor.
-  file.dirname = this.renderSrcPath(file.dirname);
-  file.basename = this.renderSrcPath(file.basename);
+  file.dirname = this.runtimePath(file.dirname);
+  file.basename = this.runtimePath(file.basename);
 }
 
 StaticBuild.prototype.relativePath =
@@ -578,12 +582,16 @@ function (to, pattern) {
     return this.relativePath(to) + pattern;
 };
 
-StaticBuild.prototype.renderSrcPath = 
+/** Returns a relative url src path to use at runtime. */
+StaticBuild.prototype.runtimePath = 
 function (to) {
   var versionStr;
   if (!this.devmode) {
-    to = to.replace('$pvh', this.pvh);
-    to = to.replace('$pv', this.pv);
+    // TODO: Use regex replace instead of relying on the order of operations.
+    // (Replacing `$pv` before `$pvh` here would cause a bug.)
+    // TODO: Loop over a set of regex tokens.
+    to = to.replace(this.tokens.packageVersionHashid, this.pvh);
+    to = to.replace(this.tokens.packageVersion, this.pvh);
   }
   return to;
 };
@@ -678,16 +686,16 @@ function (tofile) {
 
 // #region HTML
 
-StaticBuild.prototype.linkCss =
+StaticBuild.prototype.cssFrom =
 function (to) {
-  to = this.renderSrcPath(to);
+  to = this.runtimePath(to);
   var ml = '<link rel="stylesheet" type="text/css" href="' + to + '"/>';
   return ml;
 };
 
-StaticBuild.prototype.scriptJs =
+StaticBuild.prototype.jsFrom =
 function (to) {
-  to = this.renderSrcPath(to);
+  to = this.runtimePath(to);
   var ml = '<script type="text/javascript" src="' + to + '"></script>';
   return ml;
 };
