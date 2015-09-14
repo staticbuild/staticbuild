@@ -512,6 +512,8 @@ function normalizePathOptions(opt) {
 
 // #region Paths
 
+/** Returns the filepath with the given value appended to the filename, before 
+ * the extension. */
 function appendFilename(filepath, valueToAppend) {
   var pfile = path.parse(filepath);
   var result = Array.prototype.join.call([
@@ -526,22 +528,27 @@ function appendFilename(filepath, valueToAppend) {
 StaticBuild.appendFilename = appendFilename;
 StaticBuild.prototype.appendFilename = appendFilename;
 
+/** Returns the filepath with the given part appended to the filename, before 
+ * the extension, using a standard dash as a delimiter. */
 function appendFilenamePart(filepath, part) {
   return StaticBuild.appendFilename(filepath, '-' + part);
 }
 StaticBuild.appendFilenamePart = appendFilenamePart;
 StaticBuild.prototype.appendFilenamePart = appendFilenamePart;
 
+/** Returns a relative path derived from the build's destdir. */
 StaticBuild.prototype.dest =
 function (pattern) {
   return this.relativePattern(this.destdir, pattern);
 };
 
+/** Returns a relative path derived from the build's locale directory.*/
 StaticBuild.prototype.destLocale =
 function (pattern) {
   return this.relativePattern(path.join(this.destdir, this.locale), pattern);
 };
 
+/** Returns an array of paths that are watched in dev mode. */
 StaticBuild.prototype.getWatchPaths = 
 function () {
   var paths = [
@@ -566,11 +573,14 @@ function gulpRenameFile(file) {
   file.basename = this.runtimePath(file.basename);
 }
 
+/** Returns a relative path derived from the build's basedir. */
 StaticBuild.prototype.relativePath =
 function (basePath) {
   return path.relative(this.basedir, basePath).replace('\\', '/');
 };
 
+/** Returns a relative path pattern derived from the build's basedir.
+ * (e.g. '../path/to/##/#.js' but with asterisks instead of hashes) */
 StaticBuild.prototype.relativePattern =
 function (basePath, pattern) {
   if (pattern === undefined || pattern === null || !pattern.length)
@@ -582,7 +592,7 @@ function (basePath, pattern) {
     return this.relativePath(basePath) + pattern;
 };
 
-/** Returns a relative url src path to use at runtime. */
+/** Returns the given srcPath with tokens replaced for use at runtime. */
 StaticBuild.prototype.runtimePath = 
 function (srcPath) {
   var versionStr;
@@ -596,21 +606,26 @@ function (srcPath) {
   return srcPath;
 };
 
+/** Returns an absolute file-system path resolved from the build's basedir. */
 StaticBuild.prototype.resolvePath = 
 function (basePath) {
   return path.resolve(this.basedir, basePath);
 };
 
+/** Returns an absolute file-system path resolved from the build's sourcedir. */
 StaticBuild.prototype.resolveSrcPath = 
 function (srcPath) {
   return path.resolve(this.sourcedir, srcPath);
 };
 
+/** Returns a relative path derived from the build's sourcedir. */
 StaticBuild.prototype.src =
 function (pattern) {
   return this.relativePattern(this.sourcedir, pattern);
 };
 
+/** Attempts to require an uncached instance of the given filepath's module 
+ * using require-new. */
 function tryRequireNew(filepath) {
   var build, errMsg;
   if (filepath === undefined || filepath === null)
