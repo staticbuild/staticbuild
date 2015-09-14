@@ -5,6 +5,7 @@ var concat = require('gulp-concat');
 var del = require('del');
 var gjade = require('gulp-jade');
 var gulp = require('gulp');
+var gulpif = require('gulp-if');
 var gutil = require('gulp-util');
 var gzip = require('gulp-gzip');
 var htmlmin = require('gulp-htmlmin');
@@ -13,7 +14,6 @@ var jshint = require('gulp-jshint');
 var less = require('gulp-less');
 var lodash = require('lodash');
 var minifyCss = require('gulp-minify-css');
-var nunjucksApi = require('gulp-nunjucks-api');
 var path = require('path');
 var rename = require('gulp-rename');
 var s3 = require('gulp-s3');
@@ -23,11 +23,22 @@ var uglify = require('gulp-uglify');
 
 var build = new StaticBuild('./staticbuild.json');
 
+// Pass a specific locale with `gulp [task] --locale=en`
+build.trySetLocale(gutil.env.locale, function (err) {
+  if (!err)
+    return;
+  gutil.log(err);
+  process.exit(1001);
+});
+
 // See https://github.com/jstuckey/gulp-gzip#options
 var gzipOpt = {
   append: false,
   threshold: false
 };
+
+// To disable gzip, run `gulp [task] --no-gzip`.
+var gzipOn = gutil.env.gzip === undefined || gutil.env.gzip === 'true';
 
 var mainTasks = [
   'clean',
@@ -36,13 +47,6 @@ var mainTasks = [
   'javascript',
   'html'
 ];
-
-build.trySetLocale(gutil.env.locale, function (err) {
-  if (!err)
-    return;
-  gutil.log(err);
-  process.exit(1001);
-});
 
 gulp.task('default', mainTasks);
 
@@ -64,8 +68,8 @@ gulp.task('css', function () {
   ])
   .pipe(less({ compress: true })).on('error', gutil.log)
   .pipe(minifyCss({ keepBreaks: false }))
-  .pipe(rename(build.vinyl.appendEncodedPkgVer))
-  //.pipe(gzip(gzipOpt))
+  .pipe(rename(build.gulp.renameFile))
+  .pipe(gulpif(gzipOn, gzip(gzipOpt)))
   .pipe(gulp.dest(build.destLocale()));
 });
 
@@ -91,7 +95,7 @@ gulp.task('html', function () {
   ])
   .pipe(gjade(optRenderView))
   .pipe(htmlmin(optHtmlMin))
-  //.pipe(gzip(gzipOpt))
+  .pipe(gulpif(gzipOn, gzip(gzipOpt)))
   .pipe(gulp.dest(build.destLocale()));
 });
 
@@ -102,7 +106,7 @@ gulp.task('images', function () {
     build.src('/**/*.jpg'),
     build.src('/**/*.png')
   ])
-  //.pipe(gzip(gzipOpt))
+  .pipe(gulpif(gzipOn, gzip(gzipOpt)))
   .pipe(gulp.dest(build.destLocale()));
 });
 
@@ -114,8 +118,8 @@ gulp.task('javascript', function () {
   .pipe(jshint({ globalstrict: true }))
   .pipe(jshint.reporter('jshint-stylish'))
   .pipe(uglify())
-  .pipe(rename(build.vinyl.appendEncodedPkgVer))
-  //.pipe(gzip(gzipOpt))
+  .pipe(rename(build.gulp.renameFile))
+  .pipe(gulpif(gzipOn, gzip(gzipOpt)))
   .pipe(gulp.dest(build.destLocale()));
 });
 
@@ -127,6 +131,9 @@ gulp.task('s3', function () {
       'Content-Encoding': 'gzip'
     }
   };
+  // We should always be uploading gzipped contents...
+  //if (!gzipOn)
+  //  delete opt['Content-Encoding'];
   gulp.src(build.destLocale('/**'))
   .pipe(s3(aws, opt));
 });

@@ -1,12 +1,12 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="{{"site.lang:en"|t}}" dir="auto">
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{{page_title}}</title>
-  {{cssFile("/lib/css/site.css")}}
-  {{jsFile("/lib/js/site.js")}}
+  {{linkCss("/lib/site/$pvh/css/site.css")}}
+  {{scriptJs("/lib/site/$pvh/js/site.js")}}
 </head>
 <body>
   {% block content %}

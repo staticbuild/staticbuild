@@ -35,8 +35,13 @@ function StaticBuild(pathOrOpt, opt) {
   this.filename = 'staticbuild.json';
   this.filepath = '';
   this.packagefile = 'package.json';
-  this.pkg = {};
   this.path = process.cwd();
+  /** Data from package.json */
+  this.pkg = {};
+  /** Package Version */
+  this.pv = '';
+  /** Package Version Hashid */
+  this.pvh = '';
   this.verbose = false;
   // #endregion
   
@@ -58,6 +63,7 @@ function StaticBuild(pathOrOpt, opt) {
     minLength: 4,
     salt: 'BpoIsQlrssEz56uUbfgLu5KNBkoCJiyY'
   };
+  this.versionHashIds = {};
   // #endregion
   
   // #region Locales
@@ -114,12 +120,10 @@ function StaticBuild(pathOrOpt, opt) {
   ];
   // #endregion
   
-  /** @namespace Vinyl file functions. */
-  this.vinyl = {
-    appendEncodedPkgVer: vinylAppendEncodedPkgVer.bind(this)
+  /** @namespace Gulp related functions. */
+  this.gulp = {
+    renameFile: gulpRenameFile.bind(this)
   };
-  /** @deprecated Use build.vinyl.appendEncodedPkgVer instead. */
-  this.appendVinylFileVersion = vinylAppendEncodedPkgVer.bind(this);
 
   configure(this, opt);
   StaticBuild.current = this;
@@ -129,39 +133,14 @@ module.exports = StaticBuild;
 
 // #region Cache Busting
 
-var versionCache = {};
-
-function appendFilename(filepath, valueToAppend) {
-  var pfile = path.parse(filepath);
-  var result = Array.prototype.join.call([
-    pfile.dir,
-    '/',
-    pfile.name,
-    valueToAppend,
-    pfile.ext
-  ], '');
-  return result;
-}
-StaticBuild.appendFilename = appendFilename;
-StaticBuild.prototype.appendFilename = appendFilename;
-
-function appendFilenamePart(filepath, part) {
-  return StaticBuild.appendFilename(filepath, '-' + part);
-}
-StaticBuild.appendFilenamePart = appendFilenamePart;
-StaticBuild.prototype.appendFilenamePart = appendFilenamePart;
-
-StaticBuild.prototype.appendFilenameVersion = 
-function (filepath, version) {
-  version = version || this.pkg.version;
-  var encodedVer = versionCache[version] || this.encodeVersion(version);
-  return StaticBuild.appendFilenamePart(filepath, encodedVer);
-};
-
-StaticBuild.prototype.encodeVersion = 
+StaticBuild.prototype.versionToHashId = 
 function (version) {
-  var verint = StaticBuild.versionToInt(version);
-  return this.hashids.current.encode(verint);
+  var vh = this.versionHashIds[version];
+  if (vh)
+    return vh;
+  var vi = StaticBuild.versionToInt(version);
+  vh = this.hashids.current.encode(vi);
+  return vh;
 };
 
 function versionToInt(version) {
@@ -175,15 +154,6 @@ function versionToInt(version) {
 }
 StaticBuild.versionToInt = versionToInt;
 StaticBuild.prototype.versionToInt = versionToInt;
-
-/** Appends the encoded package version to the vinyl file basename. */
-function vinylAppendEncodedPkgVer(file) {
-  /*jshint validthis: true */
-  // This method is bound to the instance in StaticBuild constructor.
-  var version = version || this.pkg.version;
-  var encodedVer = versionCache[version] || this.encodeVersion(version);
-  file.basename += '-' + encodedVer;
-}
 
 // #endregion
 
@@ -415,8 +385,12 @@ function loadPackage(build) {
   if (!build.packagefile)
     return;
   var data = build.tryRequireNew(build.packagefile);
-  if (data)
-    build.pkg = data;
+  if (!data)
+    return;
+  build.pkg = data;
+  var version = data.version;
+  build.pv = version;
+  build.pvh = build.versionToHashId(version);
 }
 
 function loadNunjucksFiles(build) {
@@ -534,13 +508,25 @@ function normalizePathOptions(opt) {
 
 // #region Paths
 
-StaticBuild.prototype.cssFile =
-function (srcpath) {
-  if (!this.devmode)
-    srcpath = this.appendFilenameVersion(srcpath, this.pkg.version);
-  var ml = '<link rel="stylesheet" type="text/css" href="' + srcpath + '"/>';
-  return ml;
-};
+function appendFilename(filepath, valueToAppend) {
+  var pfile = path.parse(filepath);
+  var result = Array.prototype.join.call([
+    pfile.dir,
+    '/',
+    pfile.name,
+    valueToAppend,
+    pfile.ext
+  ], '');
+  return result;
+}
+StaticBuild.appendFilename = appendFilename;
+StaticBuild.prototype.appendFilename = appendFilename;
+
+function appendFilenamePart(filepath, part) {
+  return StaticBuild.appendFilename(filepath, '-' + part);
+}
+StaticBuild.appendFilenamePart = appendFilenamePart;
+StaticBuild.prototype.appendFilenamePart = appendFilenamePart;
 
 StaticBuild.prototype.dest =
 function (pattern) {
@@ -568,13 +554,13 @@ function () {
   return paths;
 };
 
-StaticBuild.prototype.jsFile =
-function (srcpath) {
-  if (!this.devmode)
-    srcpath = this.appendFilenameVersion(srcpath, this.pkg.version);
-  var ml = '<script type="text/javascript" src="' + srcpath + '"></script>';
-  return ml;
-};
+/** Possibly renames the given file using StaticBuild rules. */
+function gulpRenameFile(file) {
+  /*jshint validthis: true */
+  // This method is bound to the instance in StaticBuild constructor.
+  file.dirname = this.renderSrcPath(file.dirname);
+  file.basename = this.renderSrcPath(file.basename);
+}
 
 StaticBuild.prototype.relativePath =
 function (to) {
@@ -590,6 +576,16 @@ function (to, pattern) {
     return prefix + this.relativePath(to) + pattern.substr(1);
   else
     return this.relativePath(to) + pattern;
+};
+
+StaticBuild.prototype.renderSrcPath = 
+function (to) {
+  var versionStr;
+  if (!this.devmode) {
+    to = to.replace('$pvh', this.pvh);
+    to = to.replace('$pv', this.pv);
+  }
+  return to;
 };
 
 StaticBuild.prototype.resolvePath = 
@@ -676,6 +672,24 @@ function (tofile) {
   var jsonStr = JSON.stringify(config, null, INDENT);
   
   fs.writeFileSync(tofile, jsonStr);
+};
+
+// #endregion
+
+// #region HTML
+
+StaticBuild.prototype.linkCss =
+function (to) {
+  to = this.renderSrcPath(to);
+  var ml = '<link rel="stylesheet" type="text/css" href="' + to + '"/>';
+  return ml;
+};
+
+StaticBuild.prototype.scriptJs =
+function (to) {
+  to = this.renderSrcPath(to);
+  var ml = '<script type="text/javascript" src="' + to + '"></script>';
+  return ml;
 };
 
 // #endregion

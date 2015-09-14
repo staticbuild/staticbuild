@@ -5,8 +5,8 @@ head
   meta(charset="utf-8")
   meta(name="viewport", content="width=device-width, initial-scale=1")
   title= page_title
-  |!{build.cssFile("/lib/css/site.css")}
-  |!{build.jsFile("/lib/js/site.js")}
+  |!{build.linkCss("/lib/site/$pvh/css/site.css")}
+  |!{build.scriptJs("/lib/site/$pvh/js/site.js")}
 body
   block content
     p!= '&nbsp;'
