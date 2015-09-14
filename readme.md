@@ -81,7 +81,7 @@ files like a gulp or grunt file.
 
 ### Help
 ```
-staticbuild v0.6.0 - Tools for creating static sites with Jade, Less, Nunjucks and Gulp.
+staticbuild v0.7.0 - Tools for creating static sites with Jade, Less, Nunjucks and Gulp.
 
 Usage:
   staticbuild [command] [options]
@@ -98,7 +98,7 @@ Options:
 
 ### Development Server
 ```
-staticbuild v0.6.0 - Development server.
+staticbuild v0.7.0 - Development server.
 
     Runs a local http server to dynamically render static content during development.
 
@@ -122,7 +122,7 @@ At the time of this writing, this command simply creates a default
 `staticbuild.json` file.
 
 ```
-staticbuild v0.6.0 - Setup.
+staticbuild v0.7.0 - Setup.
 
     Interactive setup to create a new project.
 

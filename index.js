@@ -661,6 +661,7 @@ StaticBuild.prototype.tryRequireNew = tryRequireNew;
 // #endregion
 
 // #region Write
+// TODO: Finish Write functionality for use with interactive setup command.
 
 StaticBuild.prototype.writeFileSync = 
 function (tofile) {
