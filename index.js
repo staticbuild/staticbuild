@@ -17,6 +17,7 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Options
+  // - All options are assigned to the StaticBuild instance in `configure`.
   opt = lodash.assign({
     // Required
     path: (istype('String', pathOrOpt) ? 
@@ -164,7 +165,7 @@ StaticBuild.prototype.versionToInt = versionToInt;
 // #region Configuration
 
 function configure(build, opt) {
-  // Normalize and apply options.
+  // Normalize and apply options directly to the build instance.
   normalizePathOptions(opt);
   lodash.assign(build, opt);
   // Configure from file.
@@ -183,7 +184,9 @@ function configure(build, opt) {
 
 function configureBase(build, data) {
   // devmode
-  // - Not configurable except through the command line 
+  // - Not configurable via file data. See StaticBuild constructor argument
+  // `opt.devmode`, which is applied to the StaticBuild in `configure`.
+  //
   // verbose
   // - Can only be turned ON from build, not off.
   if (data.verbose === true || data.verbose > 0)
