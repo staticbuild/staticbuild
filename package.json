@@ -1,6 +1,6 @@
 {
   "name": "staticbuild",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "Tools for creating static sites with Jade, Less, Nunjucks and Gulp.",
   "keywords": [
     "development",
