@@ -1,5 +1,6 @@
-﻿extends ./lib/site/site.layout.jade
-- var page_title = t('site.title:staticbuild-jade')
+﻿extends ./lib/site/base.layout.jade
+block head
+  title= t('site.title:staticbuild-jade') + ' Hello'
 block content
   h4 #{t('site.greeting:Welcome to')} #{t('site.title')}!
   p!= '&nbsp;'
