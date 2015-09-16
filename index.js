@@ -34,24 +34,26 @@ function StaticBuild(pathOrOpt, opt) {
   this.devmode = false;
   this.verbose = false;
   this.tokens = {
-    packageVersion: '$pv',
-    packageVersionHashid: '$pvh'
+    packageVersionDefault: [/~pkgVer(?![H,N])/g, /~pv(?![h,n])/g],  // ~pkgVer ~pv
+    packageVersionHashid: [/~pkgVerHash/g, /~pvh/g],
+    packageVersionNumber: [/~pkgVerNum/g, /~pvn/g]
   };
+  this.defaultPkgVerHash = true;
   // #endregion
   
   // #region Paths
   this.basedir = process.cwd();
+  this.destdir = 'dist';
   this.filename = 'staticbuild.json';
   this.filepath = '';
-  this.path = process.cwd();
-  this.destdir = 'dist';
-  this.sourcedir = 'src';
   this.ignore = [
     '.gitignore',
     '*.layout.htm',
     '*.part.htm',
     '*.map'
   ];
+  this.path = process.cwd();
+  this.sourcedir = 'src';
   // #endregion
   
   // #region Package
@@ -59,9 +61,9 @@ function StaticBuild(pathOrOpt, opt) {
   /** Data from package.json */
   this.pkg = {};
   /** Package Version */
-  this.pv = '';
+  this.pkgVer = '';
   /** Package Version Hashid */
-  this.pvh = '';
+  this.pkgVerHash = '';
   // #endregion
 
   // #region Dev Server
@@ -194,6 +196,8 @@ function configureBase(build, data) {
   // tokens
   if (istype('Object', data.tokens))
     lodash.merge(build.tokens, data.tokens);
+  if (istype('Boolean', data.defaultPkgVerHash))
+    build.defaultPkgVerHash = data.defaultPkgVerHash;
 }
 
 function configureDevServer(build, data) {
@@ -405,8 +409,8 @@ function loadPackage(build) {
     return;
   build.pkg = data;
   var version = data.version;
-  build.pv = version;
-  build.pvh = build.versionToHashId(version);
+  build.pkgVer = version;
+  build.pkgVerHash = build.versionToHashId(version);
 }
 
 function loadNunjucksFiles(build) {
@@ -607,13 +611,18 @@ function (basePath, pattern) {
 /** Returns the given srcPath with tokens replaced for use at runtime. */
 StaticBuild.prototype.runtimePath = 
 function (srcPath) {
-  var versionStr;
+  var defaultPkgVer, i, tokens;
   if (!this.devmode) {
-    // TODO: Use regex replace instead of relying on the order of operations.
-    // (Replacing `$pv` before `$pvh` here would cause a bug.)
-    // TODO: Loop over a set of regex tokens.
-    srcPath = srcPath.replace(this.tokens.packageVersionHashid, this.pvh);
-    srcPath = srcPath.replace(this.tokens.packageVersion, this.pvh);
+    defaultPkgVer = (this.defaultPkgVerHash ? this.pkgVerHash : this.pkgVer);
+    tokens = this.tokens.packageVersionDefault;
+    for (i = 0; i < tokens.length; i++)
+      srcPath = srcPath.replace(tokens[i], defaultPkgVer);
+    tokens = this.tokens.packageVersionHashid;
+    for (i = 0; i < tokens.length; i++)
+      srcPath = srcPath.replace(tokens[i], this.pkgVerHash);
+    tokens = this.tokens.packageVersionNumber;
+    for (i = 0; i < tokens.length; i++)
+      srcPath = srcPath.replace(tokens[i], this.pkgVer);
   }
   return srcPath;
 };
