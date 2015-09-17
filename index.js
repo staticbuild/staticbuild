@@ -726,14 +726,14 @@ function (tofile) {
 StaticBuild.prototype.cssFrom =
 function (srcPath) {
   srcPath = this.runtimePath(srcPath);
-  var ml = '<link rel="stylesheet" type="text/css" href="' + srcPath + '"/>';
+  var ml = '\n    <link rel="stylesheet" type="text/css" href="' + srcPath + '"/>';
   return ml;
 };
 
 StaticBuild.prototype.jsFrom =
 function (srcPath) {
   srcPath = this.runtimePath(srcPath);
-  var ml = '<script type="text/javascript" src="' + srcPath + '"></script>';
+  var ml = '\n    <script type="text/javascript" src="' + srcPath + '"></script>';
   return ml;
 };
 
