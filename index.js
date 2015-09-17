@@ -723,14 +723,14 @@ function (tofile) {
 
 // #region HTML
 
-StaticBuild.prototype.cssFrom =
+StaticBuild.prototype.link =
 function (srcPath) {
   srcPath = this.runtimePath(srcPath);
   var ml = '\n    <link rel="stylesheet" type="text/css" href="' + srcPath + '"/>';
   return ml;
 };
 
-StaticBuild.prototype.jsFrom =
+StaticBuild.prototype.script =
 function (srcPath) {
   srcPath = this.runtimePath(srcPath);
   var ml = '\n    <script type="text/javascript" src="' + srcPath + '"></script>';

@@ -6,8 +6,8 @@ html(lang=t("site.lang:en"), dir="auto")
     meta(name="viewport", content="width=device-width, initial-scale=1")
     block head
       title= t('site.title:staticbuild-jade')
-    |!{build.cssFrom("/lib/site/$pvh/css/site.css")}
-    |!{build.jsFrom("/lib/site/$pvh/js/site.js")}
+    |!{build.link("/lib/site/$pvh/css/site.css")}
+    |!{build.script("/lib/site/$pvh/js/site.js")}
   body
     block content
       p!= '&nbsp;'
