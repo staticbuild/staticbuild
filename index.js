@@ -220,7 +220,7 @@ function configureBundles(build, data) {
   if (build.bundlefile.length > 0) {
     build.bundlefilepath = path.resolve(build.basedir, build.bundlefile);
     if (build.bundlefile !== build.filename) {
-      bundles = build.tryRequireNew(build.bundlefile);
+      bundles = build.tryRequireNew(build.bundlefilepath);
       lodash.merge(build.bundles, bundles);
     }
   }
@@ -775,7 +775,7 @@ function (srcPath) {
 
 function createBundlingInfo() {
   return {
-    data: createBundleData(),
+    data: null,
     name: '',
     started: false
   };
@@ -794,55 +794,61 @@ function createBundleData(basePath) {
     data.css = basePath + '.css';
     data.js = basePath + '.js';
   }
+  return data;
 }
 
 StaticBuild.prototype.addBundleSrc =
 function (pathStr) {
   var name = this._bundling.name;
-  var bundle = this.bundles[name];
+  var data = this._bundling.data;
   if (pathStr.substr(pathStr.length - 4) === '.css')
-    bundle.src.css.push(pathStr);
+    data.src.css.push(pathStr);
   else if (pathStr.substr(pathStr.length - 3) === '.js')
-    bundle.src.js.push(pathStr);
+    data.src.js.push(pathStr);
 };
 
 StaticBuild.prototype.bundleBegin =
 function (name, destPath) {
+  // End the previous bundle, if any.
+  if (this._bundling.started)
+    this.bundleEnd();
   var basePath = this.runtimePath(this.dest(destPath), true);
-  var bundle = this.bundles[name];
-  if (!bundle) {
-    bundle = createBundleData(basePath);
-    this.bundles[name] = bundle;
-  } else {
-    bundle.css = basePath + '.css';
-    bundle.js = basePath + '.js';
-    bundle.src.css = [];
-    bundle.src.js = [];
-  }
-  this._bundling.started = true;
-  this._bundling.name = name;
+  var bi = this._bundling
+  bi.data = createBundleData(basePath);
+  bi.name = name;
+  bi.started = true;
 };
 
 StaticBuild.prototype.bundleEnd =
 function () {
-  // Get the current bundling info and reset it.
-  var binfo = this._bundling;
+  // Get the current bundling info.
+  var bi = this._bundling;
+  if (!bi.started)
+    throw new Error('bundleEnd called without bundleBegin.');
+  var changed = false;
+  var data = bi.data;
+  // Reset the bundling info.
   this._bundling = createBundlingInfo();
-  // TODO: Merge bundlingInfo into this.bundles.
+  // Check if the bundle changed.
+  var prev = this.bundles[bi.name];
+  if (!lodash.isEqual(prev, data)) {
+    changed = true;
+    // Add or update the bundle.
+    this.bundles[bi.name] = data;
+  }
   // Autosave the new bundling info
-  if (this.autosaveBundles)
+  if (changed && this.autosaveBundles)
     this.saveBundles();
 };
 
 StaticBuild.prototype.saveBundles =
 function () {
-  // TODO: Check if bundles actually changed before saving.
-  console.log('Saving bundles...');
   var build = this;
   var savefilepath = build.bundlefilepath || build.filepath;
   var text;
   var data;
   var err;
+  console.log('Saving bundles to: ' + savefilepath);
   //console.dir(this.bundles, { depth: null });
   try {
     if (build.bundlefilepath) {
@@ -863,11 +869,6 @@ function () {
   }
   if (!err)
     console.log('OK: Bundles saved.');
-};
-
-StaticBuild.prototype.saveBundlesIfChanged =
-function (name, data) {
-
 };
 
 StaticBuild.prototype.tryAddBundleSrc =
