@@ -785,11 +785,11 @@ StaticBuild.prototype.addBundleSrc =
 function (name, sources) {
   if (!sources)
     return;
-  var items = lodash.toArray(sources.css);
+  var items = [].concat(sources.css);
   var i, len = items.length;
   for (i = 0; i < len; i++)
     this.addBundleCss(name, items[i]);
-  items = lodash.toArray(sources.js);
+  items = [].concat(sources.js);
   len = items.length;
   for (i = 0; i < len; i++)
     this.addBundleJs(name, items[i]);
@@ -797,8 +797,10 @@ function (name, sources) {
 
 StaticBuild.prototype.bundle = 
 function (nameOrNames, sourceType) {
+  if (!nameOrNames)
+    throw new Error('Argument missing: nameOrNames');
   var ml = '';
-  var names = lodash.toArray(nameOrNames);
+  var names = [].concat(nameOrNames);
   var self = this;
   var outputBundles = this.bundlesEnabled && !this.devmode;
   names.forEach(function (name) {
