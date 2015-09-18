@@ -794,6 +794,30 @@ function (name, sources) {
     this.addBundleJs(name, items[i]);
 }
 
+StaticBuild.prototype.bundle = 
+function (name, sourceType) {
+  var data = this.bundles[name];
+  var i, items, len;
+  var ml = '';
+  if (!data) {
+    console.error('Bundle not found: ' + name);
+    return ml;
+  }
+  if (!sourceType || sourceType === 'css') {
+    items = data.src.css;
+    len = items.length;
+    for (i = 0; i < len; i++)
+      ml += this.link(items[i]);
+  }
+  if (!sourceType || sourceType === 'js') {
+    items = data.src.js;
+    len = items.length;
+    for (i = 0; i < len; i++)
+      ml += this.script(items[i]);
+  }
+  return ml;
+}
+
 StaticBuild.prototype.defineBundle =
 function (name, basePath, sources) {
   var data = {
