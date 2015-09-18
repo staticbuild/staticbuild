@@ -126,7 +126,15 @@ function StaticBuild(pathOrOpt, opt) {
   this.info = [];
   this.warnings = [];
   // #endregion
-    
+  
+  // #region Bundling
+  this._bundling = createBundlingInfo();
+  this.autosaveBundles = true;
+  this.bundlefile = 'staticbuild.bundles.json';
+  this.bundlefilepath = '';
+  this.bundles = {};
+  // #endregion
+
   /** @namespace Gulp related functions. */
   this.gulp = {
     renameFile: gulpRenameFile.bind(this)
@@ -181,6 +189,7 @@ function configure(build, opt) {
   configureEngine(build, data);
   configureHashids(build, data);
   configureLocales(build, data);
+  configureBundles(build, data);
   configureViews(build, data);
 }
 
@@ -198,6 +207,23 @@ function configureBase(build, data) {
     lodash.merge(build.tokens, data.tokens);
   if (istype('Boolean', data.defaultPkgVerHash))
     build.defaultPkgVerHash = data.defaultPkgVerHash;
+}
+
+function configureBundles(build, data) {
+  var bundles;
+  if (istype('Boolean', data.autosaveBundles))
+    build.autosaveBundles = data.autosaveBundles;
+  if (istype('String', data.bundlefile))
+    build.bundlefile = data.bundlefile;
+  if (istype('Object', data.bundles))
+    lodash.merge(build.bundles, data.bundles);
+  if (build.bundlefile.length > 0) {
+    build.bundlefilepath = path.resolve(build.basedir, build.bundlefile);
+    if (build.bundlefile !== build.filename) {
+      bundles = build.tryRequireNew(build.bundlefile);
+      lodash.merge(build.bundles, bundles);
+    }
+  }
 }
 
 function configureDevServer(build, data) {
@@ -564,12 +590,10 @@ function (pattern) {
   return this.relativePattern(path.join(this.destdir, this.locale), pattern);
 };
 
-/** Returns an array of paths that are watched in dev mode. */
+/** Returns an array of paths outside of src that are watched in dev mode. */
 StaticBuild.prototype.getWatchPaths = 
 function () {
-  var paths = [
-    this.filepath
-  ];
+  var paths = [];
   if (this.contextfile)
     paths.push(this.contextfile);
   if (this.engine.nunjucks.extensionsfile)
@@ -608,23 +632,23 @@ function (basePath, pattern) {
     return this.relativePath(basePath) + pattern;
 };
 
-/** Returns the given srcPath with tokens replaced for use at runtime. */
+/** Returns the given pathStr with tokens replaced for use at runtime. */
 StaticBuild.prototype.runtimePath = 
-function (srcPath) {
+function (pathStr, production) {
   var defaultPkgVer, i, tokens;
-  if (!this.devmode) {
+  if (!this.devmode || production) {
     defaultPkgVer = (this.defaultPkgVerHash ? this.pkgVerHash : this.pkgVer);
     tokens = this.tokens.packageVersionDefault;
     for (i = 0; i < tokens.length; i++)
-      srcPath = srcPath.replace(tokens[i], defaultPkgVer);
+      pathStr = pathStr.replace(tokens[i], defaultPkgVer);
     tokens = this.tokens.packageVersionHashid;
     for (i = 0; i < tokens.length; i++)
-      srcPath = srcPath.replace(tokens[i], this.pkgVerHash);
+      pathStr = pathStr.replace(tokens[i], this.pkgVerHash);
     tokens = this.tokens.packageVersionNumber;
     for (i = 0; i < tokens.length; i++)
-      srcPath = srcPath.replace(tokens[i], this.pkgVer);
+      pathStr = pathStr.replace(tokens[i], this.pkgVer);
   }
-  return srcPath;
+  return pathStr;
 };
 
 /** Returns an absolute file-system path resolved from the build's basedir. */
@@ -726,15 +750,132 @@ function (tofile) {
 StaticBuild.prototype.link =
 function (srcPath) {
   srcPath = this.runtimePath(srcPath);
-  var ml = '\n    <link rel="stylesheet" type="text/css" href="' + srcPath + '"/>';
+  this.tryAddBundleSrc(srcPath);
+  var ml = '\n    ' +
+    '<link rel="stylesheet" type="text/css" href="' + 
+    srcPath + 
+    '"/>';
   return ml;
 };
 
 StaticBuild.prototype.script =
 function (srcPath) {
   srcPath = this.runtimePath(srcPath);
-  var ml = '\n    <script type="text/javascript" src="' + srcPath + '"></script>';
+  this.tryAddBundleSrc(srcPath);
+  var ml = '\n    ' + 
+    '<script type="text/javascript" src="' + 
+    srcPath + 
+    '"></script>';
   return ml;
+};
+
+// #endregion
+
+// #region Bundling
+
+function createBundlingInfo() {
+  return {
+    data: createBundleData(),
+    name: '',
+    started: false
+  };
+}
+
+function createBundleData(basePath) {
+  var data = {
+    css: '',
+    js: '',
+    src: {
+      css: [],
+      js: []
+    }
+  };
+  if (basePath) {
+    data.css = basePath + '.css';
+    data.js = basePath + '.js';
+  }
+}
+
+StaticBuild.prototype.addBundleSrc =
+function (pathStr) {
+  var name = this._bundling.name;
+  var bundle = this.bundles[name];
+  if (pathStr.substr(pathStr.length - 4) === '.css')
+    bundle.src.css.push(pathStr);
+  else if (pathStr.substr(pathStr.length - 3) === '.js')
+    bundle.src.js.push(pathStr);
+};
+
+StaticBuild.prototype.bundleBegin =
+function (name, destPath) {
+  var basePath = this.runtimePath(this.dest(destPath), true);
+  var bundle = this.bundles[name];
+  if (!bundle) {
+    bundle = createBundleData(basePath);
+    this.bundles[name] = bundle;
+  } else {
+    bundle.css = basePath + '.css';
+    bundle.js = basePath + '.js';
+    bundle.src.css = [];
+    bundle.src.js = [];
+  }
+  this._bundling.started = true;
+  this._bundling.name = name;
+};
+
+StaticBuild.prototype.bundleEnd =
+function () {
+  // Get the current bundling info and reset it.
+  var binfo = this._bundling;
+  this._bundling = createBundlingInfo();
+  // TODO: Merge bundlingInfo into this.bundles.
+  // Autosave the new bundling info
+  if (this.autosaveBundles)
+    this.saveBundles();
+};
+
+StaticBuild.prototype.saveBundles =
+function () {
+  // TODO: Check if bundles actually changed before saving.
+  console.log('Saving bundles...');
+  var build = this;
+  var savefilepath = build.bundlefilepath || build.filepath;
+  var text;
+  var data;
+  var err;
+  //console.dir(this.bundles, { depth: null });
+  try {
+    if (build.bundlefilepath) {
+      // Using a separate bundlefile. No need to read it in to overwrite it.
+      data = build.bundles;
+    } else {
+      // Parse the staticbuild.config file and just update the bundles object.
+      text = fs.readFileSync(savefilepath);
+      data = JSON.parse(text);
+      data.bundles = build.bundles;
+    }
+    // Write out the new file with JSON indented 2 spaces.
+    text = JSON.stringify(data, null, 2) + '\n';
+    fs.writeFileSync(savefilepath, text);
+  } catch (ex) {
+    err = ex;
+    console.log('Error saving bundles: ' + err);
+  }
+  if (!err)
+    console.log('OK: Bundles saved.');
+};
+
+StaticBuild.prototype.saveBundlesIfChanged =
+function (name, data) {
+
+};
+
+StaticBuild.prototype.tryAddBundleSrc =
+function (pathStr) {
+  if (!this._bundling.started)
+    return false;
+  this.addBundleSrc(pathStr);
+  return true;
 };
 
 // #endregion
