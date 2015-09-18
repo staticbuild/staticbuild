@@ -808,11 +808,11 @@ function (pathStr) {
 };
 
 StaticBuild.prototype.bundleBegin =
-function (name, destPath) {
+function (name, pathStr) {
   // End the previous bundle, if any.
   if (this._bundling.started)
     this.bundleEnd();
-  var basePath = this.runtimePath(this.dest(destPath), true);
+  var basePath = this.runtimePath(pathStr, true);
   var bi = this._bundling
   bi.data = createBundleData(basePath);
   bi.name = name;
