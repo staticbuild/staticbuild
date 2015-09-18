@@ -131,6 +131,7 @@ function StaticBuild(pathOrOpt, opt) {
   this.bundlefile = '';
   this.bundlefilepath = '';
   this.bundles = {};
+  this.bundlesEnabled = false;
   // #endregion
 
   /** @namespace Gulp related functions. */
@@ -209,8 +210,8 @@ function configureBase(build, data) {
 
 function configureBundles(build, data) {
   var bundles;
-  if (istype('Boolean', data.autosaveBundles))
-    build.autosaveBundles = data.autosaveBundles;
+  if (istype('Boolean', data.bundlesEnabled))
+    build.bundlesEnabled = data.bundlesEnabled;
   if (istype('Object', data.bundles))
     lodash.merge(build.bundles, data.bundles);
   else if (istype('String', data.bundlefile)) {
@@ -795,28 +796,40 @@ function (name, sources) {
 }
 
 StaticBuild.prototype.bundle = 
-function (name, sourceType) {
-  var data = this.bundles[name];
-  var i, items, len;
+function (nameOrNames, sourceType) {
   var ml = '';
-  if (!data) {
-    console.error('Bundle not found: ' + name);
-    return ml;
-  }
-  if (!sourceType || sourceType === 'css') {
-    items = data.src.css;
-    len = items.length;
-    for (i = 0; i < len; i++)
-      ml += this.link(items[i]);
-  }
-  if (!sourceType || sourceType === 'js') {
-    items = data.src.js;
-    len = items.length;
-    for (i = 0; i < len; i++)
-      ml += this.script(items[i]);
-  }
+  var names = lodash.toArray(nameOrNames);
+  var self = this;
+  var outputBundles = this.bundlesEnabled && !this.devmode;
+  names.forEach(function (name) {
+    var data = self.bundles[name];
+    if (!data) {
+      console.error('Bundle not found: ' + name);
+      return;
+    }
+    if (sourceType === undefined || sourceType === 'css')
+      if (outputBundles)
+        ml += self.link(data.css);
+      else
+        data.src.css.forEach(function (source) { ml += self.link(source); });
+    if (sourceType === undefined || sourceType === 'js')
+      if (outputBundles)
+        ml += self.link(data.js);
+      else
+        data.src.js.forEach(function (source) { ml += self.script(source); });
+  });
   return ml;
-}
+};
+
+StaticBuild.prototype.bundleCss = 
+function (nameOrNames) {
+  return this.bundle(nameOrNames, 'css');
+};
+
+StaticBuild.prototype.bundleJs = 
+function (nameOrNames) {
+  return this.bundle(nameOrNames, 'js');
+};
 
 StaticBuild.prototype.defineBundle =
 function (name, basePath, sources) {
