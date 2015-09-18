@@ -809,18 +809,21 @@ function (pathStr) {
 
 StaticBuild.prototype.bundleBegin =
 function (name, pathStr) {
+  if (!this.devmode)
+    return;
   // End the previous bundle, if any.
   if (this._bundling.started)
     this.bundleEnd();
-  var basePath = this.runtimePath(pathStr, true);
   var bi = this._bundling
-  bi.data = createBundleData(basePath);
+  bi.data = createBundleData(pathStr);
   bi.name = name;
   bi.started = true;
 };
 
 StaticBuild.prototype.bundleEnd =
 function () {
+  if (!this.devmode)
+    return;
   // Get the current bundling info.
   var bi = this._bundling;
   if (!bi.started)
@@ -873,6 +876,8 @@ function () {
 
 StaticBuild.prototype.tryAddBundleSrc =
 function (pathStr) {
+  if (!this.devmode)
+    return false;
   if (!this._bundling.started)
     return false;
   this.addBundleSrc(pathStr);
