@@ -130,7 +130,7 @@ function StaticBuild(pathOrOpt, opt) {
   // #region Bundling
   this._bundling = createBundlingInfo();
   this.autosaveBundles = true;
-  this.bundlefile = 'staticbuild.bundles.json';
+  this.bundlefile = '';
   this.bundlefilepath = '';
   this.bundles = {};
   // #endregion
@@ -213,13 +213,12 @@ function configureBundles(build, data) {
   var bundles;
   if (istype('Boolean', data.autosaveBundles))
     build.autosaveBundles = data.autosaveBundles;
-  if (istype('String', data.bundlefile))
-    build.bundlefile = data.bundlefile;
   if (istype('Object', data.bundles))
     lodash.merge(build.bundles, data.bundles);
-  if (build.bundlefile.length > 0) {
-    build.bundlefilepath = path.resolve(build.basedir, build.bundlefile);
-    if (build.bundlefile !== build.filename) {
+  else if (istype('String', data.bundlefile)) {
+    build.bundlefile = data.bundlefile.trim();
+    if (build.bundlefile.length > 0) {
+      build.bundlefilepath = path.resolve(build.basedir, build.bundlefile);
       bundles = build.tryRequireNew(build.bundlefilepath);
       lodash.merge(build.bundles, bundles);
     }
@@ -854,7 +853,7 @@ function () {
   console.log('Saving bundles to: ' + savefilepath);
   //console.dir(this.bundles, { depth: null });
   try {
-    if (build.bundlefilepath) {
+    if (build.bundlefile) {
       // Using a separate bundlefile. No need to read it in to overwrite it.
       data = build.bundles;
     } else {
