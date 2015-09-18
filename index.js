@@ -128,8 +128,6 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Bundling
-  this._bundling = createBundlingInfo();
-  this.autosaveBundles = true;
   this.bundlefile = '';
   this.bundlefilepath = '';
   this.bundles = {};
@@ -749,7 +747,6 @@ function (tofile) {
 StaticBuild.prototype.link =
 function (srcPath) {
   srcPath = this.runtimePath(srcPath);
-  this.tryAddBundleSrc(srcPath);
   var ml = '\n    ' +
     '<link rel="stylesheet" type="text/css" href="' + 
     srcPath + 
@@ -760,7 +757,6 @@ function (srcPath) {
 StaticBuild.prototype.script =
 function (srcPath) {
   srcPath = this.runtimePath(srcPath);
-  this.tryAddBundleSrc(srcPath);
   var ml = '\n    ' + 
     '<script type="text/javascript" src="' + 
     srcPath + 
@@ -772,75 +768,51 @@ function (srcPath) {
 
 // #region Bundling
 
-function createBundlingInfo() {
-  return {
-    data: null,
-    name: '',
-    started: false
-  };
+StaticBuild.prototype.addBundleCss =
+function (name, pathStr) {
+  var data = this.bundles[name];
+  data.src.css.push(pathStr);
+};
+
+StaticBuild.prototype.addBundleJs =
+function (name, pathStr) {
+  var data = this.bundles[name];
+  data.src.js.push(pathStr);
+};
+
+StaticBuild.prototype.addBundleSrc = 
+function (name, sources) {
+  if (!sources)
+    return;
+  var items = lodash.toArray(sources.css);
+  var i, len = items.length;
+  for (i = 0; i < len; i++)
+    this.addBundleCss(name, items[i]);
+  items = lodash.toArray(sources.js);
+  len = items.length;
+  for (i = 0; i < len; i++)
+    this.addBundleJs(name, items[i]);
 }
 
-function createBundleData(basePath) {
+StaticBuild.prototype.defineBundle =
+function (name, basePath, sources) {
   var data = {
-    css: '',
-    js: '',
+    css: basePath + '.css',
+    js: basePath + '.js',
     src: {
       css: [],
       js: []
     }
   };
-  if (basePath) {
-    data.css = basePath + '.css';
-    data.js = basePath + '.js';
-  }
+  this.bundles[name] = data;
+  if (sources)
+    this.addBundleSrc(name, sources);  
   return data;
-}
-
-StaticBuild.prototype.addBundleSrc =
-function (pathStr) {
-  var name = this._bundling.name;
-  var data = this._bundling.data;
-  if (pathStr.substr(pathStr.length - 4) === '.css')
-    data.src.css.push(pathStr);
-  else if (pathStr.substr(pathStr.length - 3) === '.js')
-    data.src.js.push(pathStr);
 };
 
-StaticBuild.prototype.bundleBegin =
-function (name, pathStr) {
-  if (!this.devmode)
-    return;
-  // End the previous bundle, if any.
-  if (this._bundling.started)
-    this.bundleEnd();
-  var bi = this._bundling
-  bi.data = createBundleData(pathStr);
-  bi.name = name;
-  bi.started = true;
-};
-
-StaticBuild.prototype.bundleEnd =
-function () {
-  if (!this.devmode)
-    return;
-  // Get the current bundling info.
-  var bi = this._bundling;
-  if (!bi.started)
-    throw new Error('bundleEnd called without bundleBegin.');
-  var changed = false;
-  var data = bi.data;
-  // Reset the bundling info.
-  this._bundling = createBundlingInfo();
-  // Check if the bundle changed.
-  var prev = this.bundles[bi.name];
-  if (!lodash.isEqual(prev, data)) {
-    changed = true;
-    // Add or update the bundle.
-    this.bundles[bi.name] = data;
-  }
-  // Autosave the new bundling info
-  if (changed && this.autosaveBundles)
-    this.saveBundles();
+StaticBuild.prototype.removeBundle = 
+function (name) {
+  delete this.bundles[name];
 };
 
 StaticBuild.prototype.saveBundles =
@@ -871,16 +843,6 @@ function () {
   }
   if (!err)
     console.log('OK: Bundles saved.');
-};
-
-StaticBuild.prototype.tryAddBundleSrc =
-function (pathStr) {
-  if (!this.devmode)
-    return false;
-  if (!this._bundling.started)
-    return false;
-  this.addBundleSrc(pathStr);
-  return true;
 };
 
 // #endregion
