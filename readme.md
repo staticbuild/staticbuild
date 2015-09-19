@@ -48,7 +48,7 @@ or
 
 ### Jade + Nunjucks
 
-Although it is possible to use Jade and Nunjucks simultaneously in the same 
+Although it is possible to use Jade *and* Nunjucks simultaneously in the same 
 project at the time of this writing, a demo hasn't been created yet.
 
 This could be useful if you plan to use one templating engine for HTML and 
@@ -126,6 +126,7 @@ Required:
                  If no path is supplied, the current directory is used.
 
 Options:
+  -b, --bundling Enable bundling. [default: false]
   -r, --restart  Number of seconds to delay nodemon restarts.  [default: 1]
   --no-restart   Disables the built-in nodemon server restart.
   -h, --help     Show help.  [boolean]
@@ -155,14 +156,10 @@ Options:
 
 ## Roadmap
 
-- Add config settings to disable or change the default view engines.
-- Only init Jade and Nunjucks if they're enabled and/or installed.
-- Consider moving jade and nunjucks into npm devDependencies in this project, 
-forcing the end-developer to install jade and/or nunjucks in their own project.
-- Support other view engines like consolidate.js does, but with the ability to 
-configure them from the staticbuild.json file.
+- Change demos to do bundling in their gulpfile.js using staticbuild bundles.
+- Create automated tests.
 - Create API documentation.
-- Update staticbuild.json documentation.
+- Create Configuration documentation.
 - Create interactive setup.
   - Change [Getting Started](#getting-started) section to recommend a global 
 install and then the setup command. The setup command should also install 
