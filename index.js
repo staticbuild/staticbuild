@@ -23,7 +23,7 @@ function StaticBuild(pathOrOpt, opt) {
     path: (istype('String', pathOrOpt) ? 
       String.prototype.trim.call(pathOrOpt) : ''),
     // Optional
-    bundlesEnabled: false,
+    useBundlePath: false,
     devmode: false,
     verbose: 0,
     restart: false,
@@ -132,7 +132,7 @@ function StaticBuild(pathOrOpt, opt) {
   this.bundlefile = '';
   this.bundlefilepath = '';
   this.bundles = {};
-  this.bundlesEnabled = false;
+  this.useBundlePath = false;
   // #endregion
 
   /** @namespace Gulp related functions. */
@@ -211,8 +211,8 @@ function configureBase(build, data) {
 
 function configureBundles(build, data) {
   var bundles;
-  if (!build.devmode && istype('Boolean', data.bundlesEnabled))
-    build.bundlesEnabled = data.bundlesEnabled;
+  if (!build.devmode && istype('Boolean', data.useBundlePath))
+    build.useBundlePath = data.useBundlePath;
   if (istype('Object', data.bundles))
     lodash.merge(build.bundles, data.bundles);
   else if (istype('String', data.bundlefile)) {
@@ -803,7 +803,6 @@ function (nameOrNames, sourceType) {
   var ml = '';
   var names = [].concat(nameOrNames);
   var self = this;
-  var outputBundledPath = this.bundlesEnabled;
   names.forEach(function (name) {
     var data = self.bundles[name];
     if (!data) {
@@ -811,12 +810,12 @@ function (nameOrNames, sourceType) {
       return;
     }
     if (sourceType === undefined || sourceType === 'css')
-      if (outputBundledPath)
+      if (self.useBundlePath)
         ml += self.link(data.css);
       else
         data.src.css.forEach(function (source) { ml += self.link(source); });
     if (sourceType === undefined || sourceType === 'js')
-      if (outputBundledPath)
+      if (self.useBundlePath)
         ml += self.link(data.js);
       else
         data.src.js.forEach(function (source) { ml += self.script(source); });
