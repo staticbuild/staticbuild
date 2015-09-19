@@ -1,8 +1,0 @@
-{
-  "site": {
-    "title": "staticbuild-nunjucks",
-    "lang": "en",
-    "greeting": "Welcome to",
-    "copyright": "Copyright @ Devoptix LLC 2015"
-  }
-}

@@ -7,6 +7,7 @@ Tools for creating static sites with Jade, Less, Nunjucks and Gulp.
 _This project is under development and this readme is most likely out of date._
 
 - [Getting Started](#getting-started)
+- [Demos](#demos)
 - [Project Directory](#project-directory)
 - [Configuration](#configuration)
 - [Command Line Interface](#command-line-interface)
@@ -39,6 +40,21 @@ or
   "dev": "staticbuild dev path/to/staticbuild.json"
 }
 ```
+
+## Demos
+
+- [Jade](https://github.com/devoptix/staticbuild-demo-jade)
+- [Nunjucks](https://github.com/devoptix/staticbuild-demo-nunjucks)
+
+### Jade + Nunjucks
+
+Although it is possible to use Jade and Nunjucks simultaneously in the same 
+project at the time of this writing, a demo hasn't been created yet.
+
+This could be useful if you plan to use one templating engine for HTML and 
+another for some other type of text output. Jade is a good engine for HTML,
+but nunjucks can be used to output any type of text. For instance, markdown 
+files could be generated with nunjucks.
 
 ## Project Directory
 

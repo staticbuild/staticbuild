@@ -1,1 +1,0 @@
-# staticbuild demo site - jade
