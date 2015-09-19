@@ -816,7 +816,7 @@ function (nameOrNames, sourceType) {
         data.src.css.forEach(function (source) { ml += self.link(source); });
     if (sourceType === undefined || sourceType === 'js')
       if (self.useBundlePath)
-        ml += self.link(data.js);
+        ml += self.script(data.js);
       else
         data.src.js.forEach(function (source) { ml += self.script(source); });
   });
