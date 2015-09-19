@@ -134,7 +134,8 @@ function StaticBuild(pathOrOpt, opt) {
   this.bundlefile = '';
   this.bundlefilepath = '';
   this.bundles = {};
-  this.useBundlePath = !opt.devmode;
+  // TODO: Change the useBundlePath default to `!opt.devmode` when possible.
+  this.useBundlePath = false; //!opt.devmode;
   // #endregion
 
   /** @namespace Gulp related functions. */
