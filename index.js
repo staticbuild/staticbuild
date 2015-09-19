@@ -794,7 +794,7 @@ function (name, sources) {
   len = items.length;
   for (i = 0; i < len; i++)
     this.addBundleJs(name, items[i]);
-}
+};
 
 StaticBuild.prototype.bundle = 
 function (nameOrNames, sourceType) {
