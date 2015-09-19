@@ -132,7 +132,7 @@ function StaticBuild(pathOrOpt, opt) {
   this.bundlefile = '';
   this.bundlefilepath = '';
   this.bundles = {};
-  this.useBundlePath = false;
+  this.useBundlePath = !opt.devmode;
   // #endregion
 
   /** @namespace Gulp related functions. */
@@ -211,6 +211,7 @@ function configureBase(build, data) {
 
 function configureBundles(build, data) {
   var bundles;
+  // useBundlePath is already set from the bincmd cli args for devmode.
   if (!build.devmode && istype('Boolean', data.useBundlePath))
     build.useBundlePath = data.useBundlePath;
   if (istype('Object', data.bundles))
