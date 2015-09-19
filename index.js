@@ -158,6 +158,7 @@ function (version) {
     return vh;
   var vi = StaticBuild.versionToInt(version);
   vh = this.hashids.current.encode(vi);
+  this.versionHashIds[version] = vh;
   return vh;
 };
 
