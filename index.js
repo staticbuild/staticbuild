@@ -803,23 +803,35 @@ function (nameOrNames, sourceType) {
   var ml = '';
   var names = [].concat(nameOrNames);
   var self = this;
-  names.forEach(function (name) {
-    var data = self.bundles[name];
-    if (!data) {
-      console.error('Bundle not found: ' + name);
-      return;
-    }
-    if (sourceType === undefined || sourceType === 'css')
+  
+  if (sourceType === undefined || sourceType === 'css') {
+    // Output css for all bundles
+    names.forEach(function (name) {
+      var data = self.bundles[name];
+      if (!data) {
+        console.error('CSS bundle not found: ' + name);
+        return;
+      }
       if (self.useBundlePath)
         ml += self.link(data.css);
       else
         data.src.css.forEach(function (source) { ml += self.link(source); });
-    if (sourceType === undefined || sourceType === 'js')
+    });
+  }
+  if (sourceType === undefined || sourceType === 'js') {
+    // Output js for all bundles
+    names.forEach(function (name) {
+      var data = self.bundles[name];
+      if (!data) {
+        console.error('JavaScript bundle not found: ' + name);
+        return;
+      }
       if (self.useBundlePath)
         ml += self.script(data.js);
       else
         data.src.js.forEach(function (source) { ml += self.script(source); });
-  });
+    });
+  }
   return ml;
 };
 
