@@ -911,3 +911,16 @@ function () {
 };
 
 // #endregion
+
+// #region Bower
+
+/** Returns true if the given path resides within the build's bowerUrlPath. */
+StaticBuild.prototype.inBowerUrlPath = 
+function (pathStr) {
+  var bp = this.bowerUrlPath;
+  if (!bp || !pathStr)
+    return false;
+  return (pathStr.substr(0, bp.length) === bp);
+};
+
+// #endregion
