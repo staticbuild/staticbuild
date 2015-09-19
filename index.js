@@ -134,6 +134,11 @@ function StaticBuild(pathOrOpt, opt) {
   this.bundles = {};
   this.useBundlePath = !opt.devmode;
   // #endregion
+  
+  // #region Bower
+  this.bowerdir = 'bower_components';
+  this.bowerUrlPath = '/bower_components';
+  // #endregion
 
   /** @namespace Gulp related functions. */
   this.gulp = {
@@ -190,6 +195,7 @@ function configure(build, opt) {
   configureHashids(build, data);
   configureLocales(build, data);
   configureBundles(build, data);
+  configureBower(build, data);
   configureViews(build, data);
 }
 
@@ -207,6 +213,13 @@ function configureBase(build, data) {
     lodash.merge(build.tokens, data.tokens);
   if (istype('Boolean', data.defaultPkgVerHash))
     build.defaultPkgVerHash = data.defaultPkgVerHash;
+}
+
+function configureBower(build, data) {
+  if (istype('String', data.bowerdir))
+    build.bowerdir = data.bowerdir;
+  if (istype('String', data.bowerUrlPath))
+    build.bowerUrlPath = data.bowerUrlPath;
 }
 
 function configureBundles(build, data) {
