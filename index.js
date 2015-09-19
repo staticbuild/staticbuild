@@ -56,7 +56,7 @@ function StaticBuild(pathOrOpt, opt) {
   this.path = process.cwd();
   this.sourcedir = 'src';
   this.vendordir = 'bower_components';
-  this.vendorUrlPath = '/bower_components';
+  this.vendorUrlPath = '';
   // #endregion
   
   // #region Package
@@ -257,6 +257,8 @@ function configurePaths(build, data) {
   // vendorUrlPath
   if (istype('String', data.vendorUrlPath))
     build.vendorUrlPath = data.vendorUrlPath;
+  else
+    build.vendorUrlPath = '/' + path.basename(build.vendordir);
 }
 
 function configureEngine(build, data) {
