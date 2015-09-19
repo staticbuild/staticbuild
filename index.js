@@ -23,6 +23,7 @@ function StaticBuild(pathOrOpt, opt) {
     path: (istype('String', pathOrOpt) ? 
       String.prototype.trim.call(pathOrOpt) : ''),
     // Optional
+    bundlesEnabled: false,
     devmode: false,
     verbose: 0,
     restart: false,
@@ -210,7 +211,7 @@ function configureBase(build, data) {
 
 function configureBundles(build, data) {
   var bundles;
-  if (istype('Boolean', data.bundlesEnabled))
+  if (!build.devmode && istype('Boolean', data.bundlesEnabled))
     build.bundlesEnabled = data.bundlesEnabled;
   if (istype('Object', data.bundles))
     lodash.merge(build.bundles, data.bundles);
@@ -802,7 +803,7 @@ function (nameOrNames, sourceType) {
   var ml = '';
   var names = [].concat(nameOrNames);
   var self = this;
-  var outputBundles = this.bundlesEnabled && !this.devmode;
+  var outputBundledPath = this.bundlesEnabled;
   names.forEach(function (name) {
     var data = self.bundles[name];
     if (!data) {
@@ -810,12 +811,12 @@ function (nameOrNames, sourceType) {
       return;
     }
     if (sourceType === undefined || sourceType === 'css')
-      if (outputBundles)
+      if (outputBundledPath)
         ml += self.link(data.css);
       else
         data.src.css.forEach(function (source) { ml += self.link(source); });
     if (sourceType === undefined || sourceType === 'js')
-      if (outputBundles)
+      if (outputBundledPath)
         ml += self.link(data.js);
       else
         data.src.js.forEach(function (source) { ml += self.script(source); });
