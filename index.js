@@ -1,4 +1,4 @@
-﻿'use strict';
+'use strict';
 
 // #region Imports
 var fs = require('fs');
@@ -54,9 +54,10 @@ function StaticBuild(pathOrOpt, opt) {
     '*.map'
   ];
   this.path = process.cwd();
+  this.pathMap = {
+    bower: { from: 'bower_components' }
+  };
   this.sourcedir = 'src';
-  this.vendordir = 'bower_components';
-  this.vendorUrlPath = '';
   // #endregion
   
   // #region Package
@@ -252,15 +253,14 @@ function configurePaths(build, data) {
   else if (istype('String', data.dest))
     build.destdir = data.dest;
   
-  // vendordir
-  if (istype('String', data.vendordir))
-    build.vendordir = data.vendordir;
-
-  // vendorUrlPath
-  if (istype('String', data.vendorUrlPath))
-    build.vendorUrlPath = data.vendorUrlPath;
-  else
-    build.vendorUrlPath = '/' + path.basename(build.vendordir);
+  // pathMap
+  if (istype('Object', data.pathMap)) {
+    build.pathMap = data.pathMap;
+  }
+  lodash.forEach(build.pathMap, function (mapping, name, pathMap) {
+    if (istype('String', mapping.from) && mapping.dev === undefined)
+      mapping.dev = '/' + path.basename(mapping.from);
+  });
 }
 
 function configureEngine(build, data) {
