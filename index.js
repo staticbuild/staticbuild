@@ -135,7 +135,7 @@ function StaticBuild(pathOrOpt, opt) {
   this.bundlefile = '';
   this.bundlefilepath = '';
   this.bundle = {};
-  // TODO: Change the useBundlePath default to `!opt.devmode` when possible.
+  // TODO: Change the useBundlePath default to `!opt.devmode` when bundling works.
   this.useBundlePath = false; //!opt.devmode;
   // #endregion
 
@@ -797,27 +797,13 @@ function (srcPath) {
 StaticBuild.prototype.addBundleCss =
 function (name, pathStr) {
   var data = this.bundle[name];
-  data.src.css.push(pathStr);
+  data.styles = data.styles.concat(pathStr);
 };
 
 StaticBuild.prototype.addBundleJs =
 function (name, pathStr) {
   var data = this.bundle[name];
-  data.src.js.push(pathStr);
-};
-
-StaticBuild.prototype.addBundleSrc = 
-function (name, sources) {
-  if (!sources)
-    return;
-  var items = [].concat(sources.css);
-  var i, len = items.length;
-  for (i = 0; i < len; i++)
-    this.addBundleCss(name, items[i]);
-  items = [].concat(sources.js);
-  len = items.length;
-  for (i = 0; i < len; i++)
-    this.addBundleJs(name, items[i]);
+  data.scripts = data.scripts.concat(pathStr);
 };
 
 /** Returns the html for the given bundles. */
@@ -838,9 +824,9 @@ function (nameOrNames, sourceType) {
         return;
       }
       if (self.useBundlePath)
-        ml += self.link(data.css);
+        ml += self.link(data.path.css);
       else
-        data.src.css.forEach(function (source) { ml += self.link(source); });
+        data.styles.forEach(function (source) { ml += self.link(source); });
     });
   }
   if (sourceType === undefined || sourceType === 'js') {
@@ -852,7 +838,7 @@ function (nameOrNames, sourceType) {
         return;
       }
       if (self.useBundlePath)
-        ml += self.script(data.js);
+        ml += self.script(data.path.js);
       else
         data.src.js.forEach(function (source) { ml += self.script(source); });
     });
@@ -862,27 +848,30 @@ function (nameOrNames, sourceType) {
 
 StaticBuild.prototype.bundleCss = 
 function (nameOrNames) {
-  return this.bundle(nameOrNames, 'css');
+  return this.bundles(nameOrNames, 'css');
 };
 
 StaticBuild.prototype.bundleJs = 
 function (nameOrNames) {
-  return this.bundle(nameOrNames, 'js');
+  return this.bundles(nameOrNames, 'js');
 };
 
-StaticBuild.prototype.defineBundle =
-function (name, basePath, sources) {
-  var data = {
-    css: basePath + '.css',
-    js: basePath + '.js',
-    src: {
-      css: [],
-      js: []
-    }
-  };
+StaticBuild.prototype.createBundle =
+function (name, data) {
+  var basePath = '/lib/$(bundle)';
+  var targetFile = basePath + '/$(bundleRev)';
+  data = lodash.merge({
+    assets: [],
+    path: {
+      assets: basePath,
+      css: targetFile + '.css',
+      js: targetFile + '.js',
+      target: targetFile
+    },
+    scripts: [],
+    styles: []
+  }, data);
   this.bundle[name] = data;
-  if (sources)
-    this.addBundleSrc(name, sources);  
   return data;
 };
 
