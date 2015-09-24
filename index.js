@@ -134,7 +134,7 @@ function StaticBuild(pathOrOpt, opt) {
   // #region Bundling
   this.bundlefile = '';
   this.bundlefilepath = '';
-  this.bundles = {};
+  this.bundle = {};
   // TODO: Change the useBundlePath default to `!opt.devmode` when possible.
   this.useBundlePath = false; //!opt.devmode;
   // #endregion
@@ -215,18 +215,18 @@ function configureBase(build, data) {
 }
 
 function configureBundles(build, data) {
-  var bundles;
+  var bundleData;
   // useBundlePath is already set from the bincmd cli args for devmode.
   if (!build.devmode && istype('Boolean', data.useBundlePath))
     build.useBundlePath = data.useBundlePath;
-  if (istype('Object', data.bundles))
-    lodash.merge(build.bundles, data.bundles);
+  if (istype('Object', data.bundle))
+    lodash.merge(build.bundle, data.bundle);
   else if (istype('String', data.bundlefile)) {
     build.bundlefile = data.bundlefile.trim();
     if (build.bundlefile.length > 0) {
       build.bundlefilepath = path.resolve(build.basedir, build.bundlefile);
-      bundles = build.tryRequireNew(build.bundlefilepath);
-      lodash.merge(build.bundles, bundles);
+      bundleData = build.tryRequireNew(build.bundlefilepath);
+      lodash.merge(build.bundle, bundleData);
     }
   }
 }
@@ -796,13 +796,13 @@ function (srcPath) {
 
 StaticBuild.prototype.addBundleCss =
 function (name, pathStr) {
-  var data = this.bundles[name];
+  var data = this.bundle[name];
   data.src.css.push(pathStr);
 };
 
 StaticBuild.prototype.addBundleJs =
 function (name, pathStr) {
-  var data = this.bundles[name];
+  var data = this.bundle[name];
   data.src.js.push(pathStr);
 };
 
@@ -820,7 +820,8 @@ function (name, sources) {
     this.addBundleJs(name, items[i]);
 };
 
-StaticBuild.prototype.bundle = 
+/** Returns the html for the given bundles. */
+StaticBuild.prototype.bundles = 
 function (nameOrNames, sourceType) {
   if (!nameOrNames)
     throw new Error('Argument missing: nameOrNames');
@@ -831,7 +832,7 @@ function (nameOrNames, sourceType) {
   if (sourceType === undefined || sourceType === 'css') {
     // Output css for all bundles
     names.forEach(function (name) {
-      var data = self.bundles[name];
+      var data = self.bundle[name];
       if (!data) {
         console.error('CSS bundle not found: ' + name);
         return;
@@ -845,7 +846,7 @@ function (nameOrNames, sourceType) {
   if (sourceType === undefined || sourceType === 'js') {
     // Output js for all bundles
     names.forEach(function (name) {
-      var data = self.bundles[name];
+      var data = self.bundle[name];
       if (!data) {
         console.error('JavaScript bundle not found: ' + name);
         return;
@@ -879,7 +880,7 @@ function (name, basePath, sources) {
       js: []
     }
   };
-  this.bundles[name] = data;
+  this.bundle[name] = data;
   if (sources)
     this.addBundleSrc(name, sources);  
   return data;
@@ -887,7 +888,7 @@ function (name, basePath, sources) {
 
 StaticBuild.prototype.removeBundle = 
 function (name) {
-  delete this.bundles[name];
+  delete this.bundle[name];
 };
 
 StaticBuild.prototype.saveBundles =
@@ -898,16 +899,16 @@ function () {
   var data;
   var err;
   console.log('Saving bundles to: ' + savefilepath);
-  //console.dir(this.bundles, { depth: null });
+  //console.dir(this.bundle, { depth: null });
   try {
     if (build.bundlefile) {
       // Using a separate bundlefile. No need to read it in to overwrite it.
-      data = build.bundles;
+      data = build.bundle;
     } else {
       // Parse the staticbuild.config file and just update the bundles object.
       text = fs.readFileSync(savefilepath);
       data = JSON.parse(text);
-      data.bundles = build.bundles;
+      data.bundle = build.bundle;
     }
     // Write out the new file with JSON indented 2 spaces.
     text = JSON.stringify(data, null, 2) + '\n';
