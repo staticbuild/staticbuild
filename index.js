@@ -840,7 +840,7 @@ function (nameOrNames, sourceType) {
       if (self.useBundlePath)
         ml += self.script(data.path.js);
       else
-        data.src.js.forEach(function (source) { ml += self.script(source); });
+        data.scripts.forEach(function (source) { ml += self.script(source); });
     });
   }
   return ml;
