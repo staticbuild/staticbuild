@@ -55,7 +55,7 @@ function StaticBuild(pathOrOpt, opt) {
   ];
   this.path = process.cwd();
   this.pathMap = {
-    bower: { from: 'bower_components' }
+    bower: { fs: 'bower_components' }
   };
   this.sourcedir = 'src';
   // #endregion
@@ -258,8 +258,8 @@ function configurePaths(build, data) {
     build.pathMap = data.pathMap;
   }
   lodash.forEach(build.pathMap, function (mapping, name, pathMap) {
-    if (istype('String', mapping.from) && mapping.dev === undefined)
-      mapping.dev = '/' + path.basename(mapping.from);
+    if (istype('String', mapping.fs) && mapping.url === undefined)
+      mapping.url = '/' + path.basename(mapping.fs);
   });
 }
 
