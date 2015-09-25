@@ -234,23 +234,24 @@ function configureBase(build, data) {
 }
 
 function configureBundles(build, data) {
-  var bundleFileData;
+  var bundleData;
   // useBundlePath is already set from the bincmd cli args for devmode.
   if (!build.devmode && istype('Boolean', data.useBundlePath))
     build.useBundlePath = data.useBundlePath;
   if (istype('Object', data.bundle))
-    lodash.merge(build.bundle, data.bundle);
+    bundleData = data.bundle;
   else if (istype('String', data.bundlefile)) {
     build.bundlefile = data.bundlefile.trim();
     if (build.bundlefile.length > 0) {
       build.bundlefilepath = path.resolve(build.basedir, build.bundlefile);
       // TODO: Maybe don't load data during configure.
-      bundleFileData = build.tryRequireNew(build.bundlefilepath);
-      lodash.foreach(bundleFileData, function (item, name) {
-        build.createBundle(name, item);
-      });
+      bundleData = build.tryRequireNew(build.bundlefilepath);
     }
   }
+  if (bundleData)
+    lodash.forEach(bundleData, function (item, name) {
+      build.createBundle(name, item);
+    });
 }
 
 function configureDevServer(build, data) {
