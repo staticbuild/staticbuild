@@ -645,13 +645,18 @@ function () {
   return paths;
 };
 
-/** Returns true if the given path resides within the build's vendorUrlPath. */
-StaticBuild.prototype.inVendorUrlPath = 
+/** Returns true if the given url path is mapped. */
+StaticBuild.prototype.isMappedUrl = 
 function (pathStr) {
-  var bp = this.vendorUrlPath;
-  if (!bp || !pathStr)
-    return false;
-  return (pathStr.substr(0, bp.length) === bp);
+  var rv = false;
+  if (!pathStr)
+    return rv;
+  lodash.forEach(this.pathMap, function (mapping, name) {
+    var mappedUrl = mapping.url;
+    if (pathStr.substr(0, mappedUrl.length) === mappedUrl)
+      rv = true;
+  });
+  return rv;
 };
 
 /** Possibly renames the given file using StaticBuild rules. */
@@ -895,14 +900,16 @@ function (nameOrNames) {
 StaticBuild.prototype.createBundle =
 function (name, data) {
   var basePath = '/lib/$(bundle)';
-  var targetFile = basePath + '/$(bundleRev)';
+  var revPath = basePath + '/$(bundleRev)';
   data = lodash.merge({
     assets: [],
+    builtPath: { assets: '', css: '', js: '' },
     path: {
+      base: basePath,
       assets: basePath,
-      css: targetFile + '.css',
-      js: targetFile + '.js',
-      target: targetFile
+      css: revPath + '.css',
+      js: revPath + '.js',
+      rev: revPath
     },
     scripts: [],
     styles: []
