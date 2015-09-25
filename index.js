@@ -56,8 +56,8 @@ function StaticBuild(pathOrOpt, opt) {
     bundleName: [
       /\$\(bundle\)/g
     ],
-    bundleNameWithRev: [
-      /\$\(bundleRev\)/g
+    bundleVer: [
+      /\$\(bundleVer\)/g
     ],
     packageVersionDefault: [
       // ~pkgVer (except ~pkgVerH or ~pkgVerN)
@@ -709,8 +709,8 @@ function (pathStr, opt) {
     // Bundles
     if (opt.bundle)
       pathStr = replaceAll(pathStr, this.pathTokens.bundleName, opt.bundle);
-    if (opt.bundleRev)
-      pathStr = replaceAll(pathStr, this.pathTokens.bundleNameWithRev, opt.bundleRev);
+    if (opt.bundleVer)
+      pathStr = replaceAll(pathStr, this.pathTokens.bundleVer, opt.bundleVer);
   }
   return pathStr;
 };
@@ -865,7 +865,7 @@ function (nameOrNames, sourceType) {
         return;
       }
       if (self.useBundlePath)
-        ml += self.link(data.path.css);
+        ml += self.link(data.resultPath.css);
       else
         data.styles.forEach(function (source) { ml += self.link(source); });
     });
@@ -879,7 +879,7 @@ function (nameOrNames, sourceType) {
         return;
       }
       if (self.useBundlePath)
-        ml += self.script(data.path.js);
+        ml += self.script(data.resultPath.js);
       else
         data.scripts.forEach(function (source) { ml += self.script(source); });
     });
@@ -900,17 +900,15 @@ function (nameOrNames) {
 StaticBuild.prototype.createBundle =
 function (name, data) {
   var basePath = '/lib/$(bundle)';
-  var revPath = basePath + '/$(bundleRev)';
   data = lodash.merge({
     assets: [],
-    builtPath: { assets: '', css: '', js: '' },
     path: {
       base: basePath,
       assets: basePath,
-      css: revPath + '.css',
-      js: revPath + '.js',
-      rev: revPath
+      css: basePath + '/styles.css',
+      js: basePath + '/scripts.js'
     },
+    resultPath: { base: '', assets: '', css: '', js: '' },
     scripts: [],
     styles: []
   }, data);
