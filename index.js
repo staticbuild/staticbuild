@@ -16,8 +16,9 @@ function StaticBuild(pathOrOpt, opt) {
     return new StaticBuild(pathOrOpt, opt);
   // #endregion
   
-  // #region Options
+  // #region Constructor Options
   // - All options are assigned to the StaticBuild instance in `configure`.
+  // - Some options are pre-assigned right in the constructor.
   opt = lodash.assign({
     // Required
     path: (istype('String', pathOrOpt) ? 
@@ -32,9 +33,11 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Base
-  this.devmode = false;
+  this.devmode = opt.devmode;
   this.verbose = false;
+  // #endregion
 
+  // #region Paths
   this.basedir = process.cwd();
   this.destdir = 'dist';
   this.filename = 'staticbuild.json';
@@ -80,6 +83,8 @@ function StaticBuild(pathOrOpt, opt) {
   this.pkgVer = '';
   /** Package Version Hashid */
   this.pkgVerHash = '';
+  /** True if pkgVerHash should be used when replacing 
+   * pathTokens.packageVersionDefault. */
   this.defaultPkgVerHash = true;
   // #endregion
 
@@ -219,29 +224,6 @@ function configureBase(build, data) {
   // - Can only be turned ON from build, not off.
   if (data.verbose === true || data.verbose > 0)
     build.verbose = data.verbose;
-  // source | sourcedir
-  if (istype('String', data.sourcedir))
-    build.sourcedir = data.sourcedir;
-  else if (istype('String', data.source))
-    build.sourcedir = data.source;  
-  // dest | destdir
-  if (istype('String', data.destdir))
-    build.destdir = data.destdir;
-  else if (istype('String', data.dest))
-    build.destdir = data.dest;  
-  // pathMap
-  if (istype('Object', data.pathMap)) {
-    build.pathMap = data.pathMap;
-  }
-  lodash.forEach(build.pathMap, function (mapping, name, pathMap) {
-    if (istype('String', mapping.fs) && mapping.url === undefined)
-      mapping.url = '/' + path.basename(mapping.fs);
-  });
-  // pathTokens
-  if (istype('Object', data.pathTokens))
-    lodash.merge(build.pathTokens, data.pathTokens);
-  if (istype('Boolean', data.defaultPkgVerHash))
-    build.defaultPkgVerHash = data.defaultPkgVerHash;
 }
 
 function configureBundles(build, data) {
@@ -377,6 +359,32 @@ function configurePackage(build, data) {
     build.packagefile = data["package"];
   else if (istype('String', data.packagefile))
     build.packagefile = data.packagefile;
+}
+
+function configurePaths(build, data) {
+  // source | sourcedir
+  if (istype('String', data.sourcedir))
+    build.sourcedir = data.sourcedir;
+  else if (istype('String', data.source))
+    build.sourcedir = data.source;
+  // dest | destdir
+  if (istype('String', data.destdir))
+    build.destdir = data.destdir;
+  else if (istype('String', data.dest))
+    build.destdir = data.dest;
+  // pathMap
+  if (istype('Object', data.pathMap)) {
+    build.pathMap = data.pathMap;
+  }
+  lodash.forEach(build.pathMap, function (mapping, name, pathMap) {
+    if (istype('String', mapping.fs) && mapping.url === undefined)
+      mapping.url = '/' + path.basename(mapping.fs);
+  });
+  // pathTokens
+  if (istype('Object', data.pathTokens))
+    lodash.merge(build.pathTokens, data.pathTokens);
+  if (istype('Boolean', data.defaultPkgVerHash))
+    build.defaultPkgVerHash = data.defaultPkgVerHash;
 }
 
 function configureViews(build, data) {
