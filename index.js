@@ -53,10 +53,16 @@ function StaticBuild(pathOrOpt, opt) {
     bower: { fs: 'bower_components' }
   };
   this.pathTokens = {
+    bundleName: [
+      /\$\(bundle\)/g
+    ],
+    bundleNameWithRev: [
+      /\$\(bundleRev\)/g
+    ],
     packageVersionDefault: [
-      // ~pkgVer (but not ~pkgVerH or ~pkgVerN)
+      // ~pkgVer (except ~pkgVerH or ~pkgVerN)
       /~pkgVer(?![H,N])/g,
-      // ~pv (but not ~pvh or ~pvn)
+      // ~pv (except ~pvh or ~pvn)
       /~pv(?![h,n])/g,
       // $(pkgVer)
       /\$\(pkgVer\)/g
@@ -85,7 +91,7 @@ function StaticBuild(pathOrOpt, opt) {
   this.pkgVerHash = '';
   /** True if pkgVerHash should be used when replacing 
    * pathTokens.packageVersionDefault. */
-  this.defaultPkgVerHash = true;
+  this.usePkgVerHashDefault = true;
   // #endregion
 
   // #region Dev Server
@@ -150,9 +156,9 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Bundling
+  this.bundle = {};
   this.bundlefile = '';
   this.bundlefilepath = '';
-  this.bundle = {};
   // TODO: Change the useBundlePath default to `!opt.devmode` when bundling works.
   this.useBundlePath = false; //!opt.devmode;
   // #endregion
@@ -383,8 +389,8 @@ function configurePaths(build, data) {
   // pathTokens
   if (istype('Object', data.pathTokens))
     lodash.merge(build.pathTokens, data.pathTokens);
-  if (istype('Boolean', data.defaultPkgVerHash))
-    build.defaultPkgVerHash = data.defaultPkgVerHash;
+  if (istype('Boolean', data.usePkgVerHashDefault))
+    build.usePkgVerHashDefault = data.usePkgVerHashDefault;
 }
 
 function configureViews(build, data) {
@@ -670,21 +676,31 @@ function (basePath, pattern) {
     return this.relativePath(basePath) + pattern;
 };
 
+function replaceAll(str, replacements, value) {
+  var i, len = replacements.length;
+  for (i = 0; i < len; i++)
+    str = str.replace(replacements[i], value);
+  return str;
+}
+
 /** Returns the given pathStr with pathTokens replaced for use at runtime. */
 StaticBuild.prototype.runtimePath = 
-function (pathStr, production) {
-  var defaultPkgVer, i, tokens;
-  if (!this.devmode || production) {
-    defaultPkgVer = (this.defaultPkgVerHash ? this.pkgVerHash : this.pkgVer);
-    tokens = this.pathTokens.packageVersionDefault;
-    for (i = 0; i < tokens.length; i++)
-      pathStr = pathStr.replace(tokens[i], defaultPkgVer);
-    tokens = this.pathTokens.packageVersionHashid;
-    for (i = 0; i < tokens.length; i++)
-      pathStr = pathStr.replace(tokens[i], this.pkgVerHash);
-    tokens = this.pathTokens.packageVersionNumber;
-    for (i = 0; i < tokens.length; i++)
-      pathStr = pathStr.replace(tokens[i], this.pkgVer);
+function (pathStr, opt) {
+  var defaultPkgVer;
+  opt = lodash.assign({
+    production: false
+  }, opt);
+  if (!this.devmode || opt.production) {
+    // Package Versions
+    defaultPkgVer = (this.usePkgVerHashDefault ? this.pkgVerHash : this.pkgVer);
+    pathStr = replaceAll(pathStr, this.pathTokens.packageVersionDefault, defaultPkgVer);
+    pathStr = replaceAll(pathStr, this.pathTokens.packageVersionHashid, this.pkgVerHash);
+    pathStr = replaceAll(pathStr, this.pathTokens.packageVersionNumber, this.pkgVer);
+    // Bundles
+    if (opt.bundle)
+      pathStr = replaceAll(pathStr, this.pathTokens.bundleName, opt.bundle);
+    if (opt.bundleRev)
+      pathStr = replaceAll(pathStr, this.pathTokens.bundleNameWithRev, opt.bundleRev);
   }
   return pathStr;
 };
