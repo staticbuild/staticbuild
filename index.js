@@ -59,6 +59,9 @@ function StaticBuild(pathOrOpt, opt) {
     bundleVer: [
       /\$\(bundleVer\)/g
     ],
+    bundlePath: [
+      /\$\(bundlePath\)/g
+    ],
     packageVersionDefault: [
       // ~pkgVer (except ~pkgVerH or ~pkgVerN)
       /~pkgVer(?![H,N])/g,
@@ -711,6 +714,8 @@ function (pathStr, opt) {
       pathStr = replaceAll(pathStr, this.pathTokens.bundleName, opt.bundle);
     if (opt.bundleVer)
       pathStr = replaceAll(pathStr, this.pathTokens.bundleVer, opt.bundleVer);
+    if (opt.bundlePath)
+      pathStr = replaceAll(pathStr, this.pathTokens.bundlePath, opt.bundlePath);
   }
   return pathStr;
 };
@@ -904,7 +909,6 @@ function (name, data) {
     assets: [],
     path: {
       base: basePath,
-      assets: basePath,
       css: basePath + '/styles.css',
       js: basePath + '/scripts.js'
     },
