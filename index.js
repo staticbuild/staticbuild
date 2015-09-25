@@ -34,15 +34,7 @@ function StaticBuild(pathOrOpt, opt) {
   // #region Base
   this.devmode = false;
   this.verbose = false;
-  this.tokens = {
-    packageVersionDefault: [/~pkgVer(?![H,N])/g, /~pv(?![h,n])/g],  // ~pkgVer ~pv
-    packageVersionHashid: [/~pkgVerHash/g, /~pvh/g],
-    packageVersionNumber: [/~pkgVerNum/g, /~pvn/g]
-  };
-  this.defaultPkgVerHash = true;
-  // #endregion
-  
-  // #region Paths
+
   this.basedir = process.cwd();
   this.destdir = 'dist';
   this.filename = 'staticbuild.json';
@@ -57,6 +49,26 @@ function StaticBuild(pathOrOpt, opt) {
   this.pathMap = {
     bower: { fs: 'bower_components' }
   };
+  this.pathTokens = {
+    packageVersionDefault: [
+      // ~pkgVer (but not ~pkgVerH or ~pkgVerN)
+      /~pkgVer(?![H,N])/g,
+      // ~pv (but not ~pvh or ~pvn)
+      /~pv(?![h,n])/g,
+      // $(pkgVer)
+      /\$\(pkgVer\)/g
+    ],
+    packageVersionHashid: [
+      /~pkgVerHash/g,
+      /~pvh/g,
+      /\$\(pkgVerHash\)/g
+    ],
+    packageVersionNumber: [
+      /~pkgVerNum/g,
+      /~pvn/g,
+      /\$\(pkgVerNum\)/g
+    ]
+  };
   this.sourcedir = 'src';
   // #endregion
   
@@ -68,6 +80,7 @@ function StaticBuild(pathOrOpt, opt) {
   this.pkgVer = '';
   /** Package Version Hashid */
   this.pkgVerHash = '';
+  this.defaultPkgVerHash = true;
   // #endregion
 
   // #region Dev Server
@@ -188,7 +201,6 @@ function configure(build, opt) {
   if (!data)
     return;
   configureBase(build, data);
-  configurePaths(build, data);
   configurePackage(build, data);
   configureDevServer(build, data);
   configureEngine(build, data);
@@ -207,9 +219,27 @@ function configureBase(build, data) {
   // - Can only be turned ON from build, not off.
   if (data.verbose === true || data.verbose > 0)
     build.verbose = data.verbose;
-  // tokens
-  if (istype('Object', data.tokens))
-    lodash.merge(build.tokens, data.tokens);
+  // source | sourcedir
+  if (istype('String', data.sourcedir))
+    build.sourcedir = data.sourcedir;
+  else if (istype('String', data.source))
+    build.sourcedir = data.source;  
+  // dest | destdir
+  if (istype('String', data.destdir))
+    build.destdir = data.destdir;
+  else if (istype('String', data.dest))
+    build.destdir = data.dest;  
+  // pathMap
+  if (istype('Object', data.pathMap)) {
+    build.pathMap = data.pathMap;
+  }
+  lodash.forEach(build.pathMap, function (mapping, name, pathMap) {
+    if (istype('String', mapping.fs) && mapping.url === undefined)
+      mapping.url = '/' + path.basename(mapping.fs);
+  });
+  // pathTokens
+  if (istype('Object', data.pathTokens))
+    lodash.merge(build.pathTokens, data.pathTokens);
   if (istype('Boolean', data.defaultPkgVerHash))
     build.defaultPkgVerHash = data.defaultPkgVerHash;
 }
@@ -238,29 +268,6 @@ function configureDevServer(build, data) {
   // devport
   if (istype('Number', data.devport))
     build.devport = data.devport;
-}
-
-function configurePaths(build, data) {
-  // source | sourcedir
-  if (istype('String', data.sourcedir))
-    build.sourcedir = data.sourcedir;
-  else if (istype('String', data.source))
-    build.sourcedir = data.source;
-  
-  // dest | destdir
-  if (istype('String', data.destdir))
-    build.destdir = data.destdir;
-  else if (istype('String', data.dest))
-    build.destdir = data.dest;
-  
-  // pathMap
-  if (istype('Object', data.pathMap)) {
-    build.pathMap = data.pathMap;
-  }
-  lodash.forEach(build.pathMap, function (mapping, name, pathMap) {
-    if (istype('String', mapping.fs) && mapping.url === undefined)
-      mapping.url = '/' + path.basename(mapping.fs);
-  });
 }
 
 function configureEngine(build, data) {
@@ -655,19 +662,19 @@ function (basePath, pattern) {
     return this.relativePath(basePath) + pattern;
 };
 
-/** Returns the given pathStr with tokens replaced for use at runtime. */
+/** Returns the given pathStr with pathTokens replaced for use at runtime. */
 StaticBuild.prototype.runtimePath = 
 function (pathStr, production) {
   var defaultPkgVer, i, tokens;
   if (!this.devmode || production) {
     defaultPkgVer = (this.defaultPkgVerHash ? this.pkgVerHash : this.pkgVer);
-    tokens = this.tokens.packageVersionDefault;
+    tokens = this.pathTokens.packageVersionDefault;
     for (i = 0; i < tokens.length; i++)
       pathStr = pathStr.replace(tokens[i], defaultPkgVer);
-    tokens = this.tokens.packageVersionHashid;
+    tokens = this.pathTokens.packageVersionHashid;
     for (i = 0; i < tokens.length; i++)
       pathStr = pathStr.replace(tokens[i], this.pkgVerHash);
-    tokens = this.tokens.packageVersionNumber;
+    tokens = this.pathTokens.packageVersionNumber;
     for (i = 0; i < tokens.length; i++)
       pathStr = pathStr.replace(tokens[i], this.pkgVer);
   }
