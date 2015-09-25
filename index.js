@@ -212,6 +212,7 @@ function configure(build, opt) {
   if (!data)
     return;
   configureBase(build, data);
+  configurePaths(build, data);
   configurePackage(build, data);
   configureDevServer(build, data);
   configureEngine(build, data);
