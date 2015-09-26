@@ -633,6 +633,13 @@ function (pattern) {
   return this.relativePattern(path.join(this.destdir, this.locale), pattern);
 };
 
+StaticBuild.prototype.fsPath = function(pathStr) {
+  var mapping = this.getPathMapping('url', pathStr);
+  if (!mapping)
+    return pathStr;
+  return mapping.fs + pathStr.substr(mapping.url.length);
+}
+
 /** Returns an array of paths outside of src that are watched in dev mode. */
 StaticBuild.prototype.getWatchPaths = 
 function () {
@@ -649,17 +656,16 @@ function () {
 };
 
 /** Returns true if the given url path is mapped. */
-StaticBuild.prototype.isMappedUrl = 
-function (pathStr) {
-  var rv = false;
+StaticBuild.prototype.getPathMapping = 
+function (pathType, pathStr) {
   if (!pathStr)
-    return rv;
-  lodash.forEach(this.pathMap, function (mapping, name) {
-    var mappedUrl = mapping.url;
-    if (pathStr.substr(0, mappedUrl.length) === mappedUrl)
-      rv = true;
-  });
-  return rv;
+    return;
+  function isMappedFrom(mapping) {
+    var fromPath = mapping[pathType];
+    return (fromPath && fromPath.length > 0) && 
+      (pathStr.substr(0, mappedUrl.length) === mappedUrl);
+  }
+  return lodash.find(this.pathMap, isMappedFrom);
 };
 
 /** Possibly renames the given file using StaticBuild rules. */
@@ -843,13 +849,13 @@ function (srcPath) {
 StaticBuild.prototype.addBundleCss =
 function (name, pathStr) {
   var data = this.bundle[name];
-  data.styles = data.styles.concat(pathStr);
+  data.styles = data.styles.concat({ src: pathStr });
 };
 
 StaticBuild.prototype.addBundleJs =
 function (name, pathStr) {
   var data = this.bundle[name];
-  data.scripts = data.scripts.concat(pathStr);
+  data.scripts = data.scripts.concat({ src: pathStr });
 };
 
 /** Returns the html for the given bundles. */
@@ -870,9 +876,9 @@ function (nameOrNames, sourceType) {
         return;
       }
       if (self.useBundlePath)
-        ml += self.link(data.resultPath.css);
+        ml += self.link(data.result.css);
       else
-        data.styles.forEach(function (source) { ml += self.link(source); });
+        data.styles.forEach(function (item) { ml += self.link(item.src); });
     });
   }
   if (sourceType === undefined || sourceType === 'js') {
@@ -884,9 +890,9 @@ function (nameOrNames, sourceType) {
         return;
       }
       if (self.useBundlePath)
-        ml += self.script(data.resultPath.js);
+        ml += self.script(data.result.js);
       else
-        data.scripts.forEach(function (source) { ml += self.script(source); });
+        data.scripts.forEach(function (item) { ml += self.script(item.src); });
     });
   }
   return ml;
@@ -900,6 +906,18 @@ function (nameOrNames) {
 StaticBuild.prototype.bundleJs = 
 function (nameOrNames) {
   return this.bundles(nameOrNames, 'js');
+};
+
+StaticBuild.prototype.bundledAssets = function (name, resultPath) {
+  this.bundle[name].result.assets = resultPath;
+};
+
+StaticBuild.prototype.bundledCss = function (name, resultPath) {
+  this.bundle[name].result.css = resultPath;
+};
+
+StaticBuild.prototype.bundledJs = function (name, resultPath) {
+  this.bundle[name].result.js = resultPath;
 };
 
 StaticBuild.prototype.createBundle =
@@ -947,6 +965,24 @@ function (name, data) {
   this.bundle[name] = data;
   return data;
 };
+
+StaticBuild.prototype.getBundleSources = function (name, sourceType) {
+  var bundle = this.bundle[name];
+  if (!bundle)
+    throw new Error('Bundle not found: ' + name);
+  var sources = [];
+  if (bundle.styles.length > 0 && 
+    (sourceType === undefined || sourceType === 'css'))
+    sources.concat(lodash.map(bundle.styles, getSrcOfBundleItem));
+  if (bundle.scripts.length > 0 && 
+    (sourceType === undefined || sourceType === 'js'))
+    sources.concat(lodash.map(bundle.scripts, getSrcOfBundleItem));
+  return sources;
+};
+
+function getSrcOfBundleItem(item) {
+  return item.src;
+}
 
 /** Converts array items that are String to `{ src: TheString }`. */
 function normalizeBundleItem(items) {
