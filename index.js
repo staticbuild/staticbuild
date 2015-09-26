@@ -906,15 +906,37 @@ StaticBuild.prototype.createBundle =
 function (name, data) {
   var basePath = '/lib/$(bundle)';
   data = lodash.merge({
-    assets: [],
+    assets: [
+      // {
+      // src: '/bower_components/bootstrap/fonts/**/*', 
+      // dest: 'fonts/**/*'
+      // }
+    ],
+    autoMinSrc: true,
+    cdn: {
+      css: '',
+      js: ''
+    },
     path: {
       base: basePath,
       css: basePath + '/styles.css',
       js: basePath + '/scripts.js'
     },
-    resultPath: { base: '', assets: '', css: '', js: '' },
-    scripts: [],
-    styles: []
+    resultPath: {
+      assets: '',
+      base: '',
+      css: '',
+      js: ''
+    },
+    scripts: [
+      // {
+      // src: '/bower_components/angular/angular.js', 
+      // min: '/bower_components/angular/angular.min.js'
+      // }
+    ],
+    styles: [
+      // { Same as scripts example element. }
+    ]
   }, data);
   this.bundle[name] = data;
   return data;
