@@ -905,6 +905,9 @@ function (nameOrNames) {
 StaticBuild.prototype.createBundle =
 function (name, data) {
   var basePath = '/lib/$(bundle)';
+  data.assets = normalizeBundleItem(data.assets);
+  data.scripts = normalizeBundleItem(data.scripts);
+  data.styles = normalizeBundleItem(data.styles);
   data = lodash.merge({
     assets: [
       // {
@@ -922,7 +925,7 @@ function (name, data) {
       css: basePath + '/styles.css',
       js: basePath + '/scripts.js'
     },
-    resultPath: {
+    result: {
       assets: '',
       base: '',
       css: '',
@@ -935,12 +938,27 @@ function (name, data) {
       // }
     ],
     styles: [
-      // { Same as scripts example element. }
+      // {
+      // src: '/bower_components/angular/angular.js', 
+      // min: '/bower_components/angular/angular.min.js'
+      // }
     ]
   }, data);
   this.bundle[name] = data;
   return data;
 };
+
+/** Converts array items that are String to `{ src: TheString }`. */
+function normalizeBundleItem(items) {
+  var i, len;
+  if (!istype('Array', items))
+    return;
+  len = items.length;
+  for (i = 0; i < len; i++)
+    if (istype('String', items[i]))
+      items[i] = { src: items[i] };
+  return items;
+}
 
 StaticBuild.prototype.removeBundle = 
 function (name) {
