@@ -168,7 +168,8 @@ function StaticBuild(pathOrOpt, opt) {
 
   /** @namespace Gulp related functions. */
   this.gulp = {
-    renameFile: gulpRenameFile.bind(this)
+    renameFile: gulpRenameFile.bind(this),
+    bundledJs: gulpBundledJs.bind(this)
   };
 
   configure(this, opt);
@@ -866,7 +867,6 @@ function (nameOrNames, sourceType) {
   var ml = '';
   var names = [].concat(nameOrNames);
   var self = this;
-  
   if (sourceType === undefined || sourceType === 'css') {
     // Output css for all bundles
     names.forEach(function (name) {
@@ -919,6 +919,20 @@ StaticBuild.prototype.bundledCss = function (name, resultPath) {
 StaticBuild.prototype.bundledJs = function (name, resultPath) {
   this.bundle[name].result.js = resultPath;
 };
+
+/** Possibly renames the given file using StaticBuild rules. */
+function gulpBundledJs(name, logger) {
+  var build = this;
+  function getGulpBundledJsName(file) {
+    var bundle = build.bundle[name];
+    var rpath = build.runtimePath(bundle.path.js, { bundle: name });
+    rpath = path.dirname(rpath) + '/' + file.basename + file.extname;
+    build.bundledJs(name, rpath)
+    if (logger)
+      logger.log('bundle file: ' + rpath);
+  }
+  return getGulpBundledJsName;
+}
 
 StaticBuild.prototype.createBundle =
 function (name, data) {
