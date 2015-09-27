@@ -633,12 +633,12 @@ function (pattern) {
   return this.relativePattern(path.join(this.destdir, this.locale), pattern);
 };
 
-StaticBuild.prototype.fsPath = function(pathStr) {
+StaticBuild.prototype.fsPath = function (pathStr) {
   var mapping = this.getPathMapping('url', pathStr);
   if (!mapping)
-    return pathStr;
+    return this.src(pathStr);
   return mapping.fs + pathStr.substr(mapping.url.length);
-}
+};
 
 /** Returns an array of paths outside of src that are watched in dev mode. */
 StaticBuild.prototype.getWatchPaths = 
@@ -663,7 +663,7 @@ function (pathType, pathStr) {
   function isMappedFrom(mapping) {
     var fromPath = mapping[pathType];
     return (fromPath && fromPath.length > 0) && 
-      (pathStr.substr(0, mappedUrl.length) === mappedUrl);
+      (pathStr.substr(0, fromPath.length) === fromPath);
   }
   return lodash.find(this.pathMap, isMappedFrom);
 };
@@ -972,11 +972,13 @@ StaticBuild.prototype.getBundleSources = function (name, sourceType) {
     throw new Error('Bundle not found: ' + name);
   var sources = [];
   if (bundle.styles.length > 0 && 
-    (sourceType === undefined || sourceType === 'css'))
-    sources.concat(lodash.map(bundle.styles, getSrcOfBundleItem));
+    (sourceType === undefined || sourceType === 'css')) {
+    sources = sources.concat(lodash.map(bundle.styles, getSrcOfBundleItem));
+  }
   if (bundle.scripts.length > 0 && 
-    (sourceType === undefined || sourceType === 'js'))
-    sources.concat(lodash.map(bundle.scripts, getSrcOfBundleItem));
+    (sourceType === undefined || sourceType === 'js')) {
+    sources = sources.concat(lodash.map(bundle.scripts, getSrcOfBundleItem));
+  }
   return sources;
 };
 
