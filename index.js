@@ -966,6 +966,29 @@ function (name, data) {
   return data;
 };
 
+StaticBuild.prototype.getBundleInfo = function (name, sourceType) {
+  var bi = {
+    name: name,
+    data: this.bundle[name],
+    sources: lodash.map(
+      this.getBundleSources(name, sourceType), 
+      this.fsPath.bind(this)),
+    /** Destination path. */
+    dest: '',
+    /** Destination file name. */
+    fileName: '',
+    /** Relative runtime path (url or src or dest). */
+    relFile: '',
+    /** Relative runtime directory path (url or src or dest). */
+    relDir: '',
+  };
+  bi.relFile = this.runtimePath(bi.data.path[sourceType], { bundle: name });
+  bi.relDir = path.dirname(bi.relFile);
+  bi.dest = this.destLocale(bi.relFile);
+  bi.fileName = path.basename(bi.relFile);
+  return bi;
+};
+
 StaticBuild.prototype.getBundleSources = function (name, sourceType) {
   var bundle = this.bundle[name];
   if (!bundle)
