@@ -159,11 +159,10 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Bundling
+  /** Collection of bundles. */
   this.bundle = {};
-  this.bundlefile = '';
-  this.bundlefilepath = '';
-  // TODO: Change the useBundlePath default to `!opt.devmode` when bundling works.
-  this.useBundlePath = false; //!opt.devmode;
+  /** True if the bundle should be rendered instead of the source paths. */
+  this.useBundlePath = !opt.devmode;
   // #endregion
 
   /** @namespace Gulp related functions. */
@@ -245,14 +244,6 @@ function configureBundles(build, data) {
     build.useBundlePath = data.useBundlePath;
   if (istype('Object', data.bundle))
     bundleData = data.bundle;
-  else if (istype('String', data.bundlefile)) {
-    build.bundlefile = data.bundlefile.trim();
-    if (build.bundlefile.length > 0) {
-      build.bundlefilepath = path.resolve(build.basedir, build.bundlefile);
-      // TODO: Maybe don't load data during configure.
-      bundleData = build.tryRequireNew(build.bundlefilepath);
-    }
-  }
   if (bundleData)
     lodash.forEach(bundleData, function (item, name) {
       build.createBundle(name, item);
@@ -960,7 +951,8 @@ function (name, data) {
       // dest: 'fonts/**/*'
       // }
     //],
-    autoMinSrc: true,
+    // TODO: Support using pre-minified files for the build.
+    //autoMinSrc: true,
     cdn: { 
       css: '',
       js: ''
@@ -1054,22 +1046,22 @@ function (name) {
 StaticBuild.prototype.saveBundles =
 function () {
   var build = this;
-  var savefilepath = build.bundlefilepath || build.filepath;
+  var savefilepath = build.filepath;
   var text;
   var data;
   var err;
   console.log('Saving bundles to: ' + savefilepath);
   //console.dir(this.bundle, { depth: null });
   try {
-    if (build.bundlefile) {
-      // Using a separate bundlefile. No need to read it in to overwrite it.
-      data = build.bundle;
-    } else {
-      // Parse the staticbuild.config file and just update the bundles object.
-      text = fs.readFileSync(savefilepath);
-      data = JSON.parse(text);
-      data.bundle = build.bundle;
-    }
+    //if (using_a_separate_file) {
+    //  // Using a separate bundlefile. No need to read it in to overwrite it.
+    //  data = build.bundle; } else {
+
+    // Parse the staticbuild.config file and just update the bundle property.
+    text = fs.readFileSync(savefilepath);
+    data = JSON.parse(text);
+    data.bundle = build.bundle;
+
     // Write out the new file with JSON indented 2 spaces.
     text = JSON.stringify(data, null, 2) + '\n';
     fs.writeFileSync(savefilepath, text);
