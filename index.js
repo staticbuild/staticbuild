@@ -63,21 +63,12 @@ function StaticBuild(pathOrOpt, opt) {
       /\$\(bundlePath\)/g
     ],
     packageVersionDefault: [
-      // ~pkgVer (except ~pkgVerH or ~pkgVerN)
-      /~pkgVer(?![H,N])/g,
-      // ~pv (except ~pvh or ~pvn)
-      /~pv(?![h,n])/g,
-      // $(pkgVer)
       /\$\(pkgVer\)/g
     ],
     packageVersionHashid: [
-      /~pkgVerHash/g,
-      /~pvh/g,
       /\$\(pkgVerHash\)/g
     ],
     packageVersionNumber: [
-      /~pkgVerNum/g,
-      /~pvn/g,
       /\$\(pkgVerNum\)/g
     ]
   };
@@ -167,7 +158,6 @@ function StaticBuild(pathOrOpt, opt) {
 
   /** @namespace Gulp related functions. */
   this.gulp = {
-    renameFile: gulpRenameFile.bind(this),
     bundledCss: gulpBundledCss.bind(this),
     bundledJs: gulpBundledJs.bind(this)
   };
@@ -660,14 +650,6 @@ function (pathType, pathStr) {
   }
   return lodash.find(this.pathMap, isMappedFrom);
 };
-
-/** Possibly renames the given file using StaticBuild rules. */
-function gulpRenameFile(file) {
-  /*jshint validthis: true */
-  // This method is bound to the instance in StaticBuild constructor.
-  file.dirname = this.runtimePath(file.dirname);
-  file.basename = this.runtimePath(file.basename);
-}
 
 /** Returns a relative path derived from the build's basedir. */
 StaticBuild.prototype.relativePath =
