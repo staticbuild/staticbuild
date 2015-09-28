@@ -521,13 +521,6 @@ function (singular, plural, value) {
   return i18n.__n.apply(i18n, args);
 };
 
-function updateLocaleIfChanged(build) {
-  if (build.locale === currentLocale)
-    return;
-  i18n.setLocale(build.locale);
-  currentLocale = build.locale;
-}
-
 StaticBuild.prototype.trySetLocale = 
 function (locale, errback) {
   if (!locale)
@@ -543,6 +536,13 @@ function (locale, errback) {
     errback(null, locale);
   return true;
 };
+
+function updateLocaleIfChanged(build) {
+  if (build.locale === currentLocale)
+    return;
+  i18n.setLocale(build.locale);
+  currentLocale = build.locale;
+}
 
 // #endregion
 
@@ -623,6 +623,19 @@ StaticBuild.prototype.fsPath = function (pathStr) {
   return mapping.fs + pathStr.substr(mapping.url.length);
 };
 
+/** Returns true if the given url path is mapped. */
+StaticBuild.prototype.getPathMapping = 
+function (pathType, pathStr) {
+  if (!pathStr)
+    return;
+  function isMappedFrom(mapping) {
+    var fromPath = mapping[pathType];
+    return (fromPath && fromPath.length > 0) && 
+      (pathStr.substr(0, fromPath.length) === fromPath);
+  }
+  return lodash.find(this.pathMap, isMappedFrom);
+};
+
 /** Returns an array of paths outside of src that are watched in dev mode. */
 StaticBuild.prototype.getWatchPaths = 
 function () {
@@ -636,19 +649,6 @@ function () {
   if (this.packagefile)
     paths.push(this.packagefile);
   return paths;
-};
-
-/** Returns true if the given url path is mapped. */
-StaticBuild.prototype.getPathMapping = 
-function (pathType, pathStr) {
-  if (!pathStr)
-    return;
-  function isMappedFrom(mapping) {
-    var fromPath = mapping[pathType];
-    return (fromPath && fromPath.length > 0) && 
-      (pathStr.substr(0, fromPath.length) === fromPath);
-  }
-  return lodash.find(this.pathMap, isMappedFrom);
 };
 
 /** Returns a relative path derived from the build's basedir. */
@@ -677,6 +677,18 @@ function replaceAll(str, replacements, value) {
   return str;
 }
 
+/** Returns an absolute file-system path resolved from the build's basedir. */
+StaticBuild.prototype.resolvePath = 
+function (basePath) {
+  return path.resolve(this.basedir, basePath);
+};
+
+/** Returns an absolute file-system path resolved from the build's sourcedir. */
+StaticBuild.prototype.resolveSrcPath = 
+function (srcPath) {
+  return path.resolve(this.sourcedir, srcPath);
+};
+
 /** Returns the given pathStr with pathTokens replaced for use at runtime. */
 StaticBuild.prototype.runtimePath = 
 function (pathStr, opt) {
@@ -699,18 +711,6 @@ function (pathStr, opt) {
       pathStr = replaceAll(pathStr, this.pathTokens.bundlePath, opt.bundlePath);
   }
   return pathStr;
-};
-
-/** Returns an absolute file-system path resolved from the build's basedir. */
-StaticBuild.prototype.resolvePath = 
-function (basePath) {
-  return path.resolve(this.basedir, basePath);
-};
-
-/** Returns an absolute file-system path resolved from the build's sourcedir. */
-StaticBuild.prototype.resolveSrcPath = 
-function (srcPath) {
-  return path.resolve(this.sourcedir, srcPath);
 };
 
 /** Returns a relative path derived from the build's sourcedir. */
@@ -833,6 +833,24 @@ function (name, pathStr) {
   data.scripts = data.scripts.concat({ src: pathStr });
 };
 
+StaticBuild.prototype.bundleCss = 
+function (nameOrNames) {
+  return this.bundles(nameOrNames, 'css');
+};
+
+StaticBuild.prototype.bundleJs = 
+function (nameOrNames) {
+  return this.bundles(nameOrNames, 'js');
+};
+
+StaticBuild.prototype.bundledCss = function (name, resultPath) {
+  this.bundle[name].result.css = resultPath;
+};
+
+StaticBuild.prototype.bundledJs = function (name, resultPath) {
+  this.bundle[name].result.js = resultPath;
+};
+
 /** Returns the html for the given bundles. */
 StaticBuild.prototype.bundles = 
 function (nameOrNames, sourceType) {
@@ -871,52 +889,6 @@ function (nameOrNames, sourceType) {
   }
   return ml;
 };
-
-StaticBuild.prototype.bundleCss = 
-function (nameOrNames) {
-  return this.bundles(nameOrNames, 'css');
-};
-
-StaticBuild.prototype.bundleJs = 
-function (nameOrNames) {
-  return this.bundles(nameOrNames, 'js');
-};
-
-StaticBuild.prototype.bundledCss = function (name, resultPath) {
-  this.bundle[name].result.css = resultPath;
-};
-
-StaticBuild.prototype.bundledJs = function (name, resultPath) {
-  this.bundle[name].result.js = resultPath;
-};
-
-/** Returns a function that saves the bundled file. */
-function gulpBundledCss(name, logger) {
-  var build = this;
-  function getGulpBundledCssName(file) {
-    var bundle = build.bundle[name];
-    var rpath = build.runtimePath(bundle.path.css, { bundle: name });
-    rpath = path.dirname(rpath) + '/' + file.basename + file.extname;
-    build.bundledCss(name, rpath);
-    if (logger)
-      logger.log('bundle file: ' + rpath);
-  }
-  return getGulpBundledCssName;
-}
-
-/** Returns a function that saves the bundled file. */
-function gulpBundledJs(name, logger) {
-  var build = this;
-  function getGulpBundledJsName(file) {
-    var bundle = build.bundle[name];
-    var rpath = build.runtimePath(bundle.path.js, { bundle: name });
-    rpath = path.dirname(rpath) + '/' + file.basename + file.extname;
-    build.bundledJs(name, rpath);
-    if (logger)
-      logger.log('bundle file: ' + rpath);
-  }
-  return getGulpBundledJsName;
-}
 
 StaticBuild.prototype.createBundle =
 function (name, data) {
@@ -1006,6 +978,36 @@ StaticBuild.prototype.getBundleSources = function (name, sourceType) {
 
 function getSrcOfBundleItem(item) {
   return item.src;
+}
+
+/** Returns a function that saves the bundled file. */
+function gulpBundledCss(name, logger) {
+  /*jshint validthis:true*/
+  var build = this;
+  function getGulpBundledCssName(file) {
+    var bundle = build.bundle[name];
+    var rpath = build.runtimePath(bundle.path.css, { bundle: name });
+    rpath = path.dirname(rpath) + '/' + file.basename + file.extname;
+    build.bundledCss(name, rpath);
+    if (logger)
+      logger.log('bundle file: ' + rpath);
+  }
+  return getGulpBundledCssName;
+}
+
+/** Returns a function that saves the bundled file. */
+function gulpBundledJs(name, logger) {
+  /*jshint validthis:true*/
+  var build = this;
+  function getGulpBundledJsName(file) {
+    var bundle = build.bundle[name];
+    var rpath = build.runtimePath(bundle.path.js, { bundle: name });
+    rpath = path.dirname(rpath) + '/' + file.basename + file.extname;
+    build.bundledJs(name, rpath);
+    if (logger)
+      logger.log('bundle file: ' + rpath);
+  }
+  return getGulpBundledJsName;
 }
 
 /** Converts array items that are String to `{ src: TheString }`. */
