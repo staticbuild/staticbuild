@@ -909,10 +909,6 @@ function (nameOrNames) {
   return this.bundles(nameOrNames, 'js');
 };
 
-StaticBuild.prototype.bundledAssets = function (name, resultPath) {
-  this.bundle[name].result.assets = resultPath;
-};
-
 StaticBuild.prototype.bundledCss = function (name, resultPath) {
   this.bundle[name].result.css = resultPath;
 };
@@ -952,18 +948,20 @@ function gulpBundledJs(name, logger) {
 StaticBuild.prototype.createBundle =
 function (name, data) {
   var basePath = '/lib/$(bundle)';
-  data.assets = normalizeBundleItem(data.assets);
+  // TODO: Support assets related to the scripts and styles. Make it easy to
+  // let gulp rebase css urls or urls wherever (e.g. in html or js files).
+  //data.assets = normalizeBundleItem(data.assets);
   data.scripts = normalizeBundleItem(data.scripts);
   data.styles = normalizeBundleItem(data.styles);
   data = lodash.merge({
-    assets: [
+    //assets: [
       // {
       // src: '/bower_components/bootstrap/fonts/**/*', 
       // dest: 'fonts/**/*'
       // }
-    ],
+    //],
     autoMinSrc: true,
-    cdn: {
+    cdn: { 
       css: '',
       js: ''
     },
@@ -973,7 +971,6 @@ function (name, data) {
       js: basePath + '/scripts.js'
     },
     result: {
-      assets: '',
       base: '',
       css: '',
       js: ''
@@ -986,8 +983,7 @@ function (name, data) {
     ],
     styles: [
       // {
-      // src: '/bower_components/angular/angular.js', 
-      // min: '/bower_components/angular/angular.min.js'
+      // src: '/bower_components/bootstrap/dist/css/bootstrap.css'
       // }
     ]
   }, data);
