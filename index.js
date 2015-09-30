@@ -154,6 +154,10 @@ function StaticBuild(pathOrOpt, opt) {
   this.bundle = {};
   /** True if the bundle should be rendered instead of the source paths. */
   this.useBundlePath = !opt.devmode;
+  
+  // TODO: Support using pre-minified files using the idea outlined here -
+  // https://github.com/knockout/knockout/issues/1894#issuecomment-144505628
+  
   // #endregion
 
   /** @namespace Gulp related functions. */
