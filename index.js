@@ -947,7 +947,9 @@ StaticBuild.prototype.getBundleInfo = function (name, sourceType) {
   var fsPath = this.fsPath.bind(this);
   var notPath = this.notPath.bind(this);
   var min = lodash.map(this.getBundleMinified(name, sourceType), fsPath);
-  var notMin = lodash.map(min, notPath);
+  var minIf = lodash.map(min, notPath);
+  if (minIf.length === 0)
+    minIf = true;
   var bi = {
     /** Name of the bundle. */
     name: name,
@@ -955,10 +957,12 @@ StaticBuild.prototype.getBundleInfo = function (name, sourceType) {
     data: this.bundle[name],
     /** Source paths of pre-minified files. */
     min: min,
-    /** Globs to exclude pre-minified files. */
-    notMin: notMin,
+    /** Array of glob(s) to exclude pre-minified files OR a boolean True. Value to pass to gulp-if. */
+    minIf: minIf,
     /** Source paths to include in the bundle (including pre-minified). */
-    sources: lodash.map(this.getBundleSources(name, sourceType), fsPath),
+    sources: lodash.map(
+      this.getBundleSourcesOrMinified(name, sourceType), 
+      fsPath),
     /** Destination path. */
     dest: '',
     /** Destination file name. */
@@ -982,11 +986,19 @@ StaticBuild.prototype.getBundleMinified = function (name, sourceType) {
   var sources = [];
   if (bundle.styles.length > 0 && 
     (sourceType === undefined || sourceType === 'css')) {
-    sources = sources.concat(lodash.map(bundle.styles, getMinOfBundleItem));
+    sources = sources.concat(
+      lodash.chain(bundle.styles)
+      .filter(getMinOfBundleItem)
+      .map(getMinOfBundleItem)
+      .value());
   }
   if (bundle.scripts.length > 0 && 
     (sourceType === undefined || sourceType === 'js')) {
-    sources = sources.concat(lodash.map(bundle.scripts, getMinOfBundleItem));
+    sources = sources.concat(
+      lodash.chain(bundle.scripts)
+      .filter(getMinOfBundleItem)
+      .map(getMinOfBundleItem)
+      .value());
   }
   return sources;
 };
