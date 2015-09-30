@@ -150,11 +150,12 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Bundling
+  /** True if pre-minified sources should be located by default. */
+  this.autoMinSrc = true;
   /** Collection of bundles. */
   this.bundle = {};
   /** True if the bundle should be rendered instead of the source paths. */
   this.useBundlePath = !opt.devmode;
-  
   // #endregion
 
   /** @namespace Gulp related functions. */
@@ -617,6 +618,8 @@ function (pattern) {
   return this.relativePattern(path.join(this.destdir, this.locale), pattern);
 };
 
+/** Returns a filesystem path for the given path string, taking any pathMap
+ * mappings into account. */
 StaticBuild.prototype.fsPath = function (pathStr) {
   var mapping = this.getPathMapping('url', pathStr);
   if (!mapping)
@@ -911,8 +914,7 @@ function (name, data) {
       // dest: 'fonts/**/*'
       // }
     //],
-    // TODO: Support using pre-minified files for the build.
-    //autoMinSrc: true,
+    autoMinSrc: this.autoMinSrc,
     cdn: { 
       css: '',
       js: ''
@@ -939,8 +941,24 @@ function (name, data) {
       // }
     ]
   }, data);
+  if (data.autoMinSrc) {
+    lodash.forEach(data.scripts, this.findMinifiedFromSource, this);
+    lodash.forEach(data.styles, this.findMinifiedFromSource, this);
+  }
   this.bundle[name] = data;
   return data;
+};
+
+StaticBuild.prototype.findMinifiedFromSource = function (bundleItem) {
+  var pathStr = bundleItem.src;
+  if (bundleItem.min || !pathStr)
+    return;
+  var extName = path.extname(pathStr);
+  var minPath = pathStr.substr(0, pathStr.length - extName.length) + '.min' + extName;
+  var minFsPath = this.fsPath(minPath);
+  if (fs.existsSync(minFsPath))
+    bundleItem.min = minPath;
+  return minPath;
 };
 
 StaticBuild.prototype.getBundleInfo = function (name, sourceType) {
