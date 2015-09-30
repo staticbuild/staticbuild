@@ -155,9 +155,6 @@ function StaticBuild(pathOrOpt, opt) {
   /** True if the bundle should be rendered instead of the source paths. */
   this.useBundlePath = !opt.devmode;
   
-  // TODO: Support using pre-minified files using the idea outlined here -
-  // https://github.com/knockout/knockout/issues/1894#issuecomment-144505628
-  
   // #endregion
 
   /** @namespace Gulp related functions. */
@@ -655,6 +652,11 @@ function () {
   return paths;
 };
 
+/** Returns a glob that excludes the given path string. */
+StaticBuild.prototype.notPath = function (pathStr) {
+  return '!' + pathStr;
+};
+
 /** Returns a relative path derived from the build's basedir. */
 StaticBuild.prototype.relativePath =
 function (basePath) {
@@ -942,12 +944,21 @@ function (name, data) {
 };
 
 StaticBuild.prototype.getBundleInfo = function (name, sourceType) {
+  var fsPath = this.fsPath.bind(this);
+  var notPath = this.notPath.bind(this);
+  var min = lodash.map(this.getBundleMinified(name, sourceType), fsPath);
+  var notMin = lodash.map(min, notPath);
   var bi = {
+    /** Name of the bundle. */
     name: name,
+    /** Configuration data. */
     data: this.bundle[name],
-    sources: lodash.map(
-      this.getBundleSources(name, sourceType), 
-      this.fsPath.bind(this)),
+    /** Source paths of pre-minified files. */
+    min: min,
+    /** Globs to exclude pre-minified files. */
+    notMin: notMin,
+    /** Source paths to include in the bundle (including pre-minified). */
+    sources: lodash.map(this.getBundleSources(name, sourceType), fsPath),
     /** Destination path. */
     dest: '',
     /** Destination file name. */
@@ -962,6 +973,22 @@ StaticBuild.prototype.getBundleInfo = function (name, sourceType) {
   bi.dest = this.destLocale(bi.relFile);
   bi.fileName = path.basename(bi.relFile);
   return bi;
+};
+
+StaticBuild.prototype.getBundleMinified = function (name, sourceType) {
+  var bundle = this.bundle[name];
+  if (!bundle)
+    throw new Error('Bundle not found: ' + name);
+  var sources = [];
+  if (bundle.styles.length > 0 && 
+    (sourceType === undefined || sourceType === 'css')) {
+    sources = sources.concat(lodash.map(bundle.styles, getMinOfBundleItem));
+  }
+  if (bundle.scripts.length > 0 && 
+    (sourceType === undefined || sourceType === 'js')) {
+    sources = sources.concat(lodash.map(bundle.scripts, getMinOfBundleItem));
+  }
+  return sources;
 };
 
 StaticBuild.prototype.getBundleSources = function (name, sourceType) {
@@ -979,6 +1006,30 @@ StaticBuild.prototype.getBundleSources = function (name, sourceType) {
   }
   return sources;
 };
+
+StaticBuild.prototype.getBundleSourcesOrMinified = function (name, sourceType) {
+  var bundle = this.bundle[name];
+  if (!bundle)
+    throw new Error('Bundle not found: ' + name);
+  var sources = [];
+  if (bundle.styles.length > 0 && 
+    (sourceType === undefined || sourceType === 'css')) {
+    sources = sources.concat(lodash.map(bundle.styles, getMinOrSrcOfBundleItem));
+  }
+  if (bundle.scripts.length > 0 && 
+    (sourceType === undefined || sourceType === 'js')) {
+    sources = sources.concat(lodash.map(bundle.scripts, getMinOrSrcOfBundleItem));
+  }
+  return sources;
+};
+
+function getMinOfBundleItem(item) {
+  return item.min;
+}
+
+function getMinOrSrcOfBundleItem(item) {
+  return item.min || item.src;
+}
 
 function getSrcOfBundleItem(item) {
   return item.src;
