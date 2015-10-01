@@ -141,7 +141,7 @@ function StaticBuild(pathOrOpt, opt) {
   
   // #region Views
   this.autoContext = true;
-  this.buildvar = 'build';
+  this.contextBuildVar = 'build';
   this.context = {};
   this.contextfile = '';
   this.defaultView = 'index';
@@ -395,9 +395,9 @@ function configureViews(build, data) {
   // autoContext
   if (istype('Boolean', data.autoContext))
     build.autoContext = data.autoContext;
-  // buildvar
-  if (istype('String', data.buildvar))
-    build.buildvar = data.buildvar;
+  // contextBuildVar
+  if (istype('String', data.contextBuildVar))
+    build.contextBuildVar = data.contextBuildVar;
   // context | contextfile
   if (istype('String', data.context))
     build.contextfile = data.context;
@@ -503,8 +503,8 @@ function loadViewContext(build) {
       build.tryRequireNew(build.contextfile) || context;
   if (build.autoContext) {
     // Add some stuff to the global context.
-    if (build.buildvar)
-      context[build.buildvar] = build;
+    if (build.contextBuildVar)
+      context[build.contextBuildVar] = build;
     context.t = build.translate.bind(build);
     context.tn = build.translateNumeric.bind(build);
   }
