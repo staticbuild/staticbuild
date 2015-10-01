@@ -896,28 +896,6 @@ function (srcPath) {
 
 // #region Bundling
 
-StaticBuild.prototype.addBundleCss =
-function (name, pathStr) {
-  var data = this.bundle[name];
-  data.styles = data.styles.concat({ src: pathStr });
-};
-
-StaticBuild.prototype.addBundleJs =
-function (name, pathStr) {
-  var data = this.bundle[name];
-  data.scripts = data.scripts.concat({ src: pathStr });
-};
-
-StaticBuild.prototype.bundleCss = 
-function (nameOrNames) {
-  return this.bundles(nameOrNames, 'css');
-};
-
-StaticBuild.prototype.bundleJs = 
-function (nameOrNames) {
-  return this.bundles(nameOrNames, 'js');
-};
-
 StaticBuild.prototype.bundledCss = function (name, resultPath) {
   this.bundle[name].result.css = resultPath;
 };
@@ -1047,6 +1025,11 @@ function (name, data) {
   return data;
 };
 
+StaticBuild.prototype.cssBundles = 
+function (nameOrNames) {
+  return this.bundles(nameOrNames, 'css');
+};
+
 StaticBuild.prototype.findMinifiedFromSource = function (bundleItem) {
   var pathStr = bundleItem.src;
   if (bundleItem.min || !pathStr)
@@ -1167,6 +1150,11 @@ function getMinOrSrcOfBundleItem(item) {
 function getSrcOfBundleItem(item) {
   return item.src;
 }
+
+StaticBuild.prototype.jsBundles = 
+function (nameOrNames) {
+  return this.bundles(nameOrNames, 'js');
+};
 
 /** Converts array items that are String to `{ src: TheString }`. */
 function normalizeBundleItem(items) {
