@@ -143,7 +143,7 @@ function StaticBuild(pathOrOpt, opt) {
   this.autoContext = true;
   this.contextBuildVar = 'build';
   this.context = {};
-  this.contextfile = '';
+  this.contextFile = '';
   this.defaultView = 'index';
   this.favicon = 'favicon.ico';
   // #endregion
@@ -398,13 +398,13 @@ function configureViews(build, data) {
   // contextBuildVar
   if (istype('String', data.contextBuildVar))
     build.contextBuildVar = data.contextBuildVar;
-  // context | contextfile
+  // context | contextFile
   if (istype('String', data.context))
-    build.contextfile = data.context;
-  else if (istype('String', data.contextfile))
-    build.contextfile = data.contextfile;
+    build.contextFile = data.context;
+  else if (istype('String', data.contextFile))
+    build.contextFile = data.contextFile;
   else if (istype('Object', data.context)) {
-    build.contextfile = null;
+    build.contextFile = null;
     build.context = data.context;
   }
   // defaultview | defaultView
@@ -437,8 +437,8 @@ function load(build) {
   if (build.engine.nunjucks.filtersFile)
     build.engine.nunjucks.filtersFile = 
       build.resolvePath(build.engine.nunjucks.filtersFile);
-  if (build.contextfile)
-    build.globalsfile = build.resolvePath(build.contextfile);
+  if (build.contextFile)
+    build.globalsfile = build.resolvePath(build.contextFile);
   // Load stuff.
   loadPackage(build);
   loadLocales(build);
@@ -498,9 +498,9 @@ function loadNunjucksFiles(build) {
 
 function loadViewContext(build) {
   var context = build.context;
-  if (build.contextfile)
+  if (build.contextFile)
     context = build.context = 
-      build.tryRequireNew(build.contextfile) || context;
+      build.tryRequireNew(build.contextFile) || context;
   if (build.autoContext) {
     // Add some stuff to the global context.
     if (build.contextBuildVar)
@@ -653,8 +653,8 @@ function (pathType, pathStr) {
 StaticBuild.prototype.getWatchPaths = 
 function () {
   var paths = [];
-  if (this.contextfile)
-    paths.push(this.contextfile);
+  if (this.contextFile)
+    paths.push(this.contextFile);
   if (this.engine.nunjucks.extensionsFile)
     paths.push(this.engine.nunjucks.extensionsFile);
   if (this.engine.nunjucks.filtersFile)
