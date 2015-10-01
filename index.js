@@ -132,7 +132,7 @@ function StaticBuild(pathOrOpt, opt) {
       extensions: undefined,
       extensionsFile: '',
       filters: undefined,
-      filtersfile: '',
+      filtersFile: '',
       functions: undefined,
       options: { autoescape: true }
     }
@@ -347,11 +347,11 @@ function configureNunjucks(build, data) {
     build.engine.nunjucks.extensionsFile = nunjucks.extensions;
   else if (istype('String', nunjucks.extensionsFile))
     build.engine.nunjucks.extensionsFile = nunjucks.extensionsFile;
-  // filters | filtersfile
+  // filters | filtersFile
   if (istype('String', nunjucks.filters))
-    build.engine.nunjucks.filtersfile = nunjucks.filters;
-  else if (istype('String', nunjucks.filtersfile))
-    build.engine.nunjucks.filtersfile = nunjucks.filtersfile;
+    build.engine.nunjucks.filtersFile = nunjucks.filters;
+  else if (istype('String', nunjucks.filtersFile))
+    build.engine.nunjucks.filtersFile = nunjucks.filtersFile;
   // options
   if (istype('Object', nunjucks.options))
     lodash.merge(build.engine.nunjucks.options, nunjucks.options);
@@ -434,9 +434,9 @@ function load(build) {
   if (build.engine.nunjucks.extensionsFile)
     build.engine.nunjucks.extensionsFile = 
       build.resolvePath(build.engine.nunjucks.extensionsFile);
-  if (build.engine.nunjucks.filtersfile)
-    build.engine.nunjucks.filtersfile = 
-      build.resolvePath(build.engine.nunjucks.filtersfile);
+  if (build.engine.nunjucks.filtersFile)
+    build.engine.nunjucks.filtersFile = 
+      build.resolvePath(build.engine.nunjucks.filtersFile);
   if (build.contextfile)
     build.globalsfile = build.resolvePath(build.contextfile);
   // Load stuff.
@@ -480,8 +480,8 @@ function loadNunjucksFiles(build) {
   // Read extensions and filters.
   if (nunjucks.extensionsFile)
     loaded.extensions = build.tryRequireNew(nunjucks.extensionsFile);
-  if (nunjucks.filtersfile)
-    loaded.filters = build.tryRequireNew(nunjucks.filtersfile);
+  if (nunjucks.filtersFile)
+    loaded.filters = build.tryRequireNew(nunjucks.filtersFile);
   
   if (loaded.extensions)
     nunjucks.extensions = lodash.merge(nunjucks.extensions, loaded.extensions);
@@ -657,8 +657,8 @@ function () {
     paths.push(this.contextfile);
   if (this.engine.nunjucks.extensionsFile)
     paths.push(this.engine.nunjucks.extensionsFile);
-  if (this.engine.nunjucks.filtersfile)
-    paths.push(this.engine.nunjucks.filtersfile);
+  if (this.engine.nunjucks.filtersFile)
+    paths.push(this.engine.nunjucks.filtersFile);
   if (this.packageFile)
     paths.push(this.packageFile);
   return paths;
