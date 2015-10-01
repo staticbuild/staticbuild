@@ -43,10 +43,16 @@ function StaticBuild(pathOrOpt, opt) {
   
   // #region Dev Server
   this.dev = opt.dev;
-  this.devHost = undefined;
-  this.devPort = 8080;
-  this.restart = false;
-  this.restartDelay = 0;
+  this.devServer = {
+    host: undefined,
+    port: 8080,
+    restart: false,
+    restartDelay: 0
+  };
+  if (opt.restart)
+    this.devServer.restart = opt.restart;
+  if (opt.restartDelay)
+    this.devServer.restartDelay = opt.restartDelay;
   // #endregion
   
   // #region Paths
@@ -248,12 +254,16 @@ function configureDevServer(build, data) {
   // - Not configurable via file data. See StaticBuild constructor argument
   // `opt.dev`, which is applied to the StaticBuild in `configure`.
   //
-  // devHost
-  if (istype('String', data.devHost))
-    build.devHost = data.devHost;
-  // devPort
-  if (istype('Number', data.devPort))
-    build.devPort = data.devPort;
+  data = data.devServer;
+  if (!istype('Object', data))
+    return;
+  // host
+  if (istype('String', data.host))
+    build.devServer.host = data.host;
+  // port
+  if (istype('Number', data.port))
+    build.devServer.port = data.port;
+  // restart & restartDelay are set in the StaticBuild constructor.
 }
 
 function configureEngine(build, data) {
@@ -809,8 +819,7 @@ function (tofile) {
   delete config.datafile;
   delete config.locale;
   
-  delete config.restart;
-  delete config.restartDelay;
+  delete config.devServer;
   
   delete config.errors;
   delete config.info;
