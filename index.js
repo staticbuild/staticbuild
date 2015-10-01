@@ -36,7 +36,7 @@ function StaticBuild(pathOrOpt, opt) {
   this.devmode = opt.devmode;
   this.verbose = false;
   // #endregion
-
+  
   // #region Paths
   this.basedir = process.cwd();
   this.destdir = 'dist';
@@ -87,7 +87,7 @@ function StaticBuild(pathOrOpt, opt) {
    * pathTokens.packageVersionDefault. */
   this.usePkgVerHashDefault = true;
   // #endregion
-
+  
   // #region Dev Server
   this.devhost = undefined;
   this.devport = 8080;
@@ -157,13 +157,13 @@ function StaticBuild(pathOrOpt, opt) {
   /** True if the bundle should be rendered instead of the source paths. */
   this.useBundlePath = !opt.devmode;
   // #endregion
-
+  
   /** @namespace Gulp related functions. */
   this.gulp = {
     bundledCss: gulpBundledCss.bind(this),
     bundledJs: gulpBundledJs.bind(this)
   };
-
+  
   configure(this, opt);
   StaticBuild.current = this;
   load(this);
@@ -260,8 +260,8 @@ function configureEngine(build, data) {
   if (
     istype('String', data.defaultEngine) && 
     data.defaultEngine in build.engine && 
-    data.defaultEngine !== build.defaultEngineName 
-  )
+    data.defaultEngine !== build.defaultEngineName
+    )
     build.defaultEngineName = data.defaultEngine;
 }
 
@@ -354,8 +354,8 @@ function configureNunjucks(build, data) {
 
 function configurePackage(build, data) {
   // package | packagefile
-  if (istype('String', data["package"]))
-    build.packagefile = data["package"];
+  if (istype('String', data['package']))
+    build.packagefile = data['package'];
   else if (istype('String', data.packagefile))
     build.packagefile = data.packagefile;
 }
@@ -427,9 +427,11 @@ function load(build) {
   if (build.localesdir)
     build.localesdir = build.resolvePath(build.localesdir);
   if (build.engine.nunjucks.extensionsfile)
-    build.engine.nunjucks.extensionsfile = build.resolvePath(build.engine.nunjucks.extensionsfile);
+    build.engine.nunjucks.extensionsfile = 
+      build.resolvePath(build.engine.nunjucks.extensionsfile);
   if (build.engine.nunjucks.filtersfile)
-    build.engine.nunjucks.filtersfile = build.resolvePath(build.engine.nunjucks.filtersfile);
+    build.engine.nunjucks.filtersfile = 
+      build.resolvePath(build.engine.nunjucks.filtersfile);
   if (build.contextfile)
     build.globalsfile = build.resolvePath(build.contextfile);
   // Load stuff.
@@ -479,12 +481,14 @@ function loadNunjucksFiles(build) {
   if (loaded.extensions)
     nunjucks.extensions = lodash.merge(nunjucks.extensions, loaded.extensions);
   
-  nunjucks.filters = require('./lib/nunjucks/filters.js').createForBuild(build);
+  nunjucks.filters = 
+    require('./lib/nunjucks/filters.js').createForBuild(build);
   if (loaded.filters)
     nunjucks.filters = lodash.merge(nunjucks.filters, loaded.filters);
-
+  
   // Some core functions specialized for nunjucks.
-  nunjucks.functions = require('./lib/nunjucks/functions.js').createForBuild(build);
+  nunjucks.functions = 
+    require('./lib/nunjucks/functions.js').createForBuild(build);
 }
 
 function loadViewContext(build) {
@@ -692,7 +696,7 @@ function (basePath) {
   return path.resolve(this.basedir, basePath);
 };
 
-/** Returns an absolute file-system path resolved from the build's sourcedir. */
+/** Returns an absolute file-system path resolved from sourcedir. */
 StaticBuild.prototype.resolveSrcPath = 
 function (srcPath) {
   return path.resolve(this.sourcedir, srcPath);
@@ -707,17 +711,31 @@ function (pathStr, opt) {
   }, opt);
   if (!this.devmode || opt.production) {
     // Package Versions
-    defaultPkgVer = (this.usePkgVerHashDefault ? this.pkgVerHash : this.pkgVer);
-    pathStr = replaceAll(pathStr, this.pathTokens.packageVersionDefault, defaultPkgVer);
-    pathStr = replaceAll(pathStr, this.pathTokens.packageVersionHashid, this.pkgVerHash);
-    pathStr = replaceAll(pathStr, this.pathTokens.packageVersionNumber, this.pkgVer);
+    defaultPkgVer = (this.usePkgVerHashDefault ? 
+      this.pkgVerHash : 
+      this.pkgVer);
+    pathStr = replaceAll(pathStr, 
+      this.pathTokens.packageVersionDefault, 
+      defaultPkgVer);
+    pathStr = replaceAll(pathStr, 
+      this.pathTokens.packageVersionHashid, 
+      this.pkgVerHash);
+    pathStr = replaceAll(pathStr, 
+      this.pathTokens.packageVersionNumber, 
+      this.pkgVer);
     // Bundles
     if (opt.bundle)
-      pathStr = replaceAll(pathStr, this.pathTokens.bundleName, opt.bundle);
+      pathStr = replaceAll(pathStr, 
+        this.pathTokens.bundleName, 
+        opt.bundle);
     if (opt.bundleVer)
-      pathStr = replaceAll(pathStr, this.pathTokens.bundleVer, opt.bundleVer);
+      pathStr = replaceAll(pathStr, 
+        this.pathTokens.bundleVer, 
+        opt.bundleVer);
     if (opt.bundlePath)
-      pathStr = replaceAll(pathStr, this.pathTokens.bundlePath, opt.bundlePath);
+      pathStr = replaceAll(pathStr, 
+        this.pathTokens.bundlePath, 
+        opt.bundlePath);
   }
   return pathStr;
 };
@@ -767,7 +785,7 @@ function (tofile) {
   if (config.datafile)
     config.data = config.datafile;
   else
-    config.data = "";
+    config.data = '';
   
   // Make absolute paths relative.
   config.dest = path.relative(config.basedir, config.destdir);
@@ -909,13 +927,13 @@ function (name, data) {
   data.styles = normalizeBundleItem(data.styles);
   data = lodash.merge({
     //assets: [
-      // {
-      // src: '/bower_components/bootstrap/fonts/**/*', 
-      // dest: 'fonts/**/*'
-      // }
+    // {
+    // src: '/bower_components/bootstrap/fonts/**/*', 
+    // dest: 'fonts/**/*'
+    // }
     //],
     autoMinSrc: this.autoMinSrc,
-    cdn: { 
+    cdn: {
       css: '',
       js: ''
     },
@@ -954,7 +972,9 @@ StaticBuild.prototype.findMinifiedFromSource = function (bundleItem) {
   if (bundleItem.min || !pathStr)
     return;
   var extName = path.extname(pathStr);
-  var minPath = pathStr.substr(0, pathStr.length - extName.length) + '.min' + extName;
+  var minPath = pathStr.substr(0, pathStr.length - extName.length) + 
+    '.min' + 
+    extName;
   var minFsPath = this.fsPath(minPath);
   if (fs.existsSync(minFsPath))
     bundleItem.min = minPath;
@@ -975,7 +995,7 @@ StaticBuild.prototype.getBundleInfo = function (name, sourceType) {
     data: this.bundle[name],
     /** Source paths of pre-minified files. */
     min: min,
-    /** Array of glob(s) to exclude pre-minified files OR a boolean True. Value to pass to gulp-if. */
+    /** Array of glob(s) to exclude pre-minified files OR True. For gulp-if. */
     minIf: minIf,
     /** Source paths to include in the bundle (including pre-minified). */
     sources: lodash.map(
@@ -988,7 +1008,7 @@ StaticBuild.prototype.getBundleInfo = function (name, sourceType) {
     /** Relative runtime path (url or src or dest). */
     relFile: '',
     /** Relative runtime directory path (url or src or dest). */
-    relDir: '',
+    relDir: ''
   };
   bi.relFile = this.runtimePath(bi.data.path[sourceType], { bundle: name });
   bi.relDir = path.dirname(bi.relFile);
@@ -1037,18 +1057,21 @@ StaticBuild.prototype.getBundleSources = function (name, sourceType) {
   return sources;
 };
 
-StaticBuild.prototype.getBundleSourcesOrMinified = function (name, sourceType) {
+StaticBuild.prototype.getBundleSourcesOrMinified = 
+function (name, sourceType) {
   var bundle = this.bundle[name];
   if (!bundle)
     throw new Error('Bundle not found: ' + name);
   var sources = [];
   if (bundle.styles.length > 0 && 
     (sourceType === undefined || sourceType === 'css')) {
-    sources = sources.concat(lodash.map(bundle.styles, getMinOrSrcOfBundleItem));
+    sources = sources.concat(
+      lodash.map(bundle.styles, getMinOrSrcOfBundleItem));
   }
   if (bundle.scripts.length > 0 && 
     (sourceType === undefined || sourceType === 'js')) {
-    sources = sources.concat(lodash.map(bundle.scripts, getMinOrSrcOfBundleItem));
+    sources = sources.concat(
+      lodash.map(bundle.scripts, getMinOrSrcOfBundleItem));
   }
   return sources;
 };
@@ -1125,12 +1148,12 @@ function () {
     //if (using_a_separate_file) {
     //  // Using a separate bundlefile. No need to read it in to overwrite it.
     //  data = build.bundle; } else {
-
+    
     // Parse the staticbuild.config file and just update the bundle property.
     text = fs.readFileSync(savefilepath);
     data = JSON.parse(text);
     data.bundle = build.bundle;
-
+    
     // Write out the new file with JSON indented 2 spaces.
     text = JSON.stringify(data, null, 2) + '\n';
     fs.writeFileSync(savefilepath, text);
