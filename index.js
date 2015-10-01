@@ -181,7 +181,7 @@ function StaticBuild(pathOrOpt, opt) {
     bundledJs: gulpBundledJs.bind(this)
   };
   
-  configure(this, opt);
+  configure(this);
   StaticBuild.current = this;
   load(this);
 }
@@ -216,7 +216,7 @@ StaticBuild.prototype.versionToInt = versionToInt;
 
 // #region Configuration
 
-function configure(build, opt) {
+function configure(build) {
   // Configure from file.
   var data = build.tryRequireNew(build.filePath);
   if (!data)
