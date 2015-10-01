@@ -94,7 +94,7 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Dev Server
-  this.devhost = undefined;
+  this.devHost = undefined;
   this.devport = 8080;
   this.restart = false;
   this.restartDelay = 0;
@@ -248,9 +248,9 @@ function configureBundles(build, data) {
 }
 
 function configureDevServer(build, data) {
-  // devhost
-  if (istype('String', data.devhost))
-    build.devhost = data.devhost;
+  // devHost
+  if (istype('String', data.devHost))
+    build.devHost = data.devHost;
   // devport
   if (istype('Number', data.devport))
     build.devport = data.devport;
