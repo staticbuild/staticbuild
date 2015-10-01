@@ -25,7 +25,7 @@ function StaticBuild(pathOrOpt, opt) {
       String.prototype.trim.call(pathOrOpt) : ''),
     // Optional
     bundling: true,
-    devmode: false,
+    dev: false,
     verbose: 0,
     restart: false,
     restartDelay: 0
@@ -33,7 +33,7 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Base
-  this.devmode = opt.devmode;
+  this.dev = opt.dev;
   this.verbose = false;
   // #endregion
   
@@ -155,7 +155,7 @@ function StaticBuild(pathOrOpt, opt) {
   /** Collection of bundles. */
   this.bundle = {};
   /** True if the bundle should be rendered instead of the source paths. */
-  this.bundling = !opt.devmode;
+  this.bundling = !opt.dev;
   // #endregion
   
   /** @namespace Gulp related functions. */
@@ -219,9 +219,9 @@ function configure(build, opt) {
 }
 
 function configureBase(build, data) {
-  // devmode
+  // dev
   // - Not configurable via file data. See StaticBuild constructor argument
-  // `opt.devmode`, which is applied to the StaticBuild in `configure`.
+  // `opt.dev`, which is applied to the StaticBuild in `configure`.
   //
   // verbose
   // - Can only be turned ON from build, not off.
@@ -231,8 +231,8 @@ function configureBase(build, data) {
 
 function configureBundles(build, data) {
   var bundleData;
-  // bundling is already set from the bincmd cli args for devmode.
-  if (!build.devmode && istype('Boolean', data.bundling))
+  // bundling is already set from the bincmd cli args for dev mode.
+  if (!build.dev && istype('Boolean', data.bundling))
     build.bundling = data.bundling;
   if (istype('Object', data.bundle))
     bundleData = data.bundle;
@@ -709,7 +709,7 @@ function (pathStr, opt) {
   opt = lodash.assign({
     production: false
   }, opt);
-  if (!this.devmode || opt.production) {
+  if (!this.dev || opt.production) {
     // Package Versions
     defaultPkgVer = (this.usePkgVerHashDefault ? 
       this.pkgVerHash : 
@@ -795,7 +795,7 @@ function (tofile) {
   // Delete object data.
   delete config.basedir;
   delete config.destdir;
-  delete config.devmode;
+  delete config.dev;
   delete config.filepath;
   delete config.filename;
   delete config.pkg;
