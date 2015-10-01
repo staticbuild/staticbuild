@@ -44,7 +44,7 @@ function StaticBuild(pathOrOpt, opt) {
   
   // #region Paths
   this.baseDir = process.cwd();
-  this.destdir = 'dist';
+  this.destDir = 'dist';
   this.filename = 'staticbuild.json';
   this.filepath = '';
   this.ignore = [
@@ -371,11 +371,11 @@ function configurePaths(build, data) {
     build.sourcedir = data.sourcedir;
   else if (istype('String', data.source))
     build.sourcedir = data.source;
-  // dest | destdir
-  if (istype('String', data.destdir))
-    build.destdir = data.destdir;
+  // dest | destDir
+  if (istype('String', data.destDir))
+    build.destDir = data.destDir;
   else if (istype('String', data.dest))
-    build.destdir = data.dest;
+    build.destDir = data.dest;
   // pathMap
   if (istype('Object', data.pathMap)) {
     build.pathMap = data.pathMap;
@@ -427,8 +427,8 @@ function load(build) {
     build.packagefile = build.resolvePath(build.packagefile);
   if (build.sourcedir)
     build.sourcedir = build.resolvePath(build.sourcedir);
-  if (build.destdir)
-    build.destdir = build.resolvePath(build.destdir);
+  if (build.destDir)
+    build.destDir = build.resolvePath(build.destDir);
   if (build.localesdir)
     build.localesdir = build.resolvePath(build.localesdir);
   if (build.engine.nunjucks.extensionsfile)
@@ -615,16 +615,16 @@ function appendFilenamePart(filepath, part) {
 StaticBuild.appendFilenamePart = appendFilenamePart;
 StaticBuild.prototype.appendFilenamePart = appendFilenamePart;
 
-/** Returns a relative path derived from the build's destdir. */
+/** Returns a relative path derived from the build's destDir. */
 StaticBuild.prototype.dest =
 function (pattern) {
-  return this.relativePattern(this.destdir, pattern);
+  return this.relativePattern(this.destDir, pattern);
 };
 
 /** Returns a relative path derived from the build's locale directory.*/
 StaticBuild.prototype.destLocale =
 function (pattern) {
-  return this.relativePattern(path.join(this.destdir, this.locale), pattern);
+  return this.relativePattern(path.join(this.destDir, this.locale), pattern);
 };
 
 /** Returns a filesystem path for the given path string, taking any pathMap
@@ -793,13 +793,13 @@ function (tofile) {
     config.data = '';
   
   // Make absolute paths relative.
-  config.dest = path.relative(config.baseDir, config.destdir);
+  config.dest = path.relative(config.baseDir, config.destDir);
   config.localesdir = path.relative(config.baseDir, config.localesdir);
   config.source = path.relative(config.baseDir, config.sourcedir);
   
   // Delete object data.
   delete config.baseDir;
-  delete config.destdir;
+  delete config.destDir;
   delete config.dev;
   delete config.filepath;
   delete config.filename;
