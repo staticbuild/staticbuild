@@ -130,7 +130,7 @@ function StaticBuild(pathOrOpt, opt) {
     nunjucks: {
       extension: 'htm',
       extensions: undefined,
-      extensionsfile: '',
+      extensionsFile: '',
       filters: undefined,
       filtersfile: '',
       functions: undefined,
@@ -342,11 +342,11 @@ function configureNunjucks(build, data) {
   // extension
   if (istype('String', nunjucks.extension))
     build.engine.nunjucks.extension = nunjucks.extension;
-  // extensions | extensionsfile
+  // extensions | extensionsFile
   if (istype('String', nunjucks.extensions))
-    build.engine.nunjucks.extensionsfile = nunjucks.extensions;
-  else if (istype('String', nunjucks.extensionsfile))
-    build.engine.nunjucks.extensionsfile = nunjucks.extensionsfile;
+    build.engine.nunjucks.extensionsFile = nunjucks.extensions;
+  else if (istype('String', nunjucks.extensionsFile))
+    build.engine.nunjucks.extensionsFile = nunjucks.extensionsFile;
   // filters | filtersfile
   if (istype('String', nunjucks.filters))
     build.engine.nunjucks.filtersfile = nunjucks.filters;
@@ -431,9 +431,9 @@ function load(build) {
     build.destDir = build.resolvePath(build.destDir);
   if (build.localesDir)
     build.localesDir = build.resolvePath(build.localesDir);
-  if (build.engine.nunjucks.extensionsfile)
-    build.engine.nunjucks.extensionsfile = 
-      build.resolvePath(build.engine.nunjucks.extensionsfile);
+  if (build.engine.nunjucks.extensionsFile)
+    build.engine.nunjucks.extensionsFile = 
+      build.resolvePath(build.engine.nunjucks.extensionsFile);
   if (build.engine.nunjucks.filtersfile)
     build.engine.nunjucks.filtersfile = 
       build.resolvePath(build.engine.nunjucks.filtersfile);
@@ -478,8 +478,8 @@ function loadNunjucksFiles(build) {
   var nunjucks = build.engine.nunjucks;
   var loaded = {};
   // Read extensions and filters.
-  if (nunjucks.extensionsfile)
-    loaded.extensions = build.tryRequireNew(nunjucks.extensionsfile);
+  if (nunjucks.extensionsFile)
+    loaded.extensions = build.tryRequireNew(nunjucks.extensionsFile);
   if (nunjucks.filtersfile)
     loaded.filters = build.tryRequireNew(nunjucks.filtersfile);
   
@@ -655,8 +655,8 @@ function () {
   var paths = [];
   if (this.contextfile)
     paths.push(this.contextfile);
-  if (this.engine.nunjucks.extensionsfile)
-    paths.push(this.engine.nunjucks.extensionsfile);
+  if (this.engine.nunjucks.extensionsFile)
+    paths.push(this.engine.nunjucks.extensionsFile);
   if (this.engine.nunjucks.filtersfile)
     paths.push(this.engine.nunjucks.filtersfile);
   if (this.packageFile)
