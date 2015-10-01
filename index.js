@@ -38,7 +38,6 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Base
-  this.dev = opt.dev;
   this.verbose = false;
   // #endregion
   
@@ -94,6 +93,7 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Dev Server
+  this.dev = opt.dev;
   this.devHost = undefined;
   this.devPort = 8080;
   this.restart = false;
@@ -224,10 +224,6 @@ function configure(build, opt) {
 }
 
 function configureBase(build, data) {
-  // dev
-  // - Not configurable via file data. See StaticBuild constructor argument
-  // `opt.dev`, which is applied to the StaticBuild in `configure`.
-  //
   // verbose
   // - Can only be turned ON from build, not off.
   if (data.verbose === true || data.verbose > 0)
@@ -248,6 +244,10 @@ function configureBundles(build, data) {
 }
 
 function configureDevServer(build, data) {
+  // dev
+  // - Not configurable via file data. See StaticBuild constructor argument
+  // `opt.dev`, which is applied to the StaticBuild in `configure`.
+  //
   // devHost
   if (istype('String', data.devHost))
     build.devHost = data.devHost;
