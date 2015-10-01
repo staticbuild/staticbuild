@@ -41,6 +41,14 @@ function StaticBuild(pathOrOpt, opt) {
   this.verbose = false;
   // #endregion
   
+  // #region Dev Server
+  this.dev = opt.dev;
+  this.devHost = undefined;
+  this.devPort = 8080;
+  this.restart = false;
+  this.restartDelay = 0;
+  // #endregion
+  
   // #region Paths
   this.baseDir = process.cwd();
   this.destDir = 'dist';
@@ -90,14 +98,6 @@ function StaticBuild(pathOrOpt, opt) {
   /** True if pkgVerHash should be used when replacing 
    * pathTokens.packageVersionDefault. */
   this.usePkgVerHashDefault = true;
-  // #endregion
-  
-  // #region Dev Server
-  this.dev = opt.dev;
-  this.devHost = undefined;
-  this.devPort = 8080;
-  this.restart = false;
-  this.restartDelay = 0;
   // #endregion
   
   // #region Hashids
