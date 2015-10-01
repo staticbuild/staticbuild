@@ -556,8 +556,6 @@ function loadViewContext(build) {
 
 // #region Locales
 
-var currentLocale;
-
 StaticBuild.prototype.translate = 
 function (str, etc) {
   /*jshint unused:false*/
@@ -591,10 +589,9 @@ function (locale, errback) {
 };
 
 function updateLocaleIfChanged(build) {
-  if (build.locale === currentLocale)
+  if (build.locale === i18n.locale)
     return;
   i18n.setLocale(build.locale);
-  currentLocale = build.locale;
 }
 
 // #endregion
