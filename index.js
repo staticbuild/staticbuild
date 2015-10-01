@@ -95,7 +95,7 @@ function StaticBuild(pathOrOpt, opt) {
   
   // #region Dev Server
   this.devHost = undefined;
-  this.devport = 8080;
+  this.devPort = 8080;
   this.restart = false;
   this.restartDelay = 0;
   // #endregion
@@ -251,9 +251,9 @@ function configureDevServer(build, data) {
   // devHost
   if (istype('String', data.devHost))
     build.devHost = data.devHost;
-  // devport
-  if (istype('Number', data.devport))
-    build.devport = data.devport;
+  // devPort
+  if (istype('Number', data.devPort))
+    build.devPort = data.devPort;
 }
 
 function configureEngine(build, data) {
