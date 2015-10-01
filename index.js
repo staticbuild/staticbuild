@@ -113,7 +113,7 @@ function StaticBuild(pathOrOpt, opt) {
   this.defaultLocale = 'en';
   this.locale = 'en';
   this.locales = ['en'];
-  this.localesdir = 'locales';
+  this.localesDir = 'locales';
   // #endregion
   
   // #region Engine
@@ -326,9 +326,9 @@ function configureLocales(build, data) {
     build.defaultLocale = data.defaultLocale;
     build.locale = build.defaultLocale;
   }
-  // localesdir
-  if (istype('String', data.localesdir))
-    build.localesdir = data.localesdir;
+  // localesDir
+  if (istype('String', data.localesDir))
+    build.localesDir = data.localesDir;
   
   // locales
   if (istype('Array', data.locales))
@@ -429,8 +429,8 @@ function load(build) {
     build.sourcedir = build.resolvePath(build.sourcedir);
   if (build.destDir)
     build.destDir = build.resolvePath(build.destDir);
-  if (build.localesdir)
-    build.localesdir = build.resolvePath(build.localesdir);
+  if (build.localesDir)
+    build.localesDir = build.resolvePath(build.localesDir);
   if (build.engine.nunjucks.extensionsfile)
     build.engine.nunjucks.extensionsfile = 
       build.resolvePath(build.engine.nunjucks.extensionsfile);
@@ -447,13 +447,13 @@ function load(build) {
 }
 
 function loadLocales(build) {
-  // TODO: Load locale names from localesdir if it exists.
+  // TODO: Load locale names from localesDir if it exists.
   i18n.configure({
     extension: '.json',
     indent: '  ',
     locales: build.locales,
     defaultLocale: build.defaultLocale,
-    directory: build.localesdir,
+    directory: build.localesDir,
     objectNotation: true,
     prefix: '',
     updateFiles: true
@@ -794,7 +794,7 @@ function (tofile) {
   
   // Make absolute paths relative.
   config.dest = path.relative(config.baseDir, config.destDir);
-  config.localesdir = path.relative(config.baseDir, config.localesdir);
+  config.localesDir = path.relative(config.baseDir, config.localesDir);
   config.source = path.relative(config.baseDir, config.sourcedir);
   
   // Delete object data.
