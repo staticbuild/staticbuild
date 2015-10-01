@@ -24,7 +24,7 @@ function StaticBuild(pathOrOpt, opt) {
     path: (istype('String', pathOrOpt) ? 
       String.prototype.trim.call(pathOrOpt) : ''),
     // Optional
-    useBundlePath: false,
+    useBundlePath: true,
     devmode: false,
     verbose: 0,
     restart: false,
