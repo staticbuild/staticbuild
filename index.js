@@ -26,23 +26,28 @@ function StaticBuild(pathOrOpt, opt) {
     opt = pathOrOpt;
 
   opt = lodash.assign({
-    // Required
     path: pathStr,
-    // Optional
     bundling: true,
     dev: false,
     verbose: 0,
     restart: false,
     restartDelay: 0
   }, opt);
+  
+  normalizePathOptions(opt);
+
   // #endregion
   
   // #region Base
   this.verbose = false;
+  if (opt.verbose)
+    this.verbose = opt.verbose;
   // #endregion
   
   // #region Dev Server
-  this.dev = opt.dev;
+  this.dev = false;
+  if (opt.dev)
+    this.dev = opt.dev;
   this.devServer = {
     host: undefined,
     port: 8080,
@@ -66,7 +71,6 @@ function StaticBuild(pathOrOpt, opt) {
     '*.part.htm',
     '*.map'
   ];
-  this.path = process.cwd();
   this.pathMap = {
     bower: { fs: 'bower_components' }
   };
@@ -167,6 +171,8 @@ function StaticBuild(pathOrOpt, opt) {
   this.bundle = {};
   /** True if the bundle should be rendered instead of the source paths. */
   this.bundling = !opt.dev;
+  if (opt.bundling)
+    this.bundling = opt.bundling;
   // #endregion
   
   /** @namespace Gulp related functions. */
@@ -211,9 +217,6 @@ StaticBuild.prototype.versionToInt = versionToInt;
 // #region Configuration
 
 function configure(build, opt) {
-  // Normalize and apply options directly to the build instance.
-  normalizePathOptions(opt);
-  lodash.assign(build, opt);
   // Configure from file.
   var data = build.tryRequireNew(build.filePath);
   if (!data)
@@ -811,7 +814,6 @@ function (tofile) {
   delete config.fileName;
   delete config.pkg;
   delete config.packageFile;
-  delete config.path;
   delete config.sourcedir;
   delete config.verbose;
   
