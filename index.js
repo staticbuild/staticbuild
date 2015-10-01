@@ -45,7 +45,7 @@ function StaticBuild(pathOrOpt, opt) {
   // #region Paths
   this.baseDir = process.cwd();
   this.destDir = 'dist';
-  this.filename = 'staticbuild.json';
+  this.fileName = 'staticbuild.json';
   this.filepath = '';
   this.ignore = [
     '.gitignore',
@@ -578,12 +578,12 @@ function fileFromPathOption(opt) {
 function normalizePathOptions(opt) {
   if (fileFromPathOption(opt)) {
     opt.baseDir = path.resolve(path.dirname(opt.filepath));
-    opt.filename = path.basename(opt.filepath);
+    opt.fileName = path.basename(opt.filepath);
   }
   else if (opt.path !== undefined) {
-    opt.filename = opt.filename || 'staticbuild.json';
+    opt.fileName = opt.fileName || 'staticbuild.json';
     opt.baseDir = path.resolve(opt.baseDir || process.cwd(), opt.path);
-    opt.filepath = path.join(opt.baseDir, opt.filename);
+    opt.filepath = path.join(opt.baseDir, opt.fileName);
   }
 }
 
@@ -591,7 +591,7 @@ function normalizePathOptions(opt) {
 
 // #region Paths
 
-/** Returns the filepath with the given value appended to the filename, before 
+/** Returns the filepath with the given value appended to the fileName, before 
  * the extension. */
 function appendFilename(filepath, valueToAppend) {
   var pfile = path.parse(filepath);
@@ -607,7 +607,7 @@ function appendFilename(filepath, valueToAppend) {
 StaticBuild.appendFilename = appendFilename;
 StaticBuild.prototype.appendFilename = appendFilename;
 
-/** Returns the filepath with the given part appended to the filename, before 
+/** Returns the filepath with the given part appended to the fileName, before 
  * the extension, using a standard dash as a delimiter. */
 function appendFilenamePart(filepath, part) {
   return StaticBuild.appendFilename(filepath, '-' + part);
@@ -802,7 +802,7 @@ function (tofile) {
   delete config.destDir;
   delete config.dev;
   delete config.filepath;
-  delete config.filename;
+  delete config.fileName;
   delete config.pkg;
   delete config.packagefile;
   delete config.path;
