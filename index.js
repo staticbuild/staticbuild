@@ -24,7 +24,7 @@ function StaticBuild(pathOrOpt, opt) {
     path: (istype('String', pathOrOpt) ? 
       String.prototype.trim.call(pathOrOpt) : ''),
     // Optional
-    useBundlePath: true,
+    bundling: true,
     devmode: false,
     verbose: 0,
     restart: false,
@@ -155,7 +155,7 @@ function StaticBuild(pathOrOpt, opt) {
   /** Collection of bundles. */
   this.bundle = {};
   /** True if the bundle should be rendered instead of the source paths. */
-  this.useBundlePath = !opt.devmode;
+  this.bundling = !opt.devmode;
   // #endregion
   
   /** @namespace Gulp related functions. */
@@ -231,9 +231,9 @@ function configureBase(build, data) {
 
 function configureBundles(build, data) {
   var bundleData;
-  // useBundlePath is already set from the bincmd cli args for devmode.
-  if (!build.devmode && istype('Boolean', data.useBundlePath))
-    build.useBundlePath = data.useBundlePath;
+  // bundling is already set from the bincmd cli args for devmode.
+  if (!build.devmode && istype('Boolean', data.bundling))
+    build.bundling = data.bundling;
   if (istype('Object', data.bundle))
     bundleData = data.bundle;
   if (bundleData)
@@ -894,7 +894,7 @@ function (nameOrNames, sourceType) {
         console.error('CSS bundle not found: ' + name);
         return;
       }
-      if (self.useBundlePath)
+      if (self.bundling)
         ml += self.link(data.result.css);
       else
         data.styles.forEach(function (item) { ml += self.link(item.src); });
@@ -908,7 +908,7 @@ function (nameOrNames, sourceType) {
         console.error('JavaScript bundle not found: ' + name);
         return;
       }
-      if (self.useBundlePath)
+      if (self.bundling)
         ml += self.script(data.result.js);
       else
         data.scripts.forEach(function (item) { ml += self.script(item.src); });
