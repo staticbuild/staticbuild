@@ -22,7 +22,6 @@ function StaticBuild(pathOrOpt, opt) {
     pathStr = pathOrOpt.trim();
   else
     opt = pathOrOpt;
-
   opt = lodash.assign({
     path: pathStr,
     bundling: true,
@@ -31,9 +30,7 @@ function StaticBuild(pathOrOpt, opt) {
     restart: false,
     restartDelay: 0
   }, opt);
-  
   normalizePathOptions(opt);
-
   // #endregion
   
   // #region Base
