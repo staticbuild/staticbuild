@@ -46,7 +46,7 @@ function StaticBuild(pathOrOpt, opt) {
   this.baseDir = process.cwd();
   this.destDir = 'dist';
   this.fileName = 'staticbuild.json';
-  this.filepath = '';
+  this.filePath = '';
   this.ignore = [
     '.gitignore',
     '*.layout.htm',
@@ -209,7 +209,7 @@ function configure(build, opt) {
   normalizePathOptions(opt);
   lodash.assign(build, opt);
   // Configure from file.
-  var data = build.tryRequireNew(build.filepath);
+  var data = build.tryRequireNew(build.filePath);
   if (!data)
     return;
   configureBase(build, data);
@@ -560,14 +560,14 @@ function updateLocaleIfChanged(build) {
 // #region Options
 
 function fileFromPathOption(opt) {
-  if (opt.filepath !== undefined)
+  if (opt.filePath !== undefined)
     return true;
   if (opt.path === undefined)
     return false;
   try {
     var stat = fs.statSync(opt.path);
     if (stat.isFile()) {
-      opt.filepath = path.resolve(opt.path);
+      opt.filePath = path.resolve(opt.path);
       return true;
     }
   } catch (err) {
@@ -577,13 +577,13 @@ function fileFromPathOption(opt) {
 
 function normalizePathOptions(opt) {
   if (fileFromPathOption(opt)) {
-    opt.baseDir = path.resolve(path.dirname(opt.filepath));
-    opt.fileName = path.basename(opt.filepath);
+    opt.baseDir = path.resolve(path.dirname(opt.filePath));
+    opt.fileName = path.basename(opt.filePath);
   }
   else if (opt.path !== undefined) {
     opt.fileName = opt.fileName || 'staticbuild.json';
     opt.baseDir = path.resolve(opt.baseDir || process.cwd(), opt.path);
-    opt.filepath = path.join(opt.baseDir, opt.fileName);
+    opt.filePath = path.join(opt.baseDir, opt.fileName);
   }
 }
 
@@ -591,10 +591,10 @@ function normalizePathOptions(opt) {
 
 // #region Paths
 
-/** Returns the filepath with the given value appended to the fileName, before 
+/** Returns the pathStr with the given value appended to the fileName, before 
  * the extension. */
-function appendFilename(filepath, valueToAppend) {
-  var pfile = path.parse(filepath);
+function appendFilename(pathStr, valueToAppend) {
+  var pfile = path.parse(pathStr);
   var result = Array.prototype.join.call([
     pfile.dir,
     '/',
@@ -607,10 +607,10 @@ function appendFilename(filepath, valueToAppend) {
 StaticBuild.appendFilename = appendFilename;
 StaticBuild.prototype.appendFilename = appendFilename;
 
-/** Returns the filepath with the given part appended to the fileName, before 
+/** Returns the pathStr with the given part appended to the fileName, before 
  * the extension, using a standard dash as a delimiter. */
-function appendFilenamePart(filepath, part) {
-  return StaticBuild.appendFilename(filepath, '-' + part);
+function appendFilenamePart(pathStr, part) {
+  return StaticBuild.appendFilename(pathStr, '-' + part);
 }
 StaticBuild.appendFilenamePart = appendFilenamePart;
 StaticBuild.prototype.appendFilenamePart = appendFilenamePart;
@@ -751,18 +751,18 @@ function (pattern) {
   return this.relativePattern(this.sourcedir, pattern);
 };
 
-/** Attempts to require an uncached instance of the given filepath's module 
+/** Attempts to require an uncached instance of the given pathStr's module 
  * using require-new. */
-function tryRequireNew(filepath) {
+function tryRequireNew(pathStr) {
   var build, errMsg;
-  if (filepath === undefined || filepath === null)
+  if (pathStr === undefined || pathStr === null)
     return;
   try {
-    return requireNew(filepath);
+    return requireNew(pathStr);
   } catch (err) {
     errMsg = err.code === 'MODULE_NOT_FOUND' ? 
-        'File not found: ' + filepath :
-        'Error loading file ' + filepath + ' - ' + err.toString();
+        'File not found: ' + pathStr :
+        'Error loading file ' + pathStr + ' - ' + err.toString();
     build = this instanceof StaticBuild ? this : StaticBuild.current;
     if (build)
       build.warnings.push(errMsg);
@@ -801,7 +801,7 @@ function (tofile) {
   delete config.baseDir;
   delete config.destDir;
   delete config.dev;
-  delete config.filepath;
+  delete config.filePath;
   delete config.fileName;
   delete config.pkg;
   delete config.packagefile;
@@ -1143,7 +1143,7 @@ function (name) {
 StaticBuild.prototype.saveBundles =
 function () {
   var build = this;
-  var savefilepath = build.filepath;
+  var savefilepath = build.filePath;
   var text;
   var data;
   var err;
