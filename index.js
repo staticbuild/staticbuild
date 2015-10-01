@@ -220,6 +220,7 @@ module.exports = StaticBuild;
 
 // #region Cache Busting
 
+/** Creates a hash of the given version using Hashids. */
 StaticBuild.prototype.versionToHashId = 
 function (version) {
   var vh = this.versionHashIds[version];
@@ -240,7 +241,9 @@ function versionToInt(version) {
   version = parts.join('');
   return parseInt(version, 10);
 }
+/** Converts the given version number to an integer. */
 StaticBuild.versionToInt = versionToInt;
+/** Converts the given version number to an integer. */
 StaticBuild.prototype.versionToInt = versionToInt;
 
 // #endregion
@@ -557,6 +560,7 @@ function loadViewContext(build) {
 
 // #region Locales
 
+/** Applies the i18n translate method (`__`). */
 StaticBuild.prototype.translate = 
 function (str, etc) {
   /*jshint unused:false*/
@@ -565,6 +569,7 @@ function (str, etc) {
   return i18n.__.apply(i18n, args);
 };
 
+/** Applies the i18n translate-numeric method (`__n`). */
 StaticBuild.prototype.translateNumeric = 
 function (singular, plural, value) {
   /*jshint unused:false*/
@@ -573,6 +578,7 @@ function (singular, plural, value) {
   return i18n.__n.apply(i18n, args);
 };
 
+/** Sets the current locale for the build. */
 StaticBuild.prototype.trySetLocale = 
 function (locale, errback) {
   if (!locale)
@@ -864,6 +870,7 @@ function (tofile) {
 
 // #region HTML
 
+/** Returns HTML for a link tag with a dynamic href attribute. */
 StaticBuild.prototype.link =
 function (srcPath) {
   srcPath = this.runtimePath(srcPath);
@@ -874,6 +881,7 @@ function (srcPath) {
   return ml;
 };
 
+/** Returns HTML for a script tag with a dynamic src attribute. */
 StaticBuild.prototype.script =
 function (srcPath) {
   srcPath = this.runtimePath(srcPath);
