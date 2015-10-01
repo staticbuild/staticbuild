@@ -896,10 +896,12 @@ function (srcPath) {
 
 // #region Bundling
 
+/** Stores the result path for the bundled css, for rendering later. */
 StaticBuild.prototype.bundledCss = function (name, resultPath) {
   this.bundle[name].result.css = resultPath;
 };
 
+/** Stores the result path for the bundled css, for rendering later. */
 StaticBuild.prototype.bundledCssInStream = function (name, logger) {
   var passiveStream = new stream.Transform({ objectMode: true });
   var build = this;
@@ -916,10 +918,12 @@ StaticBuild.prototype.bundledCssInStream = function (name, logger) {
   return passiveStream;
 };
 
+/** Stores the result path for the bundled js, for rendering later. */
 StaticBuild.prototype.bundledJs = function (name, resultPath) {
   this.bundle[name].result.js = resultPath;
 };
 
+/** Stores the result path for the bundled js, for rendering later. */
 StaticBuild.prototype.bundledJsInStream = function (name, logger) {
   var passiveStream = new stream.Transform({ objectMode: true });
   var build = this;
@@ -936,7 +940,8 @@ StaticBuild.prototype.bundledJsInStream = function (name, logger) {
   return passiveStream;
 };
 
-/** Returns the html for the given bundles. */
+/** Returns HTML for the given bundles name(s) with CSS link tags first, 
+ * then JS script tags. */
 StaticBuild.prototype.bundles = 
 function (nameOrNames, sourceType) {
   if (!nameOrNames)
@@ -975,6 +980,7 @@ function (nameOrNames, sourceType) {
   return ml;
 };
 
+/** Creates a new bundle within the build. */
 StaticBuild.prototype.createBundle =
 function (name, data) {
   var basePath = '/lib/$(bundle)';
@@ -1025,11 +1031,13 @@ function (name, data) {
   return data;
 };
 
+/** Returns CSS link tags HTML only for the given bundle name(s). */
 StaticBuild.prototype.cssBundles = 
 function (nameOrNames) {
   return this.bundles(nameOrNames, 'css');
 };
 
+/** If bundle item has no min path, finds one, updates the item and returns. */
 StaticBuild.prototype.findMinifiedFromSource = function (bundleItem) {
   var pathStr = bundleItem.src;
   if (bundleItem.min || !pathStr)
@@ -1039,11 +1047,14 @@ StaticBuild.prototype.findMinifiedFromSource = function (bundleItem) {
     '.min' + 
     extName;
   var minFsPath = this.fsPath(minPath);
-  if (fs.existsSync(minFsPath))
+  if (fs.existsSync(minFsPath)) {
     bundleItem.min = minPath;
-  return minPath;
+    return minPath;
+  }
 };
 
+/** Returns an object containing information about the bundle.
+ * eg: `{name,data,min,minif,sources,dest,fileName,relFile,relDir}` */
 StaticBuild.prototype.getBundleInfo = function (name, sourceType) {
   var fsPath = this.fsPath.bind(this);
   var notPath = this.notPath.bind(this);
@@ -1080,6 +1091,7 @@ StaticBuild.prototype.getBundleInfo = function (name, sourceType) {
   return bi;
 };
 
+/** Returns just the min paths of the given bundle name. */
 StaticBuild.prototype.getBundleMinified = function (name, sourceType) {
   var bundle = this.bundle[name];
   if (!bundle)
@@ -1104,6 +1116,7 @@ StaticBuild.prototype.getBundleMinified = function (name, sourceType) {
   return sources;
 };
 
+/** Returns just the src paths of the given bundle name. */
 StaticBuild.prototype.getBundleSources = function (name, sourceType) {
   var bundle = this.bundle[name];
   if (!bundle)
@@ -1120,6 +1133,7 @@ StaticBuild.prototype.getBundleSources = function (name, sourceType) {
   return sources;
 };
 
+/** Returns the min (if any) OR src paths of the given bundle name. */
 StaticBuild.prototype.getBundleSourcesOrMinified = 
 function (name, sourceType) {
   var bundle = this.bundle[name];
@@ -1151,6 +1165,7 @@ function getSrcOfBundleItem(item) {
   return item.src;
 }
 
+/** Returns Javascript script tags HTML only for the given bundle name(s). */
 StaticBuild.prototype.jsBundles = 
 function (nameOrNames) {
   return this.bundles(nameOrNames, 'js');
@@ -1168,11 +1183,13 @@ function normalizeBundleItem(items) {
   return items;
 }
 
+/** Removes a bundle from the build. */
 StaticBuild.prototype.removeBundle = 
 function (name) {
   delete this.bundle[name];
 };
 
+/** Saves bundles to the configuration filePath. */
 StaticBuild.prototype.saveBundles =
 function () {
   var build = this;
