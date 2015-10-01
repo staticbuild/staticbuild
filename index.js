@@ -43,7 +43,7 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Paths
-  this.basedir = process.cwd();
+  this.baseDir = process.cwd();
   this.destdir = 'dist';
   this.filename = 'staticbuild.json';
   this.filepath = '';
@@ -577,13 +577,13 @@ function fileFromPathOption(opt) {
 
 function normalizePathOptions(opt) {
   if (fileFromPathOption(opt)) {
-    opt.basedir = path.resolve(path.dirname(opt.filepath));
+    opt.baseDir = path.resolve(path.dirname(opt.filepath));
     opt.filename = path.basename(opt.filepath);
   }
   else if (opt.path !== undefined) {
     opt.filename = opt.filename || 'staticbuild.json';
-    opt.basedir = path.resolve(opt.basedir || process.cwd(), opt.path);
-    opt.filepath = path.join(opt.basedir, opt.filename);
+    opt.baseDir = path.resolve(opt.baseDir || process.cwd(), opt.path);
+    opt.filepath = path.join(opt.baseDir, opt.filename);
   }
 }
 
@@ -669,13 +669,13 @@ StaticBuild.prototype.notPath = function (pathStr) {
   return '!' + pathStr;
 };
 
-/** Returns a relative path derived from the build's basedir. */
+/** Returns a relative path derived from the build's baseDir. */
 StaticBuild.prototype.relativePath =
 function (basePath) {
-  return path.relative(this.basedir, basePath).replace('\\', '/');
+  return path.relative(this.baseDir, basePath).replace('\\', '/');
 };
 
-/** Returns a relative path pattern derived from the build's basedir.
+/** Returns a relative path pattern derived from the build's baseDir.
  * (e.g. '../path/to/##/#.js' but with asterisks instead of hashes) */
 StaticBuild.prototype.relativePattern =
 function (basePath, pattern) {
@@ -695,10 +695,10 @@ function replaceAll(str, replacements, value) {
   return str;
 }
 
-/** Returns an absolute file-system path resolved from the build's basedir. */
+/** Returns an absolute file-system path resolved from the build's baseDir. */
 StaticBuild.prototype.resolvePath = 
 function (basePath) {
-  return path.resolve(this.basedir, basePath);
+  return path.resolve(this.baseDir, basePath);
 };
 
 /** Returns an absolute file-system path resolved from sourcedir. */
@@ -793,12 +793,12 @@ function (tofile) {
     config.data = '';
   
   // Make absolute paths relative.
-  config.dest = path.relative(config.basedir, config.destdir);
-  config.localesdir = path.relative(config.basedir, config.localesdir);
-  config.source = path.relative(config.basedir, config.sourcedir);
+  config.dest = path.relative(config.baseDir, config.destdir);
+  config.localesdir = path.relative(config.baseDir, config.localesdir);
+  config.source = path.relative(config.baseDir, config.sourcedir);
   
   // Delete object data.
-  delete config.basedir;
+  delete config.baseDir;
   delete config.destdir;
   delete config.dev;
   delete config.filepath;
