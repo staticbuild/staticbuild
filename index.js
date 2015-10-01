@@ -8,6 +8,7 @@ var istype = require('type-check').typeCheck;
 var lodash = require('lodash');
 var path = require('path');
 var requireNew = require('require-new');
+var stream = require('stream');
 // #endregion
 
 function StaticBuild(pathOrOpt, opt) {
@@ -204,16 +205,10 @@ function StaticBuild(pathOrOpt, opt) {
   /** Collection of bundles. */
   this.bundle = {};
   /** True if the bundle should be rendered instead of the source paths. */
-  this.bundling = !opt.dev;
+  this.bundling = !this.dev;
   if (opt.bundling)
     this.bundling = opt.bundling;
   // #endregion
-  
-  /** Gulp related functions. */
-  this.gulp = {
-    bundledCss: gulpBundledCss.bind(this),
-    bundledJs: gulpBundledJs.bind(this)
-  };
   
   configure(this);
   StaticBuild.current = this;
@@ -920,8 +915,40 @@ StaticBuild.prototype.bundledCss = function (name, resultPath) {
   this.bundle[name].result.css = resultPath;
 };
 
+StaticBuild.prototype.bundledCssInStream = function (name, logger) {
+  var passiveStream = new stream.Transform({ objectMode: true });
+  var build = this;
+  function getBundledCssInStream(file, unused, cb) {
+    var bundle = build.bundle[name];
+    var rpath = build.runtimePath(bundle.path.css, { bundle: name });
+    rpath = path.dirname(rpath) + '/' + path.basename(file.path);
+    build.bundledCss(name, rpath);
+    if (logger)
+      logger.log('Bundled  \'' + rpath + '\'');
+    cb(null, file);
+  }
+  passiveStream._transform = getBundledCssInStream;
+  return passiveStream;
+};
+
 StaticBuild.prototype.bundledJs = function (name, resultPath) {
   this.bundle[name].result.js = resultPath;
+};
+
+StaticBuild.prototype.bundledJsInStream = function (name, logger) {
+  var passiveStream = new stream.Transform({ objectMode: true });
+  var build = this;
+  function getBundledJsInStream(file, unused, cb) {
+    var bundle = build.bundle[name];
+    var rpath = build.runtimePath(bundle.path.css, { bundle: name });
+    rpath = path.dirname(rpath) + '/' + path.basename(file.path);
+    build.bundledJs(name, rpath);
+    if (logger)
+      logger.log('Bundled  \'' + rpath + '\'');
+    cb(null, file);
+  }
+  passiveStream._transform = getBundledJsInStream;
+  return passiveStream;
 };
 
 /** Returns the html for the given bundles. */
@@ -1132,36 +1159,6 @@ function getMinOrSrcOfBundleItem(item) {
 
 function getSrcOfBundleItem(item) {
   return item.src;
-}
-
-/** Returns a function that saves the bundled file. */
-function gulpBundledCss(name, logger) {
-  /*jshint validthis:true*/
-  var build = this;
-  function getGulpBundledCssName(file) {
-    var bundle = build.bundle[name];
-    var rpath = build.runtimePath(bundle.path.css, { bundle: name });
-    rpath = path.dirname(rpath) + '/' + file.basename + file.extname;
-    build.bundledCss(name, rpath);
-    if (logger)
-      logger.log('bundle file: ' + rpath);
-  }
-  return getGulpBundledCssName;
-}
-
-/** Returns a function that saves the bundled file. */
-function gulpBundledJs(name, logger) {
-  /*jshint validthis:true*/
-  var build = this;
-  function getGulpBundledJsName(file) {
-    var bundle = build.bundle[name];
-    var rpath = build.runtimePath(bundle.path.js, { bundle: name });
-    rpath = path.dirname(rpath) + '/' + file.basename + file.extname;
-    build.bundledJs(name, rpath);
-    if (logger)
-      logger.log('bundle file: ' + rpath);
-  }
-  return getGulpBundledJsName;
 }
 
 /** Converts array items that are String to `{ src: TheString }`. */
