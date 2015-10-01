@@ -557,38 +557,6 @@ function updateLocaleIfChanged(build) {
 
 // #endregion
 
-// #region Options
-
-function fileFromPathOption(opt) {
-  if (opt.filePath !== undefined)
-    return true;
-  if (opt.path === undefined)
-    return false;
-  try {
-    var stat = fs.statSync(opt.path);
-    if (stat.isFile()) {
-      opt.filePath = path.resolve(opt.path);
-      return true;
-    }
-  } catch (err) {
-  }
-  return false;
-}
-
-function normalizePathOptions(opt) {
-  if (fileFromPathOption(opt)) {
-    opt.baseDir = path.resolve(path.dirname(opt.filePath));
-    opt.fileName = path.basename(opt.filePath);
-  }
-  else if (opt.path !== undefined) {
-    opt.fileName = opt.fileName || 'staticbuild.json';
-    opt.baseDir = path.resolve(opt.baseDir || process.cwd(), opt.path);
-    opt.filePath = path.join(opt.baseDir, opt.fileName);
-  }
-}
-
-// #endregion
-
 // #region Paths
 
 /** Returns the pathStr with the given value appended to the fileName, before 
@@ -627,6 +595,22 @@ function (pattern) {
   return this.relativePattern(path.join(this.destDir, this.locale), pattern);
 };
 
+function fileFromPathOption(opt) {
+  if (opt.filePath !== undefined)
+    return true;
+  if (opt.path === undefined)
+    return false;
+  try {
+    var stat = fs.statSync(opt.path);
+    if (stat.isFile()) {
+      opt.filePath = path.resolve(opt.path);
+      return true;
+    }
+  } catch (err) {
+  }
+  return false;
+}
+
 /** Returns a filesystem path for the given path string, taking any pathMap
  * mappings into account. */
 StaticBuild.prototype.fsPath = function (pathStr) {
@@ -663,6 +647,18 @@ function () {
     paths.push(this.packageFile);
   return paths;
 };
+
+function normalizePathOptions(opt) {
+  if (fileFromPathOption(opt)) {
+    opt.baseDir = path.resolve(path.dirname(opt.filePath));
+    opt.fileName = path.basename(opt.filePath);
+  }
+  else if (opt.path !== undefined) {
+    opt.fileName = opt.fileName || 'staticbuild.json';
+    opt.baseDir = path.resolve(opt.baseDir || process.cwd(), opt.path);
+    opt.filePath = path.join(opt.baseDir, opt.fileName);
+  }
+}
 
 /** Returns a glob that excludes the given path string. */
 StaticBuild.prototype.notPath = function (pathStr) {
