@@ -19,10 +19,15 @@ function StaticBuild(pathOrOpt, opt) {
   // #region Constructor Options
   // - All options are assigned to the StaticBuild instance in `configure`.
   // - Some options are pre-assigned right in the constructor.
+  var pathStr = '';
+  if (istype('String', pathOrOpt))
+    pathStr = pathOrOpt.trim();
+  else
+    opt = pathOrOpt;
+
   opt = lodash.assign({
     // Required
-    path: (istype('String', pathOrOpt) ? 
-      String.prototype.trim.call(pathOrOpt) : ''),
+    path: pathStr,
     // Optional
     bundling: true,
     dev: false,
