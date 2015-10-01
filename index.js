@@ -140,7 +140,7 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Views
-  this.autocontext = true;
+  this.autoContext = true;
   this.buildvar = 'build';
   this.context = {};
   this.contextfile = '';
@@ -392,9 +392,9 @@ function configurePaths(build, data) {
 }
 
 function configureViews(build, data) {
-  // autocontext
-  if (istype('Boolean', data.autocontext))
-    build.autocontext = data.autocontext;
+  // autoContext
+  if (istype('Boolean', data.autoContext))
+    build.autoContext = data.autoContext;
   // buildvar
   if (istype('String', data.buildvar))
     build.buildvar = data.buildvar;
@@ -501,7 +501,7 @@ function loadViewContext(build) {
   if (build.contextfile)
     context = build.context = 
       build.tryRequireNew(build.contextfile) || context;
-  if (build.autocontext) {
+  if (build.autoContext) {
     // Add some stuff to the global context.
     if (build.buildvar)
       context[build.buildvar] = build;
