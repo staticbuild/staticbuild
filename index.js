@@ -67,9 +67,15 @@ function StaticBuild(pathOrOpt, opt) {
   
   // #region Paths
   this.baseDir = process.cwd();
+  if (opt.baseDir)
+    this.baseDir = opt.baseDir;
   this.destDir = 'dist';
   this.fileName = 'staticbuild.json';
+  if (opt.fileName)
+    this.fileName = opt.fileName;
   this.filePath = '';
+  if (opt.filePath)
+    this.filePath = opt.filePath;
   this.ignore = [
     '.gitignore',
     '*.layout.htm',
