@@ -17,8 +17,6 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Constructor Options
-  // - All options are assigned to the StaticBuild instance in `configure`.
-  // - Some options are pre-assigned right in the constructor.
   var pathStr = '';
   if (istype('String', pathOrOpt))
     pathStr = pathOrOpt.trim();
@@ -39,19 +37,26 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Base
+  /** True or a Number to set the verbosity level. */
   this.verbose = false;
   if (opt.verbose)
     this.verbose = opt.verbose;
   // #endregion
   
   // #region Dev Server
+  /** True if dev mode is active. */
   this.dev = false;
   if (opt.dev)
     this.dev = opt.dev;
+  /** The dev server configuration. */
   this.devServer = {
+    /** Host name or ip address. */
     host: undefined,
+    /** Port number. */
     port: 8080,
+    /** True if restart is enabled. */
     restart: false,
+    /** Number of milliseconds delay on file-watch triggered restarts. */
     restartDelay: 0
   };
   if (opt.restart)
@@ -94,7 +99,7 @@ function StaticBuild(pathOrOpt, opt) {
       /\$\(pkgVerNum\)/g
     ]
   };
-  this.sourcedir = 'src';
+  this.sourceDir = 'src';
   // #endregion
   
   // #region Package
@@ -379,11 +384,11 @@ function configurePackage(build, data) {
 }
 
 function configurePaths(build, data) {
-  // source | sourcedir
-  if (istype('String', data.sourcedir))
-    build.sourcedir = data.sourcedir;
+  // source | sourceDir
+  if (istype('String', data.sourceDir))
+    build.sourceDir = data.sourceDir;
   else if (istype('String', data.source))
-    build.sourcedir = data.source;
+    build.sourceDir = data.source;
   // dest | destDir
   if (istype('String', data.destDir))
     build.destDir = data.destDir;
@@ -438,8 +443,8 @@ function load(build) {
   // Resolve all paths.
   if (build.packageFile)
     build.packageFile = build.resolvePath(build.packageFile);
-  if (build.sourcedir)
-    build.sourcedir = build.resolvePath(build.sourcedir);
+  if (build.sourceDir)
+    build.sourceDir = build.resolvePath(build.sourceDir);
   if (build.destDir)
     build.destDir = build.resolvePath(build.destDir);
   if (build.localesDir)
@@ -710,10 +715,10 @@ function (basePath) {
   return path.resolve(this.baseDir, basePath);
 };
 
-/** Returns an absolute file-system path resolved from sourcedir. */
+/** Returns an absolute file-system path resolved from sourceDir. */
 StaticBuild.prototype.resolveSrcPath = 
 function (srcPath) {
-  return path.resolve(this.sourcedir, srcPath);
+  return path.resolve(this.sourceDir, srcPath);
 };
 
 /** Returns the given pathStr with pathTokens replaced for use at runtime. */
@@ -754,10 +759,10 @@ function (pathStr, opt) {
   return pathStr;
 };
 
-/** Returns a relative path derived from the build's sourcedir. */
+/** Returns a relative path derived from the build's sourceDir. */
 StaticBuild.prototype.src =
 function (pattern) {
-  return this.relativePattern(this.sourcedir, pattern);
+  return this.relativePattern(this.sourceDir, pattern);
 };
 
 /** Attempts to require an uncached instance of the given pathStr's module 
@@ -804,7 +809,7 @@ function (tofile) {
   // Make absolute paths relative.
   config.dest = path.relative(config.baseDir, config.destDir);
   config.localesDir = path.relative(config.baseDir, config.localesDir);
-  config.source = path.relative(config.baseDir, config.sourcedir);
+  config.source = path.relative(config.baseDir, config.sourceDir);
   
   // Delete object data.
   delete config.baseDir;
@@ -814,7 +819,7 @@ function (tofile) {
   delete config.fileName;
   delete config.pkg;
   delete config.packageFile;
-  delete config.sourcedir;
+  delete config.sourceDir;
   delete config.verbose;
   
   delete config.hashids.current;
