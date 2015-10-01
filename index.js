@@ -503,7 +503,6 @@ function loadLocales(build) {
     updateFiles: true
   });
   i18n.setLocale(build.locale);
-  currentLocale = build.locale;
 }
 
 function loadPackage(build) {
