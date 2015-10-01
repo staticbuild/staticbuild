@@ -66,25 +66,32 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Paths
+  /** Path to the directory containing the build config file. */
   this.baseDir = process.cwd();
   if (opt.baseDir)
     this.baseDir = opt.baseDir;
+  /** Path to the destination directory. */
   this.destDir = 'dist';
+  /** Name of the build config file. */
   this.fileName = 'staticbuild.json';
   if (opt.fileName)
     this.fileName = opt.fileName;
+  /** Path to the build config file (includes fileName). */
   this.filePath = '';
   if (opt.filePath)
     this.filePath = opt.filePath;
+  /** Globs of file paths to ignore. */
   this.ignore = [
     '.gitignore',
     '*.layout.htm',
     '*.part.htm',
     '*.map'
   ];
+  /** Contains paths that are mapped to the source directory. */
   this.pathMap = {
     bower: { fs: 'bower_components' }
   };
+  /** Sets of tokens for replacing different items in file or url paths. */
   this.pathTokens = {
     bundleName: [
       /\$\(bundle\)/g
@@ -105,10 +112,12 @@ function StaticBuild(pathOrOpt, opt) {
       /\$\(pkgVerNum\)/g
     ]
   };
+  /** Path to the source directory. */
   this.sourceDir = 'src';
   // #endregion
   
   // #region Package
+  /** Path to the package file. */
   this.packageFile = 'package.json';
   /** Data from package.json */
   this.pkg = {};
@@ -122,23 +131,31 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Hashids
+  /** Hashids configuration for hashing version strings. */
   this.hashids = {
     alphabet: '0123456789abcdefghijklmnopqrstuvwxyz',
     minLength: 4,
     salt: 'BpoIsQlrssEz56uUbfgLu5KNBkoCJiyY'
   };
+  /** Cache of hashed version strings. */
   this.versionHashIds = {};
   // #endregion
   
   // #region Locales
+  /** Id of the default locale. */
   this.defaultLocale = 'en';
+  /** Id of the current locale. */
   this.locale = 'en';
+  /** Array of available locale ids. */
   this.locales = ['en'];
+  /** Path to the locales directory containing translations. */
   this.localesDir = 'locales';
   // #endregion
   
   // #region Engine
+  /** Name of the default view engine. */
   this.defaultEngineName = 'jade';
+  /** Contains view engine configurations. */
   this.engine = {
     jade: {
       extension: 'jade',
@@ -161,17 +178,26 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Views
+  /** True if a view context should be created automatically.*/
   this.autoContext = true;
+  /** Name of the variable to expose StaticBuild in the view context. */
   this.contextBuildVar = 'build';
+  /** The view context. */
   this.context = {};
+  /** Path to a separate file containing the view context. */
   this.contextFile = '';
+  /** Name of the default view file (without file extension). */
   this.defaultView = 'index';
+  /** Path to a favicon. */
   this.favicon = 'favicon.ico';
   // #endregion
   
   // #region Status
+  /** Array of errors or error messages. */
   this.errors = [];
+  /** Array of information messages. */
   this.info = [];
+  /** Array of warning messages. */
   this.warnings = [];
   // #endregion
   
@@ -186,7 +212,7 @@ function StaticBuild(pathOrOpt, opt) {
     this.bundling = opt.bundling;
   // #endregion
   
-  /** @namespace Gulp related functions. */
+  /** Gulp related functions. */
   this.gulp = {
     bundledCss: gulpBundledCss.bind(this),
     bundledJs: gulpBundledJs.bind(this)
