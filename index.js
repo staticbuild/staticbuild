@@ -142,6 +142,8 @@ function StaticBuild(pathOrOpt, opt) {
   // #region Locales
   /** Id of the default locale. */
   this.defaultLocale = 'en';
+  /** The i18n module used to provide translate and other functions. */
+  this.i18n = i18n;
   /** Id of the current locale. */
   this.locale = 'en';
   /** Array of available locale ids. */
@@ -583,6 +585,7 @@ function (locale, errback) {
     return false;
   }
   this.locale = locale;
+  updateLocaleIfChanged(this);
   if (errback)
     errback(null, locale);
   return true;
