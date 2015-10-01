@@ -81,7 +81,7 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Package
-  this.packagefile = 'package.json';
+  this.packageFile = 'package.json';
   /** Data from package.json */
   this.pkg = {};
   /** Package Version */
@@ -358,11 +358,11 @@ function configureNunjucks(build, data) {
 }
 
 function configurePackage(build, data) {
-  // package | packagefile
+  // package | packageFile
   if (istype('String', data['package']))
-    build.packagefile = data['package'];
-  else if (istype('String', data.packagefile))
-    build.packagefile = data.packagefile;
+    build.packageFile = data['package'];
+  else if (istype('String', data.packageFile))
+    build.packageFile = data.packageFile;
 }
 
 function configurePaths(build, data) {
@@ -423,8 +423,8 @@ function configureViews(build, data) {
 
 function load(build) {
   // Resolve all paths.
-  if (build.packagefile)
-    build.packagefile = build.resolvePath(build.packagefile);
+  if (build.packageFile)
+    build.packageFile = build.resolvePath(build.packageFile);
   if (build.sourcedir)
     build.sourcedir = build.resolvePath(build.sourcedir);
   if (build.destDir)
@@ -463,9 +463,9 @@ function loadLocales(build) {
 }
 
 function loadPackage(build) {
-  if (!build.packagefile)
+  if (!build.packageFile)
     return;
-  var data = build.tryRequireNew(build.packagefile);
+  var data = build.tryRequireNew(build.packageFile);
   if (!data)
     return;
   build.pkg = data;
@@ -659,8 +659,8 @@ function () {
     paths.push(this.engine.nunjucks.extensionsfile);
   if (this.engine.nunjucks.filtersfile)
     paths.push(this.engine.nunjucks.filtersfile);
-  if (this.packagefile)
-    paths.push(this.packagefile);
+  if (this.packageFile)
+    paths.push(this.packageFile);
   return paths;
 };
 
@@ -804,7 +804,7 @@ function (tofile) {
   delete config.filePath;
   delete config.fileName;
   delete config.pkg;
-  delete config.packagefile;
+  delete config.packageFile;
   delete config.path;
   delete config.sourcedir;
   delete config.verbose;
