@@ -11,7 +11,7 @@ var requireNew = require('require-new');
 var stream = require('stream');
 // #endregion
 
-/** Creates a new StaticBuild object. @constructor */
+/** @class StaticBuild */
 function StaticBuild(pathOrOpt, opt) {
   // #region Non-Constructor Call Handling
   if (!(this instanceof StaticBuild))
