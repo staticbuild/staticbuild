@@ -1,5 +1,8 @@
 'use strict';
-
+/**
+ * StaticBuild module.
+ * @module staticbuild
+ */
 // #region Imports
 var fs = require('fs');
 var Hashids = require('hashids');
@@ -10,8 +13,10 @@ var path = require('path');
 var requireNew = require('require-new');
 var stream = require('stream');
 // #endregion
-
-/** @class StaticBuild */
+/**
+ * Creates a new build.
+ * @class
+ */
 function StaticBuild(pathOrOpt, opt) {
   // #region Non-Constructor Call Handling
   if (!(this instanceof StaticBuild))
