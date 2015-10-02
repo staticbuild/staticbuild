@@ -183,6 +183,8 @@ function StaticBuild(pathOrOpt, opt) {
   this.autoMinSrc = true;
   /** Collection of bundles. */
   this.bundle = {};
+  /** Relative path where bundled files should be placed by default. */
+  this.bundlePath = '/lib/$(bundle)';
   /** True if the bundle should be rendered instead of the source paths. */
   this.bundling = !this.dev || opt.bundling === true;
   // #endregion
@@ -315,6 +317,8 @@ function configureBundles(build, data) {
   // bundling is already set from the bincmd cli args for dev mode.
   if (!build.dev && istype('Boolean', data.bundling))
     build.bundling = data.bundling;
+  if (istype('String', data.bundlePath))
+    build.bundlePath = data.bundlePath;
   if (istype('Object', data.bundle))
     bundleData = data.bundle;
   if (bundleData)
@@ -1021,7 +1025,7 @@ function (nameOrNames, sourceType) {
 /** Creates a new bundle within the build. */
 StaticBuild.prototype.createBundle =
 function (name, data) {
-  var basePath = '/lib/$(bundle)';
+  var basePath = this.bundlePath;
   // TODO: Support assets related to the scripts and styles. Make it easy to
   // let gulp rebase css urls or urls wherever (e.g. in html or js files).
   //data.assets = normalizeBundleItem(data.assets);
