@@ -148,6 +148,8 @@ function StaticBuild(pathOrOpt, opt) {
   this.locale = 'en';
   /** Array of available locale ids. */
   this.locales = ['en'];
+  /** True if locales have been supplied from the config file. */
+  this.localesConfigured = false;
   /** Path to the locales directory containing translations. */
   this.localesDir = 'locales';
   // #endregion
@@ -378,8 +380,10 @@ function configureLocales(build, data) {
     build.localesDir = data.localesDir;
   
   // locales
-  if (istype('Array', data.locales))
+  if (istype('Array', data.locales)) {
     build.locales = Array.prototype.slice.call(data.locales);
+    build.localesConfigured = true;
+  }
 }
 
 function configureNunjucks(build, data) {
@@ -494,7 +498,8 @@ function load(build) {
 }
 
 function loadLocales(build) {
-  // TODO: Load locale names from localesDir if it exists.
+  if (!build.localesConfigured)
+    loadLocalesFromFs(build);
   i18n.configure({
     extension: '.json',
     indent: '  ',
@@ -506,6 +511,31 @@ function loadLocales(build) {
     updateFiles: true
   });
   i18n.setLocale(build.locale);
+}
+
+function loadLocalesFromFs(build) {
+  // Load locale names from localesDir if it exists.
+  var localesPath = path.resolve(build.baseDir, build.localesDir);
+  var localesFromFs;
+  if (!fs.existsSync(localesPath))
+    return;
+  // Get the file names of all the .json files in the directory.
+  localesFromFs = fs.readdirSync(localesPath);
+  localesFromFs = lodash.chain(localesFromFs)
+    .map(function fparse(f) { return path.parse(f); })
+    .filter(function fjson(f) { return f.ext === '.json'; })
+    .map(function fname(f) { return f.name; })
+    .value();
+  if (!localesFromFs.length)
+    return;
+  // Assign the file names (minus extension) as locale names.
+  build.locales = Array.prototype.slice.call(localesFromFs);
+  // Ensure that the current locale is still valid.
+  if (build.locales.indexOf(build.locale) < 0)
+    build.locale = build.locales[0];
+  // Ensure that the default locale is still valid.
+  if (build.locales.indexOf(build.defaultLocale) < 0)
+    build.defaultLocale = build.locale;
 }
 
 function loadPackage(build) {
