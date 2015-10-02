@@ -5,8 +5,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{{page_title}}</title>
-  {{link("/lib/site/~pkgVer/css/site.css")}}
-  {{script("/lib/site/~pkgVer/js/site.js")}}
+  {{bundles(['nguibs', 'main'])}}
 </head>
 <body>
   {% block content %}
