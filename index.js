@@ -129,13 +129,15 @@ function StaticBuild(pathOrOpt, opt) {
   this.usePkgVerHashDefault = true;
   // #endregion
   
-  // #region Hashids
-  /** Hashids configuration for hashing version strings. */
-  this.hashids = {
+  // #region Version Hashing
+  /** Configuration for hashing version strings. */
+  this.versionHash = {
     alphabet: '0123456789abcdefghijklmnopqrstuvwxyz',
     minLength: 4,
     salt: 'BpoIsQlrssEz56uUbfgLu5KNBkoCJiyY'
   };
+  /** An instance of hashids or compatible: `{String encode(Number)}`. */
+  this.versionHasher = null;
   /** Cache of hashed version strings. */
   this.versionHashIds = {};
   // #endregion
@@ -230,7 +232,7 @@ function (version) {
   if (vh)
     return vh;
   var vi = StaticBuild.versionToInt(version);
-  vh = this.hashids.current.encode(vi);
+  vh = this.versionHasher.encode(vi);
   this.versionHashIds[version] = vh;
   return vh;
 };
@@ -321,8 +323,8 @@ function configureEngine(build, data) {
 }
 
 function configureHashids(build, data) {
-  var ch = build.hashids;
-  var hi = data.hashids;
+  var ch = build.versionHash;
+  var hi = data.versionHash;
   if (istype('Object', hi)) {
     // alphabet
     if (istype('String', hi.alphabet))
@@ -334,7 +336,7 @@ function configureHashids(build, data) {
     if (istype('String', hi.salt))
       ch.salt = hi.salt;
   }
-  build.hashids.current = new Hashids(
+  build.versionHasher = new Hashids(
     ch.salt,
     ch.minLength,
     ch.alphabet
@@ -883,7 +885,7 @@ function (tofile) {
   delete config.sourceDir;
   delete config.verbose;
   
-  delete config.hashids.current;
+  delete config.versionHasher;
   delete config.datafile;
   delete config.locale;
   
