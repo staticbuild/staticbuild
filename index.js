@@ -16,6 +16,15 @@ var stream = require('stream');
 /**
  * Creates a new build.
  * @class
+ * @param {string|object} pathOrOpt - Path string or options object.
+ * @param {object} [opt] - Options object.
+ * @param {string} opt.path - Path to a configuration file.
+ * @param {boolean} [opt.bundling] - True if bundling is active.
+ * @param {boolean} [opt.dev] - True if dev mode is active.
+ * @param {string|number} [opt.verbose] - True to or a positive number to
+ * enable verbose logging.
+ * @param {boolean} [opt.restart] - True to enable restarting dev mode.
+ * @param {number} [opt.restartDelay] - Millisecond delay before restart.
  */
 function StaticBuild(pathOrOpt, opt) {
   // #region Non-Constructor Call Handling
