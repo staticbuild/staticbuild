@@ -1,0 +1,1 @@
+{"version":3,"sources":["src/lib/main/css/site.less"],"names":[],"mappings":"AAAA;EACI,4BAAA;EACA,iBAAA","file":"src/lib/main/css/site.css","sourcesContent":["body {\n    background-color:ghostwhite;\n    padding-top: 60px;\r\n}\r\n\n"],"sourceRoot":"/source/"}

@@ -1,0 +1,42 @@
+{
+  "versionHash": { "salt": "VKlUPwjMWkiAmiHSM6N6ekNelE0QG4AX" },
+  "bundle": {
+    "jqbs": {
+      "scripts": [
+        "/bower_components/jquery/dist/jquery.js",
+        "/bower_components/bootstrap/dist/js/bootstrap.js"
+      ],
+      "styles": [
+        "/bower_components/bootstrap/dist/css/bootstrap.css"
+      ]
+    },
+    "ko": {
+      "scripts": [
+        {
+          "src": "/bower_components/knockout/dist/knockout.js",
+          "min": "/bower_components/knockout/dist/knockout.js"
+        }
+      ]
+    },
+    "main": {
+      "scripts": [
+        "/lib/main/js/site.js"
+      ],
+      "styles": [
+        "/lib/main/css/site.css"
+      ]
+    },
+    "nguibs": {
+      "scripts": [
+        "/bower_components/angular/angular.js",
+        "/bower_components/angular-animate/angular-animate.js",
+        "/bower_components/angular-touch/angular-touch.js",
+        "/bower_components/angular-sanitize/angular-sanitize.js",
+        "/bower_components/angular-bootstrap/ui-bootstrap-tpls.js"
+      ],
+      "styles": [
+        "/bower_components/bootstrap/dist/css/bootstrap.css"
+      ]
+    }
+  }
+}

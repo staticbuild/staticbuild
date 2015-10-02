@@ -1,0 +1,17 @@
+extends ./lib/main/base.layout.jade
+block head
+  title= t('site.title:staticbuild-jade') + ' Home'
+block content
+  h4 #{t('site.greeting:Welcome to')} #{t('site.title')}!
+  p!= '&nbsp;'
+  h5 Facts
+  ul
+    li Package: #{build.pkg.name} v#{build.pkg.version}
+    li Description: #{build.pkg.description}
+    li In development mode: #{build.devmode}
+    li Locale: #{build.locale}
+  p!= '&nbsp;'
+  script(type='text/ng-template' id='test')
+    include ./lib/main/partials/test.html
+  script(type='text/ng-template' id='test2')
+    include ./lib/main/partials/test.html
