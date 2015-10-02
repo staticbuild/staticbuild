@@ -37,16 +37,13 @@ function StaticBuild(pathOrOpt, opt) {
   
   // #region Base
   /** True or a Number to set the verbosity level. */
-  this.verbose = false;
-  if (opt.verbose)
-    this.verbose = opt.verbose;
+  this.verbose = opt.verbose || false;
   // #endregion
   
   // #region Dev Server
+  // TODO: Create a cli option for host_AND_port; use it to override config.
   /** True if dev mode is active. */
-  this.dev = false;
-  if (opt.dev)
-    this.dev = opt.dev;
+  this.dev = opt.dev || false;
   /** The dev server configuration. */
   this.devServer = {
     /** Host name or ip address. */
@@ -54,31 +51,21 @@ function StaticBuild(pathOrOpt, opt) {
     /** Port number. */
     port: 8080,
     /** True if restart is enabled. */
-    restart: false,
+    restart: istype('Boolean', opt.restart) ? opt.restart : false,
     /** Number of milliseconds delay on file-watch triggered restarts. */
-    restartDelay: 0
+    restartDelay: istype('Number', opt.restartDelay) ? opt.restartDelay : 0
   };
-  if (opt.restart)
-    this.devServer.restart = opt.restart;
-  if (opt.restartDelay)
-    this.devServer.restartDelay = opt.restartDelay;
   // #endregion
   
   // #region Paths
   /** Path to the directory containing the build config file. */
-  this.baseDir = process.cwd();
-  if (opt.baseDir)
-    this.baseDir = opt.baseDir;
+  this.baseDir = opt.baseDir || process.cwd();
   /** Path to the destination directory. */
   this.destDir = 'dist';
   /** Name of the build config file. */
-  this.fileName = 'staticbuild.json';
-  if (opt.fileName)
-    this.fileName = opt.fileName;
+  this.fileName = opt.fileName || 'staticbuild.json';
   /** Path to the build config file (includes fileName). */
-  this.filePath = '';
-  if (opt.filePath)
-    this.filePath = opt.filePath;
+  this.filePath = opt.filePath || '';
   /** Globs of file paths to ignore. */
   this.ignore = [
     '.gitignore',
@@ -212,9 +199,7 @@ function StaticBuild(pathOrOpt, opt) {
   /** Collection of bundles. */
   this.bundle = {};
   /** True if the bundle should be rendered instead of the source paths. */
-  this.bundling = !this.dev;
-  if (opt.bundling)
-    this.bundling = opt.bundling;
+  this.bundling = !this.dev || opt.bundling === true;
   // #endregion
   
   configure(this);
