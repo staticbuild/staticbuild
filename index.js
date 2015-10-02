@@ -18,22 +18,7 @@ function StaticBuild(pathOrOpt, opt) {
     return new StaticBuild(pathOrOpt, opt);
   // #endregion
   
-  // #region Constructor Options
-  var pathStr = '';
-  if (istype('String', pathOrOpt))
-    pathStr = pathOrOpt.trim();
-  else
-    opt = pathOrOpt;
-  opt = lodash.assign({
-    path: pathStr,
-    bundling: true,
-    dev: false,
-    verbose: 0,
-    restart: false,
-    restartDelay: 0
-  }, opt);
-  normalizePathOptions(opt);
-  // #endregion
+  opt = normalizeOptions(pathOrOpt, opt);
   
   // #region Base
   /** True or a Number to set the verbosity level. */
@@ -207,6 +192,68 @@ function StaticBuild(pathOrOpt, opt) {
   load(this);
 }
 module.exports = StaticBuild;
+
+// #region Options
+
+function fileFromPathOption(opt) {
+  if (opt.filePath !== undefined)
+    return true;
+  if (opt.path === undefined)
+    return false;
+  try {
+    var stat = fs.statSync(opt.path);
+    if (stat.isFile()) {
+      opt.filePath = path.resolve(opt.path);
+      return true;
+    }
+  } catch (err) {
+  }
+  return false;
+}
+
+function normalizeOptions(pathOrOpt, opt) {
+  var pathStr = '';
+  if (istype('String', pathOrOpt))
+    pathStr = pathOrOpt.trim();
+  else
+    opt = pathOrOpt;
+  opt = lodash.assign({
+    path: pathStr,
+    bundling: true,
+    dev: false,
+    verbose: 0,
+    restart: false,
+    restartDelay: 0
+  }, opt);
+  if (!istype('String', opt.path))
+    opt.path = '';
+  if (!istype('Boolean', opt.bundling))
+    opt.bundling = true;
+  if (!istype('Boolean', opt.dev))
+    opt.dev = false;
+  if (!(istype('Number', opt.verbose) || istype('Boolean', opt.verbose)))
+    opt.verbose = 0;
+  if (!istype('Boolean', opt.restart))
+    opt.restart = false;
+  if (!istype('Number', opt.restartDelay))
+    opt.restartDelay = 0;
+  normalizePathOptions(opt);
+  return opt;
+}
+
+function normalizePathOptions(opt) {
+  if (fileFromPathOption(opt)) {
+    opt.baseDir = path.resolve(path.dirname(opt.filePath));
+    opt.fileName = path.basename(opt.filePath);
+  }
+  else if (opt.path !== undefined) {
+    opt.fileName = opt.fileName || 'staticbuild.json';
+    opt.baseDir = path.resolve(opt.baseDir || process.cwd(), opt.path);
+    opt.filePath = path.join(opt.baseDir, opt.fileName);
+  }
+}
+
+// #endregion
 
 // #region Cache Busting
 
@@ -660,22 +707,6 @@ function (pattern) {
   return this.relativePattern(path.join(this.destDir, this.locale), pattern);
 };
 
-function fileFromPathOption(opt) {
-  if (opt.filePath !== undefined)
-    return true;
-  if (opt.path === undefined)
-    return false;
-  try {
-    var stat = fs.statSync(opt.path);
-    if (stat.isFile()) {
-      opt.filePath = path.resolve(opt.path);
-      return true;
-    }
-  } catch (err) {
-  }
-  return false;
-}
-
 /** Returns a filesystem path for the given path string, taking any pathMap
  * mappings into account. */
 StaticBuild.prototype.fsPath = function (pathStr) {
@@ -712,18 +743,6 @@ function () {
     paths.push(this.packageFile);
   return paths;
 };
-
-function normalizePathOptions(opt) {
-  if (fileFromPathOption(opt)) {
-    opt.baseDir = path.resolve(path.dirname(opt.filePath));
-    opt.fileName = path.basename(opt.filePath);
-  }
-  else if (opt.path !== undefined) {
-    opt.fileName = opt.fileName || 'staticbuild.json';
-    opt.baseDir = path.resolve(opt.baseDir || process.cwd(), opt.path);
-    opt.filePath = path.join(opt.baseDir, opt.fileName);
-  }
-}
 
 /** Returns a glob that excludes the given path string. */
 StaticBuild.prototype.notPath = function (pathStr) {
