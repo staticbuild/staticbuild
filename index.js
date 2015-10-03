@@ -14,7 +14,7 @@ var requireNew = require('require-new');
 var stream = require('stream');
 // #endregion
 /**
- * Creates a new build.
+ * Creates a new StaticBuild.
  * @class
  * @param {string|object} pathOrOpt - Path string or options object.
  * @param {object} [opt] - Options object.
