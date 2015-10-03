@@ -127,7 +127,7 @@ lodash.forEach(build.bundle, function (bundle, name) {
   });
 });
 
-gulp.task('html', function () {
+gulp.task(mts('html'), function () {
   // Nunjucks
   // 
   // See https://github.com/devoptix/gulp-nunjucks-api#gulp-nunjucks-apioptions
@@ -147,7 +147,7 @@ gulp.task('html', function () {
     collapseWhitespace: true,
     keepClosingSlash: true
   };
-  gulp.src([
+  return gulp.src([
     build.src('/**/*.htm'), 
     build.src('!/**/*.layout.htm'),
     build.src('!/**/*.part.htm')
