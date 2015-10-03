@@ -210,7 +210,6 @@ function StaticBuild(pathOrOpt, opt) {
 module.exports = StaticBuild;
 
 // #region Options
-
 function fileFromPathOption(opt) {
   if (opt.filePath !== undefined)
     return true;
@@ -268,24 +267,33 @@ function normalizePathOptions(opt) {
     opt.filePath = path.join(opt.baseDir, opt.fileName);
   }
 }
-
 // #endregion
 
 // #region Cache Busting
-
-/** Creates a hash of the given version using Hashids. */
+/**
+ * Returns a hash of the given version using Hashids.
+ * @param {string} version - A version string, e.g. '1.0.1'.
+ * @returns {string} The hash value.
+ * @see https://github.com/ivanakimov/hashids.node.js
+ */
 StaticBuild.prototype.versionToHashId = 
 function (version) {
   var vh = this.versionHashIds[version];
   if (vh)
     return vh;
-  var vi = StaticBuild.versionToInt(version);
+  var vi = this.versionToInt(version);
   vh = this.versionHasher.encode(vi);
   this.versionHashIds[version] = vh;
   return vh;
 };
-
-function versionToInt(version) {
+/**
+ * Returns the given version as an integer.
+ * @param {string} version - A version string, e.g. '1.0.1'.
+ * @returns {number} The version as an integer.
+ * @see https://github.com/ivanakimov/hashids.node.js
+ */
+StaticBuild.prototype.versionToInt = 
+function (version) {
   version = String.prototype.trim.call(version);
   var parts = String.prototype.split.call(version, '.');
   var i, len = parts.length;
@@ -293,16 +301,10 @@ function versionToInt(version) {
     parts[i] = lodash.padLeft(parts[i], 3, '0');
   version = parts.join('');
   return parseInt(version, 10);
-}
-/** Converts the given version number to an integer. */
-StaticBuild.versionToInt = versionToInt;
-/** Converts the given version number to an integer. */
-StaticBuild.prototype.versionToInt = versionToInt;
-
+};
 // #endregion
 
 // #region Configuration
-
 function configure(build) {
   // Configure from file.
   var data = build.tryRequireNew(build.filePath);
@@ -520,11 +522,9 @@ function configureViews(build, data) {
   if (istype('String', data.favicon))
     build.favicon = data.favicon;
 }
-
 // #endregion
 
 // #region Load
-
 function load(build) {
   // Resolve all paths.
   if (build.packageFile)
@@ -638,12 +638,16 @@ function loadViewContext(build) {
     context.tn = build.translateNumeric.bind(build);
   }
 }
-
 // #endregion
 
 // #region Locales
-
-/** Applies the i18n translate method (`__`). */
+/**
+ * Applies the i18n translate method (`__`).
+ * @param {string|obj} [str] - String or phrase object with mustache template.
+ * @param [etc] - An object or primitive value to merge into the template.
+ * @returns {string} The translation.
+ * @see https://github.com/mashpie/i18n-node#__
+ */
 StaticBuild.prototype.translate = 
 function (str, etc) {
   /*jshint unused:false*/
@@ -651,8 +655,14 @@ function (str, etc) {
   updateLocaleIfChanged(this);
   return i18n.__.apply(i18n, args);
 };
-
-/** Applies the i18n translate-numeric method (`__n`). */
+/**
+ * Applies the i18n translate-numeric method (`__n`).
+ * @param {string} singular - The singular format string.
+ * @param {string} plural - The plural format string.
+ * @param {number} value - The number to translate.
+ * @returns {string} The translation.
+ * @see https://github.com/mashpie/i18n-node#__n
+ */
 StaticBuild.prototype.translateNumeric = 
 function (singular, plural, value) {
   /*jshint unused:false*/
@@ -660,8 +670,13 @@ function (singular, plural, value) {
   updateLocaleIfChanged(this);
   return i18n.__n.apply(i18n, args);
 };
-
-/** Sets the current locale for the build. */
+/**
+ * Sets the current locale for i18n.
+ * @param {string} locale - The locale id string.
+ * @param {function} errback - A callback that accepts (err, locale);
+ * @returns {boolean} True if successful otherwise false.
+ * @see https://github.com/mashpie/i18n-node#setlocale
+ */
 StaticBuild.prototype.trySetLocale = 
 function (locale, errback) {
   if (!locale)
@@ -684,13 +699,16 @@ function updateLocaleIfChanged(build) {
     return;
   i18n.setLocale(build.locale);
 }
-
 // #endregion
 
 // #region Paths
-
-/** Returns the pathStr with the given value appended to the fileName, before 
- * the extension. */
+/**
+ * Returns the pathStr after appending the given value to the fileName, 
+ * before the extension.
+ * @param {string} pathStr - The file path.
+ * @param {string} valueToAppend - The value to append.
+ * @returns {string} The pathStr with value appended.
+ */
 function appendFilename(pathStr, valueToAppend) {
   var pfile = path.parse(pathStr);
   var result = Array.prototype.join.call([
@@ -704,37 +722,53 @@ function appendFilename(pathStr, valueToAppend) {
 }
 StaticBuild.appendFilename = appendFilename;
 StaticBuild.prototype.appendFilename = appendFilename;
-
-/** Returns the pathStr with the given part appended to the fileName, before 
- * the extension, using a standard dash as a delimiter. */
+/**
+ * Returns the pathStr with the given part appended to the fileName, before 
+ * the extension, using a standard dash as a delimiter.
+ * @param {string} pathStr - The file path.
+ * @param {string} valueToAppend - The value to append.
+ * @returns {string} The pathStr with value appended.
+ */
 function appendFilenamePart(pathStr, part) {
   return StaticBuild.appendFilename(pathStr, '-' + part);
 }
 StaticBuild.appendFilenamePart = appendFilenamePart;
 StaticBuild.prototype.appendFilenamePart = appendFilenamePart;
-
-/** Returns a relative path derived from the build's destDir. */
+/**
+ * Returns a relative path derived from the build's destDir.
+ * @param {string} pattern - The path pattern within the destination.
+ * @returns {string} The relative destination path with pattern appended.
+ */
 StaticBuild.prototype.dest =
 function (pattern) {
   return this.relativePattern(this.destDir, pattern);
 };
-
-/** Returns a relative path derived from the build's locale directory.*/
+/**
+ * Returns a relative path derived from the build's locale directory.
+ * @param {string} pattern - The path pattern within the locale destination.
+ */
 StaticBuild.prototype.destLocale =
 function (pattern) {
   return this.relativePattern(path.join(this.destDir, this.locale), pattern);
 };
-
-/** Returns a filesystem path for the given path string, taking any pathMap
- * mappings into account. */
+/**
+ * Returns a filesystem path for the given path string, taking any pathMap 
+ * mappings into account.
+ * @param {string} pathStr - The path string.
+ * @returns {string} The filesystem path.
+ */
 StaticBuild.prototype.fsPath = function (pathStr) {
   var mapping = this.getPathMapping('url', pathStr);
   if (!mapping)
     return this.src(pathStr);
   return mapping.fs + pathStr.substr(mapping.url.length);
 };
-
-/** Returns true if the given url path is mapped. */
+/**
+ * Returns true if the given url path is mapped.
+ * @param {string} pathType - The type of pathStr ('fs', 'url').
+ * @param {string} pathStr - The path to get the mapping for.
+ * @returns {object} The path mapping object with keys: 'fs', 'url'.
+ */
 StaticBuild.prototype.getPathMapping = 
 function (pathType, pathStr) {
   if (!pathStr)
@@ -746,8 +780,10 @@ function (pathType, pathStr) {
   }
   return lodash.find(this.pathMap, isMappedFrom);
 };
-
-/** Returns an array of paths outside of src that are watched in dev mode. */
+/**
+ * Returns an array of paths outside of src that are watched in dev mode.
+ * @returns {string[]} An array of paths that are watched in dev mode.
+ */
 StaticBuild.prototype.getWatchPaths = 
 function () {
   var paths = [];
@@ -761,20 +797,30 @@ function () {
     paths.push(this.packageFile);
   return paths;
 };
-
-/** Returns a glob that excludes the given path string. */
+/**
+ * Returns a glob that excludes the given path string.
+ * @param {string} pathStr - The path to exclude.
+ * @returns {string} The pathStr with exclusion pattern applied.
+ */
 StaticBuild.prototype.notPath = function (pathStr) {
   return '!' + pathStr;
 };
-
-/** Returns a relative path derived from the build's baseDir. */
+/**
+ * Returns a relative path derived from the build's baseDir.
+ * @param {string} targetPath - The path to get a relative path to.
+ * @returns {string} A relative path to targetPath.
+ */
 StaticBuild.prototype.relativePath =
-function (basePath) {
-  return path.relative(this.baseDir, basePath).replace('\\', '/');
+function (targetPath) {
+  return path.relative(this.baseDir, targetPath).replace('\\', '/');
 };
-
-/** Returns a relative path pattern derived from the build's baseDir.
- * (e.g. '../path/to/##/#.js' but with asterisks instead of hashes) */
+/**
+ * Returns a relative path pattern derived from the build's baseDir. 
+ * (e.g. '../path/to/##/#.js' but with asterisks instead of hashes)
+ * @param {string} basePath - The base path.
+ * @param {string} pattern - The glob pattern.
+ * @returns {string} A relative path pattern within baseDir.
+ */
 StaticBuild.prototype.relativePattern =
 function (basePath, pattern) {
   if (pattern === undefined || pattern === null || !pattern.length)
@@ -792,20 +838,33 @@ function replaceAll(str, replacements, value) {
     str = str.replace(replacements[i], value);
   return str;
 }
-
-/** Returns an absolute file-system path resolved from the build's baseDir. */
+/**
+ * Returns an absolute file-system path resolved from the build's baseDir.
+ * @param {string} targetPath - The path to resolve to.
+ * @returns {string} An absolute path to the targetPath.
+ */
 StaticBuild.prototype.resolvePath = 
-function (basePath) {
-  return path.resolve(this.baseDir, basePath);
+function (targetPath) {
+  return path.resolve(this.baseDir, targetPath);
 };
-
-/** Returns an absolute file-system path resolved from sourceDir. */
+/**
+ * Returns an absolute file-system path resolved from sourceDir.
+ * @param {string} srcPath - The path to resolve.
+ * @returns {string} Th absolute path to the given srcPath.
+ */
 StaticBuild.prototype.resolveSrcPath = 
 function (srcPath) {
   return path.resolve(this.sourceDir, srcPath);
 };
-
-/** Returns the given pathStr with pathTokens replaced for use at runtime. */
+/**
+ * Returns the given pathStr with pathTokens replaced for use at runtime.
+ * @param {string} pathStr - The path string.
+ * @param {object} [opt] - Options.
+ * @param {string} [opt.bundle] - A bundle name for string replacement.
+ * @param {string} [opt.bundleVer] - A bundle version for string replacement.
+ * @param {string} [opt.bundlePath] - A bundle path for string replacement.
+ * @returns {string} The pathStr with runtime path tokens replaced.
+ */
 StaticBuild.prototype.runtimePath = 
 function (pathStr, opt) {
   var defaultPkgVer;
@@ -842,15 +901,21 @@ function (pathStr, opt) {
   }
   return pathStr;
 };
-
-/** Returns a relative path derived from the build's sourceDir. */
+/**
+ * Returns a relative path derived from the build's sourceDir.
+ * @param {string} pattern - Path pattern within the source directory.
+ * @returns {string} A relative source directory path.
+ */
 StaticBuild.prototype.src =
 function (pattern) {
   return this.relativePattern(this.sourceDir, pattern);
 };
-
-/** Attempts to require an uncached instance of the given pathStr's module 
- * using require-new. */
+/**
+ * Attempts to require an uncached instance of the given pathStr's module 
+ * using require-new.
+ * @param {string} pathStr - The path string.
+ * @returns {object} The required javascript module or JSON file data.
+ */
 function tryRequireNew(pathStr) {
   var build, errMsg;
   if (pathStr === undefined || pathStr === null)
@@ -870,13 +935,14 @@ function tryRequireNew(pathStr) {
 }
 StaticBuild.tryRequireNew = tryRequireNew;
 StaticBuild.prototype.tryRequireNew = tryRequireNew;
-
 // #endregion
 
 // #region Write
 // TODO: Finish Write functionality for use with interactive setup command.
 
-/** Do not use. This function is not finished. */
+/**
+ * Do not use. This function is not finished.
+ */
 StaticBuild.prototype.writeFileSync = 
 function (tofile) {
   var INDENT = 2;
@@ -921,12 +987,14 @@ function (tofile) {
   
   fs.writeFileSync(tofile, jsonStr);
 };
-
 // #endregion
 
 // #region HTML
-
-/** Returns HTML for a link tag with a dynamic href attribute. */
+/**
+ * Returns HTML for a link tag with a dynamic href attribute.
+ * @param {string} srcPath - Relative path to the css file.
+ * @returns {string} An HTML link tag string.
+ */
 StaticBuild.prototype.link =
 function (srcPath) {
   srcPath = this.runtimePath(srcPath);
@@ -937,7 +1005,11 @@ function (srcPath) {
   return ml;
 };
 
-/** Returns HTML for a script tag with a dynamic src attribute. */
+/**
+ * Returns HTML for a script tag with a dynamic src attribute.
+ * @param {string} srcPath - Relative path to the js file.
+ * @returns {string} An HTML script tag string.
+ */
 StaticBuild.prototype.script =
 function (srcPath) {
   srcPath = this.runtimePath(srcPath);
@@ -947,17 +1019,23 @@ function (srcPath) {
     '"></script>';
   return ml;
 };
-
 // #endregion
 
 // #region Bundling
-
-/** Stores the result path for the bundled css, for rendering later. */
+/**
+ * Stores the result path for the bundled css, for rendering later.
+ * @param {string} name - Name of the bundle.
+ * @param {string} resultPath - Path to the bundled file.
+ */
 StaticBuild.prototype.bundledCss = function (name, resultPath) {
   this.bundle[name].result.css = resultPath;
 };
-
-/** Stores the result path for the bundled css, for rendering later. */
+/**
+ * Stores the result path for the bundled css, for rendering later.
+ * @param {string} name - Name of the bundle.
+ * @param {object} logger - Object with log method to use for logging.
+ * @returns {stream.Transform} A stream transform to capture the bundle file.
+ */
 StaticBuild.prototype.bundledCssInStream = function (name, logger) {
   var passiveStream = new stream.Transform({ objectMode: true });
   var build = this;
@@ -973,13 +1051,20 @@ StaticBuild.prototype.bundledCssInStream = function (name, logger) {
   passiveStream._transform = getBundledCssInStream;
   return passiveStream;
 };
-
-/** Stores the result path for the bundled js, for rendering later. */
+/**
+ * Stores the result path for the bundled js, for rendering later.
+ * @param {string} name - Name of the bundle.
+ * @param {string} resultPath - Path to the bundled file.
+ */
 StaticBuild.prototype.bundledJs = function (name, resultPath) {
   this.bundle[name].result.js = resultPath;
 };
-
-/** Stores the result path for the bundled js, for rendering later. */
+/**
+ * Stores the result path for the bundled js, for rendering later.
+ * @param {string} name - Name of the bundle.
+ * @param {object} logger - Object with log method to use for logging.
+ * @returns {stream.Transform} A stream transform to capture the bundle file.
+ */
 StaticBuild.prototype.bundledJsInStream = function (name, logger) {
   var passiveStream = new stream.Transform({ objectMode: true });
   var build = this;
@@ -995,9 +1080,13 @@ StaticBuild.prototype.bundledJsInStream = function (name, logger) {
   passiveStream._transform = getBundledJsInStream;
   return passiveStream;
 };
-
-/** Returns HTML for the given bundles name(s) with CSS link tags first, 
- * then JS script tags. */
+/**
+ * Returns HTML for the given bundles name(s) with CSS link tags first, 
+ * then JS script tags.
+ * @param {string|string[]} nameOrNames - Bundle name or array of names.
+ * @param {string} sourceType - The type of files to output ('css', 'js').
+ * @returns {string} HTML of link and script tags that comprise the bundle.
+ */
 StaticBuild.prototype.bundles = 
 function (nameOrNames, sourceType) {
   if (!nameOrNames)
@@ -1035,8 +1124,12 @@ function (nameOrNames, sourceType) {
   }
   return ml;
 };
-
-/** Creates a new bundle within the build. */
+/**
+ * Creates a new bundle within the build.
+ * @param {string} name - Name of the bundle.
+ * @param {object} data - Data for the bundle.
+ * @returns {object} The bundle data.
+ */
 StaticBuild.prototype.createBundle =
 function (name, data) {
   var basePath = this.bundlePath;
@@ -1086,14 +1179,20 @@ function (name, data) {
   this.bundle[name] = data;
   return data;
 };
-
-/** Returns CSS link tags HTML only for the given bundle name(s). */
+/**
+ * Returns CSS link tags HTML only for the given bundle name(s).
+ * @param {string|string[]} nameOrNames - Bundle name or array of names.
+ * @returns {string} HTML of link tags that comprise the bundle.
+ */
 StaticBuild.prototype.cssBundles = 
 function (nameOrNames) {
   return this.bundles(nameOrNames, 'css');
 };
-
-/** If bundle item has no min path, finds one, updates the item and returns. */
+/**
+ * If bundle item has no min path, finds one, updates the item and returns.
+ * @param {object} bundleItem - The bundle item with src to find min from.
+ * @returns {string|undefined} The minified path, if found.
+ */
 StaticBuild.prototype.findMinifiedFromSource = function (bundleItem) {
   var pathStr = bundleItem.src;
   if (bundleItem.min || !pathStr)
@@ -1108,9 +1207,13 @@ StaticBuild.prototype.findMinifiedFromSource = function (bundleItem) {
     return minPath;
   }
 };
-
-/** Returns an object containing information about the bundle.
- * eg: `{name,data,min,minif,sources,dest,fileName,relFile,relDir}` */
+/**
+ * Returns an object containing information about the bundle. 
+ * e.g. `{name,data,min,minif,sources,dest,fileName,relFile,relDir}`
+ * @param {string} name - Name of the bundle.
+ * @param {string} sourceType - The type of files to output ('css', 'js').
+ * @returns The bundle info.
+ */
 StaticBuild.prototype.getBundleInfo = function (name, sourceType) {
   var fsPath = this.fsPath.bind(this);
   var notPath = this.notPath.bind(this);
@@ -1146,8 +1249,12 @@ StaticBuild.prototype.getBundleInfo = function (name, sourceType) {
   bi.fileName = path.basename(bi.relFile);
   return bi;
 };
-
-/** Returns just the min paths of the given bundle name. */
+/**
+ * Returns just the min paths of the given bundle name.
+ * @param {string} name - Name of the bundle.
+ * @param {string} sourceType - The type of files to output ('css', 'js').
+ * @returns {string[]} Array of pre-minified file paths for a bundle.
+ */
 StaticBuild.prototype.getBundleMinified = function (name, sourceType) {
   var bundle = this.bundle[name];
   if (!bundle)
@@ -1171,8 +1278,12 @@ StaticBuild.prototype.getBundleMinified = function (name, sourceType) {
   }
   return sources;
 };
-
-/** Returns just the src paths of the given bundle name. */
+/**
+ * Returns just the src paths of the given bundle name.
+ * @param {string} name - Name of the bundle.
+ * @param {string} sourceType - The type of files to output ('css', 'js').
+ * @returns {string[]} Array of source paths for a bundle.
+ */
 StaticBuild.prototype.getBundleSources = function (name, sourceType) {
   var bundle = this.bundle[name];
   if (!bundle)
@@ -1188,8 +1299,13 @@ StaticBuild.prototype.getBundleSources = function (name, sourceType) {
   }
   return sources;
 };
-
-/** Returns the min (if any) OR src paths of the given bundle name. */
+/**
+ * Returns the min (if any) OR src paths of the given bundle name.
+ * @param {string} name - Name of the bundle.
+ * @param {string} sourceType - The type of files to output ('css', 'js').
+ * @returns {string[]} An array of source or pre-minified file paths for the 
+ * bundle.
+ */
 StaticBuild.prototype.getBundleSourcesOrMinified = 
 function (name, sourceType) {
   var bundle = this.bundle[name];
@@ -1220,14 +1336,20 @@ function getMinOrSrcOfBundleItem(item) {
 function getSrcOfBundleItem(item) {
   return item.src;
 }
-
-/** Returns Javascript script tags HTML only for the given bundle name(s). */
+/**
+ * Returns Javascript script tags HTML only for the given bundle name(s).
+ * @param {string|string[]} nameOrNames - Bundle name or array of names.
+ * @returns {string} HTML of script tags that comprise the bundle.
+ */
 StaticBuild.prototype.jsBundles = 
 function (nameOrNames) {
   return this.bundles(nameOrNames, 'js');
 };
-
-/** Converts array items that are String to `{ src: TheString }`. */
+/**
+ * Converts array items that are String to `{ src: TheString }`.
+ * @param {array} items - Array that contains string items to convert.
+ * @returns {array} An array of bundle item objects with normalized src field.
+ */
 function normalizeBundleItem(items) {
   var i, len;
   if (!istype('Array', items))
@@ -1238,14 +1360,17 @@ function normalizeBundleItem(items) {
       items[i] = { src: items[i] };
   return items;
 }
-
-/** Removes a bundle from the build. */
+/**
+ * Removes a bundle from the build.
+ * @param {string} name - Name of the bundle.
+ */
 StaticBuild.prototype.removeBundle = 
 function (name) {
   delete this.bundle[name];
 };
-
-/** Saves bundles to the configuration filePath. */
+/**
+ * Saves bundles to the configuration filePath.
+ */
 StaticBuild.prototype.saveBundles =
 function () {
   var build = this;
@@ -1275,5 +1400,4 @@ function () {
   if (!err)
     console.log('OK: Bundles saved.');
 };
-
 // #endregion
