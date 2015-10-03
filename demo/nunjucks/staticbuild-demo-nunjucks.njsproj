@@ -36,7 +36,7 @@
     <Content Include="locales\en.json" />
     <Content Include="locales\es.json" />
     <Content Include="package.json" />
-    <Content Include="README.md" />
+    <Content Include="readme.md" />
     <Content Include="staticbuild.json" />
   </ItemGroup>
   <ItemGroup>

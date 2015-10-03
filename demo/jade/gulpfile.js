@@ -29,7 +29,7 @@ var uglify = require('gulp-uglify');
 var mainTaskSeries = [];
 
 /** See https://github.com/devoptix/staticbuild */
-var build = new StaticBuild('./staticbuild.json', {useBundlePath: true});
+var build = new StaticBuild('./staticbuild.json');
 
 /** See https://github.com/jstuckey/gulp-gzip#options */
 var gzipOpt = { append: false, threshold: false };
