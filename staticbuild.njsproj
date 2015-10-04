@@ -60,7 +60,7 @@
     <Content Include="docs\StaticBuild.md" />
     <Content Include="LICENSE" />
     <Content Include="package.json" />
-    <Content Include="README_.md" />
+    <Content Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="content\" />
