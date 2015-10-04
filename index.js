@@ -1,8 +1,5 @@
 'use strict';
-/**
- * StaticBuild module.
- * @module staticbuild
- */
+
 // #region Imports
 var fs = require('fs');
 var Hashids = require('hashids');
@@ -705,6 +702,7 @@ function updateLocaleIfChanged(build) {
 /**
  * Returns the pathStr after appending the given value to the fileName, 
  * before the extension.
+ * @private
  * @param {string} pathStr - The file path.
  * @param {string} valueToAppend - The value to append.
  * @returns {string} The pathStr with value appended.
@@ -725,6 +723,7 @@ StaticBuild.prototype.appendFilename = appendFilename;
 /**
  * Returns the pathStr with the given part appended to the fileName, before 
  * the extension, using a standard dash as a delimiter.
+ * @private
  * @param {string} pathStr - The file path.
  * @param {string} valueToAppend - The value to append.
  * @returns {string} The pathStr with value appended.
@@ -913,6 +912,7 @@ function (pattern) {
 /**
  * Attempts to require an uncached instance of the given pathStr's module 
  * using require-new.
+ * @private
  * @param {string} pathStr - The path string.
  * @returns {object} The required javascript module or JSON file data.
  */
@@ -1347,6 +1347,7 @@ function (nameOrNames) {
 };
 /**
  * Converts array items that are String to `{ src: TheString }`.
+ * @private
  * @param {array} items - Array that contains string items to convert.
  * @returns {array} An array of bundle item objects with normalized src field.
  */

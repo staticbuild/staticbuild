@@ -57,12 +57,14 @@
     <Content Include="bin\staticbuild" />
     <Content Include="content\error.htm" />
     <Content Include="content\error.jade" />
+    <Content Include="docs\StaticBuild.md" />
     <Content Include="LICENSE" />
     <Content Include="package.json" />
     <Content Include="readme.md" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="content\" />
+    <Folder Include="docs\" />
     <Folder Include="lib\" />
     <Folder Include="bin\" />
     <Folder Include="lib\devserver\" />
