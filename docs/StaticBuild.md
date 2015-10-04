@@ -1,6 +1,17 @@
-<a name="StaticBuild"></a>
-## StaticBuild
-**Kind**: global class  
+# staticbuild API Reference
+
+## StaticBuild class
+
+Example
+
+```js
+var StaticBuild = require('staticbuild');
+var build = new StaticBuild('./staticbuild.json');
+
+// print relative path to src dir, e.g. 'src/x/y/z.js'
+console.log(build.src('/x/y/z.js'));
+```
+
 
 * [StaticBuild](#StaticBuild)
   * [new StaticBuild(pathOrOpt, [opt])](#new_StaticBuild_new)
@@ -722,3 +733,4 @@ Removes a bundle from the build.
 Saves bundles to the configuration filePath.
 
 **Kind**: instance method of <code>[StaticBuild](#StaticBuild)</code>  
+

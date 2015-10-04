@@ -29,7 +29,7 @@
     "staticbuild": "bin/staticbuild"
   },
   "scripts": {
-    "docs": "jsdoc2md index.js > docs/StaticBuild.md"
+    "docs": "jsdoc2md -t src/docs/StaticBuild.hbs index.js > docs/StaticBuild.md"
   },
   "dependencies": {
     "body-parser": "~1.8.1",
