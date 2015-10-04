@@ -165,11 +165,18 @@ the jsdoc comments thanks to
 
 ## Roadmap
 
-- Change demos to do bundling in their gulpfile.js using staticbuild bundles.
-- Create automated tests.
-- Create API documentation.
-- Create Configuration documentation.
+- Replace less-middleware dependency with code to let the end-developer choose
+less or sass.
+- Improve the dev server code altogether to make it more plugabble.
+- Create a separate dev UI server command as an alternative to CLI commands.
+- Add related assets feature to bundles.
+  - Copying related assets (fonts, images, etc).
+  - Updating relative paths to those assets in css, html and js files.
 - Create interactive setup.
   - Change [Getting Started](#getting-started) section to recommend a global 
 install and then the setup command. The setup command should also install 
 staticbuild locally, similar to the way gulp works.
+- Create automated tests.
+- Create Configuration documentation.
+- Improve API documentation.
+- Make some nicer demos.
