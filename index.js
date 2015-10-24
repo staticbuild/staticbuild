@@ -340,8 +340,6 @@ function configureBundles(build, data) {
     if (key.indexOf('/') === 0) {
       // The key is a base output path.
       basePath = key;
-      if (!basePath.match(build.pathTokens.bundleName))
-        basePath += '/$(bundle)';
       bpStack.push(basePath);
       // Recursively create bundles from itemData children.
       lodash.forEach(itemData, configureBundle)
@@ -1196,6 +1194,10 @@ function (name, data) {
       // }
     ]
   }, data);
+  if (typeof data.path === 'string')
+    data.path = { base: data.path };
+  if (!data.path.base.match(this.pathTokens.bundleName))
+    data.path.base += '/$(bundle)';
   if (!data.path.css)
     data.path.css = data.path.base + '/styles.css';
   if (!data.path.js)
