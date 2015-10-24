@@ -1196,7 +1196,8 @@ function (name, data) {
   }, data);
   if (typeof data.path === 'string')
     data.path = { base: data.path };
-  if (!data.path.base.match(this.pathTokens.bundleName))
+  // TODO: Process the entire token array or nix multiple tokens per value.
+  if (data.path.base.match(this.pathTokens.bundleName[0]) === null)
     data.path.base += '/$(bundle)';
   if (!data.path.css)
     data.path.css = data.path.base + '/styles.css';
