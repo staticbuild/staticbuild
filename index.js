@@ -71,7 +71,9 @@ function StaticBuild(pathOrOpt, opt) {
   ];
   /** Contains paths that are mapped to the source directory. */
   this.pathMap = {
-    bower: { fs: 'bower_components' }
+    // For example, to map fs `./bower_components` to url `/bower_components`.
+    // bower: { fs: 'bower_components' } // url filled in automagically.
+    // TODO: Change pathMap to an array, we don't need a key for each map.
   };
   /** Sets of tokens for replacing different items in file or url paths. */
   this.pathTokens = {
