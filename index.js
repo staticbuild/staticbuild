@@ -327,6 +327,8 @@ function configureBase(build, data) {
 
 function configureBundles(build, data) {
   var bundleData;
+  var basePath;
+  var bpStack = [];
   // bundling is already set from the bincmd cli args for dev mode.
   if (!build.dev && istype('Boolean', data.bundling))
     build.bundling = data.bundling;
@@ -334,10 +336,32 @@ function configureBundles(build, data) {
     build.bundlePath = data.bundlePath;
   if (istype('Object', data.bundle))
     bundleData = data.bundle;
+  function configureBundle(itemData, key) {
+    if (key.indexOf('/') === 0) {
+      // The key is a base output path.
+      basePath = key;
+      if (!basePath.match(build.pathTokens.bundleName))
+        basePath += '/$(bundle)';
+      bpStack.push(basePath);
+      // Recursively create bundles from itemData children.
+      lodash.forEach(itemData, configureBundle)
+      bpStack.pop();
+      basePath = bpStack.length > 0 ? bpStack[bpStack.length - 1] : '';
+      return;
+    }
+    // The item is a bundle.
+    // Apply the current base output path, if any.
+    if (basePath) {
+      if (!itemData.path)
+        itemData.path = {};
+      if (typeof itemData.path !== 'string' && !itemData.path.base)
+        itemData.path.base = basePath;
+    }
+    build.createBundle(key, itemData);
+  }
+  // Recursively create bundles from bundleData children.
   if (bundleData)
-    lodash.forEach(bundleData, function (item, name) {
-      build.createBundle(name, item);
-    });
+    lodash.forEach(bundleData, configureBundle);
 }
 
 function configureDevServer(build, data) {
@@ -1152,8 +1176,8 @@ function (name, data) {
     },
     path: {
       base: basePath,
-      css: basePath + '/styles.css',
-      js: basePath + '/scripts.js'
+      css: '',
+      js: ''
     },
     result: {
       base: '',
@@ -1172,6 +1196,10 @@ function (name, data) {
       // }
     ]
   }, data);
+  if (!data.path.css)
+    data.path.css = data.path.base + '/styles.css';
+  if (!data.path.js)
+    data.path.js = data.path.base + '/scripts.js';
   if (data.autoMinSrc) {
     lodash.forEach(data.scripts, this.findMinifiedFromSource, this);
     lodash.forEach(data.styles, this.findMinifiedFromSource, this);
