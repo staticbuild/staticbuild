@@ -1250,10 +1250,22 @@ StaticBuild.prototype.findMinifiedFromSource = function (bundleItem) {
 StaticBuild.prototype.getBundleInfo = function (name, sourceType) {
   var fsPath = this.fsPath.bind(this);
   var notPath = this.notPath.bind(this);
+  // Pre-minified files.
   var min = lodash.map(this.getBundleMinified(name, sourceType), fsPath);
-  var minIf = lodash.map(min, notPath);
-  if (minIf.length === 0)
+  // Glob filter paths to exlude and include files for minification.
+  // Start by excluding absolute paths of pre-minified files.
+  var minGlobs = lodash.map(min, function minAbsPath(relPath) {
+    return notPath(path.resolve(relPath));
+  });
+  var minIf;
+  if (minGlobs.length === 0) {
+    // Nothing to exclude, so include all files.
     minIf = true;
+  } else {
+    // Append a catch-all inclusion after all exclusions.
+    minGlobs.push('**/*');
+    minIf = minGlobs;
+  }
   var bi = {
     /** Name of the bundle. */
     name: name,
@@ -1261,7 +1273,7 @@ StaticBuild.prototype.getBundleInfo = function (name, sourceType) {
     data: this.bundle[name],
     /** Source paths of pre-minified files. */
     min: min,
-    /** Array of glob(s) to exclude pre-minified files OR True. For gulp-if. */
+    /** True to minify all files or an array of glob filters. For gulp-if. */
     minIf: minIf,
     /** Source paths to include in the bundle (including pre-minified). */
     sources: lodash.map(
@@ -1282,6 +1294,7 @@ StaticBuild.prototype.getBundleInfo = function (name, sourceType) {
   bi.fileName = path.basename(bi.relFile);
   return bi;
 };
+
 /**
  * Returns just the min paths of the given bundle name.
  * @param {string} name - Name of the bundle.
