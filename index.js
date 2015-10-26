@@ -563,7 +563,7 @@ function load(build) {
     build.engine.nunjucks.filtersFile = 
       build.resolvePath(build.engine.nunjucks.filtersFile);
   if (build.contextFile)
-    build.globalsfile = build.resolvePath(build.contextFile);
+    build.contextFile = build.resolvePath(build.contextFile);
   // Load stuff.
   loadPackage(build);
   loadLocales(build);
