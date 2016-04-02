@@ -1,5 +1,8 @@
 {
   "versionHash": { "salt": "VKlUPwjMWkiAmiHSM6N6ekNelE0QG4AX" },
+  "pathMap": {
+    "bower": { "fs": "bower_components" }
+  },
   "bundle": {
     "jqbs": {
       "scripts": [
