@@ -582,7 +582,7 @@ function loadLocales(build) {
     directory: build.localesDir,
     objectNotation: true,
     prefix: '',
-    updateFiles: true
+    updateFiles: false
   });
   i18n.setLocale(build.locale);
 }
