@@ -33,8 +33,13 @@ var build = new StaticBuild('./staticbuild.json');
 /** See https://github.com/jstuckey/gulp-gzip#options */
 var gzipOpt = { append: false, threshold: false };
 
-/** True when gzip is disabled via cli flag `gulp [task] --no-gzip`. */
+/** 
+ * True if files should be gzipped. (Current Default: true)
+ * Disabled via cli flag `gulp [task] --no-gzip`.
+ * Enable via cli flag `gulp [task] --gzip`.
+ */
 var gzipOn = gutil.env.gzip === undefined || gutil.env.gzip === 'true';
+// To change default to false, use: `var gzipOn = gutil.env.gzip === 'true';`
 
 /** Sets a default or specific locale via cli flag `gulp [task] --locale=en` */
 build.trySetLocale(gutil.env.locale, function (err) {
