@@ -2,9 +2,7 @@
 
 Tools for creating static sites with Jade, Less, Nunjucks and Gulp.
 
-## Alpha
-
-_This project is under development and this readme is most likely out of date._
+## Beta
 
 - [Getting Started](#getting-started)
 - [Demos](#demos)
