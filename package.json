@@ -8,15 +8,15 @@
     "static",
     "nunjucks"
   ],
-  "homepage": "https://github.com/devoptix/staticbuild",
+  "homepage": "http://staticbuild.github.io",
   "license": "MIT",
   "author": "Wayne Bloss <waynebloss@gmail.com> (https://github.com/devoptix)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/devoptix/staticbuild.git"
+    "url": "https://github.com/staticbuild/staticbuild.git"
   },
   "bugs": {
-    "url": "https://github.com/devoptix/staticbuild/issues"
+    "url": "https://github.com/staticbuild/staticbuild/issues"
   },
   "files": [
     "index.js",
