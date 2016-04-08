@@ -22,6 +22,7 @@ var stream = require('stream');
  * enable verbose logging.
  * @param {boolean} [opt.restart] - True to enable restarting dev mode.
  * @param {number} [opt.restartDelay] - Millisecond delay before restart.
+ * @classdesc This is a description of the StaticBuild class...
  */
 function StaticBuild(pathOrOpt, opt) {
   // #region Non-Constructor Call Handling
