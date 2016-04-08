@@ -203,6 +203,7 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   configure(this);
+  /** The current (most recently created) instance of StaticBuild. */
   StaticBuild.current = this;
   load(this);
 }
@@ -282,6 +283,7 @@ function (version) {
     return vh;
   var vi = this.versionToInt(version);
   vh = this.versionHasher.encode(vi);
+  /** @ignore */
   this.versionHashIds[version] = vh;
   return vh;
 };
@@ -708,6 +710,7 @@ function (locale, errback) {
       errback(new Error('Invalid locale.'), null);
     return false;
   }
+  /** @ignore */
   this.locale = locale;
   updateLocaleIfChanged(this);
   if (errback)
@@ -723,14 +726,7 @@ function updateLocaleIfChanged(build) {
 // #endregion
 
 // #region Paths
-/**
- * Returns the pathStr after appending the given value to the fileName, 
- * before the extension.
- * @private
- * @param {string} pathStr - The file path.
- * @param {string} valueToAppend - The value to append.
- * @returns {string} The pathStr with value appended.
- */
+
 function appendFilename(pathStr, valueToAppend) {
   var pfile = path.parse(pathStr);
   var result = Array.prototype.join.call([
@@ -742,20 +738,45 @@ function appendFilename(pathStr, valueToAppend) {
   ], '');
   return result;
 }
-StaticBuild.appendFilename = appendFilename;
-StaticBuild.prototype.appendFilename = appendFilename;
 /**
- * Returns the pathStr with the given part appended to the fileName, before 
- * the extension, using a standard dash as a delimiter.
- * @private
+ * Returns the pathStr after appending the given value to the fileName, 
+ * before the extension.
+ * @function
  * @param {string} pathStr - The file path.
  * @param {string} valueToAppend - The value to append.
  * @returns {string} The pathStr with value appended.
  */
+StaticBuild.appendFilename = appendFilename;
+/**
+ * Returns the pathStr after appending the given value to the fileName, 
+ * before the extension.
+ * @function
+ * @param {string} pathStr - The file path.
+ * @param {string} valueToAppend - The value to append.
+ * @returns {string} The pathStr with value appended.
+ */
+StaticBuild.prototype.appendFilename = appendFilename;
+
 function appendFilenamePart(pathStr, part) {
   return StaticBuild.appendFilename(pathStr, '-' + part);
 }
+/**
+ * Returns the pathStr with the given part appended to the fileName, before 
+ * the extension, using a standard dash as a delimiter.
+ * @function
+ * @param {string} pathStr - The file path.
+ * @param {string} valueToAppend - The value to append.
+ * @returns {string} The pathStr with value appended.
+ */
 StaticBuild.appendFilenamePart = appendFilenamePart;
+/**
+ * Returns the pathStr with the given part appended to the fileName, before 
+ * the extension, using a standard dash as a delimiter.
+ * @function
+ * @param {string} pathStr - The file path.
+ * @param {string} valueToAppend - The value to append.
+ * @returns {string} The pathStr with value appended.
+ */
 StaticBuild.prototype.appendFilenamePart = appendFilenamePart;
 /**
  * Returns a relative path derived from the build's destDir.
@@ -933,13 +954,7 @@ StaticBuild.prototype.src =
 function (pattern) {
   return this.relativePattern(this.sourceDir, pattern);
 };
-/**
- * Attempts to require an uncached instance of the given pathStr's module 
- * using require-new.
- * @private
- * @param {string} pathStr - The path string.
- * @returns {object} The required javascript module or JSON file data.
- */
+
 function tryRequireNew(pathStr) {
   var build, errMsg;
   if (pathStr === undefined || pathStr === null)
@@ -957,7 +972,21 @@ function tryRequireNew(pathStr) {
       console.error(errMsg);
   }
 }
+/**
+ * Attempts to require an uncached instance of the given pathStr's module 
+ * using require-new.
+ * @function
+ * @param {string} pathStr - The path string.
+ * @returns {object} The required javascript module or JSON file data.
+ */
 StaticBuild.tryRequireNew = tryRequireNew;
+/**
+ * Attempts to require an uncached instance of the given pathStr's module 
+ * using require-new.
+ * @function
+ * @param {string} pathStr - The path string.
+ * @returns {object} The required javascript module or JSON file data.
+ */
 StaticBuild.prototype.tryRequireNew = tryRequireNew;
 // #endregion
 
@@ -1209,6 +1238,7 @@ function (name, data) {
     lodash.forEach(data.scripts, this.findMinifiedFromSource, this);
     lodash.forEach(data.styles, this.findMinifiedFromSource, this);
   }
+  /** @ignore */
   this.bundle[name] = data;
   return data;
 };
