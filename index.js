@@ -22,7 +22,11 @@ var stream = require('stream');
  * enable verbose logging.
  * @param {boolean} [opt.restart] - True to enable restarting dev mode.
  * @param {number} [opt.restartDelay] - Millisecond delay before restart.
- * @classdesc This is a description of the StaticBuild class...
+ * @example
+ * // Creates a new build using the configuration from a local file.
+ * var build = new StaticBuild('./staticbuild.json');
+ * @classdesc The StaticBuild class can be used in a gulp, grunt or other 
+ * JS build pipeline to assist with paths, versioning, i18n and bundling.
  */
 function StaticBuild(pathOrOpt, opt) {
   // #region Non-Constructor Call Handling
@@ -33,13 +37,15 @@ function StaticBuild(pathOrOpt, opt) {
   opt = normalizeOptions(pathOrOpt, opt);
   
   // #region Base
-  /** True or a Number to set the verbosity level. */
+  /** True or a Number to set the verbosity level.
+   * @type {(boolean|number)} */
   this.verbose = opt.verbose || false;
   // #endregion
   
   // #region Dev Server
   // TODO: Create a cli option for host_AND_port; use it to override config.
-  /** True if dev mode is active. */
+  /** True if dev mode is active.
+   * @type {boolean} */
   this.dev = opt.dev || false;
   /** The dev server configuration. */
   this.devServer = {
@@ -55,15 +61,20 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Paths
-  /** Path to the directory containing the build config file. */
+  /** Path to the directory containing the build config file.
+   * @type {string} */
   this.baseDir = opt.baseDir || process.cwd();
-  /** Path to the destination directory. */
+  /** Path to the destination directory.
+   * @type {string} */
   this.destDir = 'dist';
-  /** Name of the build config file. */
+  /** Name of the build config file.
+   * @type {string} */
   this.fileName = opt.fileName || 'staticbuild.json';
-  /** Path to the build config file (includes fileName). */
+  /** Path to the build config file (includes fileName).
+   * @type {string} */
   this.filePath = opt.filePath || '';
-  /** Globs of file paths to ignore. */
+  /** Globs of file paths to ignore.
+   * @type {string[]} */
   this.ignore = [
     '.gitignore',
     '*.layout.htm',
@@ -97,21 +108,26 @@ function StaticBuild(pathOrOpt, opt) {
       /\$\(pkgVerNum\)/g
     ]
   };
-  /** Path to the source directory. */
+  /** Path to the source directory.
+   * @type {string} */
   this.sourceDir = 'src';
   // #endregion
   
   // #region Package
-  /** Path to the package file. */
+  /** Path to the package file.
+   * @type {string} */
   this.packageFile = 'package.json';
   /** Data from package.json */
   this.pkg = {};
-  /** Package Version */
+  /** Package Version
+   * @type {string} */
   this.pkgVer = '';
-  /** Package Version Hashid */
+  /** Package Version Hashid
+   * @type {string} */
   this.pkgVerHash = '';
   /** True if pkgVerHash should be used when replacing 
-   * pathTokens.packageVersionDefault. */
+   * pathTokens.packageVersionDefault.
+   * @type {boolean} */
   this.usePkgVerHashDefault = true;
   // #endregion
   
@@ -129,22 +145,28 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Locales
-  /** Id of the default locale. */
+  /** Id of the default locale.
+   * @type {string} */
   this.defaultLocale = 'en';
   /** The i18n module used to provide translate and other functions. */
   this.i18n = i18n;
-  /** Id of the current locale. */
+  /** Id of the current locale.
+   * @type {string} */
   this.locale = 'en';
-  /** Array of available locale ids. */
+  /** Array of available locale ids.
+   * @type {string[]} */
   this.locales = ['en'];
-  /** True if locales have been supplied from the config file. */
+  /** True if locales have been supplied from the config file.
+   * @type {boolean} */
   this.localesConfigured = false;
-  /** Path to the locales directory containing translations. */
+  /** Path to the locales directory containing translations.
+   * @type {string} */
   this.localesDir = 'locales';
   // #endregion
   
   // #region Engine
-  /** Name of the default view engine. */
+  /** Name of the default view engine.
+   * @type {string} */
   this.defaultEngineName = 'jade';
   /** Contains view engine configurations. */
   this.engine = {
@@ -169,42 +191,54 @@ function StaticBuild(pathOrOpt, opt) {
   // #endregion
   
   // #region Views
-  /** True if a view context should be created automatically.*/
+  /** True if a view context should be created automatically.
+   * @type {boolean} */
   this.autoContext = true;
-  /** Name of the variable to expose StaticBuild in the view context. */
+  /** Name of the variable to expose StaticBuild in the view context.
+   * @type {string} */
   this.contextBuildVar = 'build';
   /** The view context. */
   this.context = {};
-  /** Path to a separate file containing the view context. */
+  /** Path to a separate file containing the view context.
+   * @type {string} */
   this.contextFile = '';
-  /** Name of the default view file (without file extension). */
+  /** Name of the default view file (without file extension).
+   * @type {string} */
   this.defaultView = 'index';
-  /** Path to a favicon. */
+  /** Path to a favicon.
+   * @type {string} */
   this.favicon = 'favicon.ico';
   // #endregion
   
   // #region Status
-  /** Array of errors or error messages. */
+  /** Array of errors or error messages.
+   * @type {string[]} */
   this.errors = [];
-  /** Array of information messages. */
+  /** Array of information messages.
+   * @type {string[]} */
   this.info = [];
-  /** Array of warning messages. */
+  /** Array of warning messages.
+   * @type {string[]} */
   this.warnings = [];
   // #endregion
   
   // #region Bundling
-  /** True if pre-minified sources should be located by default. */
+  /** True if pre-minified sources should be located by default.
+   * @type {boolean} */
   this.autoMinSrc = true;
   /** Collection of bundles. */
   this.bundle = {};
-  /** Relative path where bundled files should be placed by default. */
+  /** Relative path where bundled files should be placed by default.
+   * @type {string} */
   this.bundlePath = '/lib/$(bundle)';
-  /** True if the bundle should be rendered instead of the source paths. */
+  /** True if the bundle should be rendered instead of the source paths.
+   * @type {boolean} */
   this.bundling = !this.dev || opt.bundling === true;
   // #endregion
   
   configure(this);
-  /** The current (most recently created) instance of StaticBuild. */
+  /** The current (most recently created) instance of StaticBuild.
+   * @type {StaticBuild} */
   StaticBuild.current = this;
   load(this);
 }
