@@ -1,8 +1,27 @@
-# staticbuild
+[![Staticbuild Logo](http://staticbuild.github.io/lib/img/graffiti-logo-225x42.png)](http://staticbuild.github.io/) **(beta)**
 
-Tools for creating static sites with Jade, Less, Nunjucks and Gulp.
+A static website generator and development server for 
+[Pug (aka Jade)](https://github.com/pugjs/pug) 
+and/or 
+[Nunjucks](https://github.com/mozilla/nunjucks) 
+templates.
+Useable with Gulp, Grunt or other build automation.
 
-## Beta
+## Features
+
+  * **Development Server** - *No need to maintain one in your Gulp/Grunt file.*
+  * **Path Management** - *Automatically maps and translates paths between source, 
+destination, development and runtime.*
+* **Bundling, Minification &amp; Source Maps** - *Simple JSON configuration 
+for bundling, minifying and source mapping Less, CSS and JavaScript files.*
+* **Cache Busting with Version Hashes** - *Allows you to generate files at 
+runtime named with a hashed version number from your package.*
+* **Internationalization (i18n)** - *i18n is available to all of your views 
+rendered by the development server and the generator.*
+* **View Engines** - *Generate your site from Pug/Jade or Nunjucks templates, 
+with more view engines being added soon.*
+
+## README Contents
 
 - [Getting Started](#getting-started)
 - [Demos](#demos)
@@ -13,6 +32,7 @@ Tools for creating static sites with Jade, Less, Nunjucks and Gulp.
   - [Development Server](#development-server)
   - [Setup](#setup)
 - [API Documentation](#api-documentation)
+- [Why Pug/Jade and Nunjucks?](#why-pug-jade-and-nunjucks)
 - [Roadmap](#roadmap)
 
 ## Getting Started
@@ -44,16 +64,6 @@ or
 
 - [Jade](https://github.com/devoptix/staticbuild-demo-jade)
 - [Nunjucks](https://github.com/devoptix/staticbuild-demo-nunjucks)
-
-### Jade + Nunjucks
-
-Although it is possible to use Jade *and* Nunjucks simultaneously in the same 
-project at the time of this writing, a demo hasn't been created yet.
-
-This could be useful if you plan to use one templating engine for HTML and 
-another for some other type of text output. Jade is a good engine for HTML,
-but nunjucks can be used to output any type of text. For instance, markdown 
-files could be generated with nunjucks.
 
 ## Project Directory
 
@@ -96,7 +106,7 @@ files like a gulp or grunt file.
 
 ### Help
 ```
-staticbuild v0.7.0 - Tools for creating static sites with Jade, Less, Nunjucks and Gulp.
+staticbuild v0.12.4 - A static website generator and development server.
 
 Usage:
   staticbuild [command] [options]
@@ -113,7 +123,7 @@ Options:
 
 ### Development Server
 ```
-staticbuild v0.7.0 - Development server.
+staticbuild v0.12.4 - Development server.
 
     Runs a local http server to dynamically render static content during development.
 
@@ -125,11 +135,12 @@ Required:
                  If no path is supplied, the current directory is used.
 
 Options:
-  -b, --bundling Enable bundling. [default: false]
-  -r, --restart  Number of seconds to delay nodemon restarts.  [default: 1]
-  --no-restart   Disables the built-in nodemon server restart.
-  -h, --help     Show help.  [boolean]
-  -V, --verbose  Enables verbose output.  [count]
+  -v, --version       Show version number.  [boolean]
+  -h, --help, --help  Show help.  [boolean]
+  -b, --bundling      Enable bundling.  [boolean] [default: false]
+  -r, --restart       Number of seconds to delay nodemon restarts.  [number] [default: 1]
+  --no-restart        Disables the built-in nodemon server restart.
+  -V, --verbose       Enables verbose output.  [count]
 ```
 
 ### Setup
@@ -138,7 +149,7 @@ At the time of this writing, this command simply creates a default
 `staticbuild.json` file.
 
 ```
-staticbuild v0.7.0 - Setup.
+staticbuild v0.12.4 - Setup.
 
     Interactive setup to create a new project.
 
@@ -149,17 +160,25 @@ Required:
   path           Path for a new staticbuild.json file or project directory.
 
 Options:
-  -h, --help     Show help.  [boolean]
-  -V, --verbose  Enables verbose output.  [count]
+  -v, --version       Show version number.  [boolean]
+  -h, --help, --help  Show help.  [boolean]
+  -V, --verbose       Enables verbose output.  [count]
 ```
 
 ## API Documentation
 
-See [docs/StaticBuild.md](docs/StaticBuild.md) for now.
+See [http://staticbuild.github.io/api/](http://staticbuild.github.io/api/)
 
-It's not formatted very well just yet, but it's automatically extracted from 
-the jsdoc comments thanks to 
-[jsdoc-to-markdown](https://github.com/jsdoc2md/jsdoc-to-markdown).
+## Why Pug/Jade and Nunjucks
+
+Any view engine can be plugged into staticbuild eventually. Pug (previously 
+known as Jade) was initially used since it is the authors preference for 
+emitting HTML.
+
+Nunjucks was chosen as the first alternate to Jade since it can use templates 
+to emit any type of text-based file format, not just HTML. This can be very
+useful for generating other types of fixtures for your static website such as
+markdown files, JSON, XML and so on.
 
 ## Roadmap
 
