@@ -334,7 +334,7 @@ function (version) {
   var parts = String.prototype.split.call(version, '.');
   var i, len = parts.length;
   for (i = 0; i < len; i++)
-    parts[i] = lodash.padLeft(parts[i], 3, '0');
+    parts[i] = lodash.padStart(parts[i], 3, '0');
   version = parts.join('');
   return parseInt(version, 10);
 };
