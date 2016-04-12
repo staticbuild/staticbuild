@@ -9,8 +9,8 @@ Useable with Gulp, Grunt or other build automation.
 
 ## Features
 
-  * **Development Server** - *No need to maintain one in your Gulp/Grunt file.*
-  * **Path Management** - *Automatically maps and translates paths between source, 
+* **Development Server** - *No need to maintain one in your Gulp/Grunt file.*
+* **Path Management** - *Automatically maps and translates paths between source, 
 destination, development and runtime.*
 * **Bundling, Minification &amp; Source Maps** - *Simple JSON configuration 
 for bundling, minifying and source mapping Less, CSS and JavaScript files.*
