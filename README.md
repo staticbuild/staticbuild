@@ -32,7 +32,7 @@ rendered by the development server and the generator.*
   - [Development Server](#development-server)
   - [Setup](#setup)
 - [API Documentation](#api-documentation)
-- [Why Pug/Jade and Nunjucks?](#why-pug-jade-and-nunjucks)
+- [Why Pug (Jade) and Nunjucks?](#why-pug-jade-and-nunjucks)
 - [Roadmap](#roadmap)
 
 ## Getting Started
@@ -169,7 +169,7 @@ Options:
 
 See [http://staticbuild.github.io/api/](http://staticbuild.github.io/api/)
 
-## Why Pug/Jade and Nunjucks
+## Why Pug (Jade) and Nunjucks?
 
 Any view engine can be plugged into staticbuild eventually. Pug (previously 
 known as Jade) was initially used since it is the authors preference for 
