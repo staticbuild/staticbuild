@@ -192,18 +192,16 @@ markdown files, JSON, XML and so on.
 
 ## Roadmap
 
-- Replace less-middleware dependency with code to let the end-developer choose
-less or sass.
-- Improve the dev server code altogether to make it more plugabble.
-- Create a separate dev UI server command as an alternative to CLI commands.
-- Add related assets feature to bundles.
-  - Copying related assets (fonts, images, etc).
-  - Updating relative paths to those assets in css, html and js files.
+- Create automated tests with tape.
 - Create interactive setup.
   - Change [Getting Started](#getting-started) section to recommend a global 
 install and then the setup command. The setup command should also install 
 staticbuild locally, similar to the way gulp works.
-- Create automated tests.
+- Make some nicer demos.
 - Create Configuration documentation.
 - Improve API documentation.
-- Make some nicer demos.
+- Replace less-middleware dependency with code to let the end-developer choose
+less or sass.
+  - Add a sass demo.
+- Improve the dev server code altogether to make it more plugabble.
+- Create a separate dev UI server command as an alternative to CLI commands.
