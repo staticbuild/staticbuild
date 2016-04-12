@@ -34,7 +34,7 @@
     "i18n": "^0.8.1",
     "jade": "^1.11.0",
     "jshint-stylish": "^2.0.0",
-    "lodash": "^3.10.0",
+    "lodash": "^4.10.0",
     "run-sequence": "^1.1.5",
     "staticbuild": "file:../..",
     "vinyl-paths": "^2.1.0"
