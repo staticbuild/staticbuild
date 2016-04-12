@@ -18,8 +18,8 @@ for bundling, minifying and source mapping Less, CSS and JavaScript files.*
 runtime named with a hashed version number from your package.*
 * **Internationalization (i18n)** - *i18n is available to all of your views 
 rendered by the development server and the generator.*
-* **View Engines** - *Generate your site from Pug/Jade or Nunjucks templates, 
-with more view engines being added soon.*
+* **View Engines** - *Generate your site from Pug/Jade or Nunjucks templates.
+(More view engines could be added in the future.)*
 
 ## README Contents
 
