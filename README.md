@@ -40,7 +40,29 @@ file to expand upon the built-in view context.*
 
 ## Getting Started
 
-Install
+### Global Install
+
+Run
+
+`npm install -g staticbuild`
+
+Then, to setup a new project in the specified path:
+
+`staticbuild setup [path]`
+
+Output
+
+```
+Setting up basic site template....
+Done.
+When ready, please run: npm install && bower install
+To view the site during development: npm run dev
+To generate the site for production: gulp
+```
+
+*(The path argument is optional and defaults to the current directory.)*
+
+### Manual Installation
 
 `npm install --save-dev staticbuild`
 
@@ -164,10 +186,7 @@ staticbuild v0.12.4 - Setup.
     Interactive setup to create a new project.
 
 Usage:
-  staticbuild setup [options] <path>
-
-Required:
-  path           Path for a new staticbuild.json file or project directory.
+  staticbuild setup [options] [path]
 
 Options:
   -v, --version       Show version number.  [boolean]
@@ -192,17 +211,15 @@ markdown files, JSON, XML and so on.
 
 ## Roadmap
 
-- Create automated tests with tape.
-- Create interactive setup.
-  - Change [Getting Started](#getting-started) section to recommend a global 
-install and then the setup command. The setup command should also install 
-staticbuild locally, similar to the way gulp works.
+- Create tests.
 - Make some nicer demos.
 - Create Configuration documentation.
 - Improve API documentation.
+  - Create examples.
 - Replace less-middleware dependency with code to let the end-developer choose
 less or sass.
   - Add a sass demo.
+- Replace gulp-minify-css with gulp-clean-css as per the installation warning.
 - Improve the dev server code altogether to make it more plugabble.
   - Allow for per-view contexts that expand upon the global view context.
 - Create a separate dev UI server command as an alternative to CLI commands.
