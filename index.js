@@ -381,7 +381,7 @@ function configureBundles(build, data) {
       basePath = key;
       bpStack.push(basePath);
       // Recursively create bundles from itemData children.
-      lodash.forEach(itemData, configureBundle)
+      lodash.forEach(itemData, configureBundle);
       bpStack.pop();
       basePath = bpStack.length > 0 ? bpStack[bpStack.length - 1] : '';
       return;
@@ -1270,8 +1270,9 @@ function (name, data) {
   if (!data.path.js)
     data.path.js = data.path.base + '/scripts.js';
   if (data.autoMinSrc) {
-    lodash.forEach(data.scripts, this.findMinifiedFromSource, this);
-    lodash.forEach(data.styles, this.findMinifiedFromSource, this);
+    var minFromSource = StaticBuild.prototype.findMinifiedFromSource.bind(this);
+    lodash.forEach(data.scripts, minFromSource);
+    lodash.forEach(data.styles, minFromSource);
   }
   /** @ignore */
   this.bundle[name] = data;
