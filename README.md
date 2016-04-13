@@ -64,9 +64,9 @@ To generate the site for production: gulp
 
 ### Manual Installation
 
-`npm install --save-dev staticbuild`
-
 Run
+
+`npm install --save-dev staticbuild`
 
 In the `package.json` file for your project, add one of the following and then
 run it with `npm run dev`. Look at the `demo` projects for more details.
