@@ -216,10 +216,9 @@ markdown files, JSON, XML and so on.
 - Create Configuration documentation.
 - Improve API documentation.
   - Create examples.
-- Replace less-middleware dependency with code to let the end-developer choose
-less or sass.
-  - Add a sass demo.
 - Replace gulp-minify-css with gulp-clean-css as per the installation warning.
 - Improve the dev server code altogether to make it more plugabble.
   - Allow for per-view contexts that expand upon the global view context.
+  - Replace less-middleware dependency with code to let the end-developer 
+  choose less or sass.
 - Create a separate dev UI server command as an alternative to CLI commands.
