@@ -204,4 +204,5 @@ staticbuild locally, similar to the way gulp works.
 less or sass.
   - Add a sass demo.
 - Improve the dev server code altogether to make it more plugabble.
+  - Allow for per-view contexts that expand upon the global view context.
 - Create a separate dev UI server command as an alternative to CLI commands.
