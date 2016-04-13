@@ -1,0 +1,14 @@
+{
+  "site": {
+    "lang": "en",
+    "domain": "your-domain.org",
+    "product": "Your Product",
+    "tagline": "A very nice thing for doing things.",
+    "description": "Your Product has a lot of nice things for doing things.",
+    "copyright": "Copyright @ You 2016"
+  },
+  "url": {
+    "github": "https://github.com/you/yourproduct",
+    "githubIssues": "https://github.com/you/yourproduct/issues"
+  }
+}

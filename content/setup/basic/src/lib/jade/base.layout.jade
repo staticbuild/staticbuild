@@ -1,0 +1,22 @@
+include ./base.part.jade
+block vars
+doctype html
+html(lang=t('site.lang') dir='auto')
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible' content='IE=edge')
+    meta(name='viewport' content='width=device-width, initial-scale=1')
+    block title
+      title #{t('site.product')} &middot; #{t('site.tagline')}
+    block description
+      meta(name='description' content=t('site.description'))
+    link(rel='apple-touch-icon' href='apple-touch-icon.png')
+    block bundles
+      |!{build.bundles(['jqbs', 'ko', 'main'])}
+  body
+    block navbar
+      +navbar
+    block content
+      p!= '&nbsp;'
+    block footer
+      +footer

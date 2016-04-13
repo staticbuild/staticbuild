@@ -1,0 +1,32 @@
+{
+  "versionHash": { "salt": "MDAEaMF8Q8rhwCGQuaeCC4Za9GLHUeZr" },
+  "pathMap": {
+    "bower": { "fs": "bower_components" }
+  },
+  "contextFile": "./view-context.js",
+  "bundle": {
+    "jqbs": {
+      "scripts": [
+        "/bower_components/jquery/dist/jquery.js",
+        "/bower_components/bootstrap/dist/js/bootstrap.js"
+      ]
+    },
+    "ko": {
+      "scripts": [
+        {
+          "src": "/bower_components/knockout/dist/knockout.js",
+          "min": "/bower_components/knockout/dist/knockout.js"
+        }
+      ]
+    },
+    "main": {
+      "scripts": [
+        "/lib/js/site.js"
+      ],
+      "styles": [
+        "/lib/css/monokai-sublime.css",
+        "/lib/css/site.css"
+      ]
+    }
+  }
+}

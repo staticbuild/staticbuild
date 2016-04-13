@@ -1,0 +1,9 @@
+{
+  "name": "your-product",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "3.3.6",
+    "knockout": "3.4.0"
+  },
+  "devDependencies": {}
+}

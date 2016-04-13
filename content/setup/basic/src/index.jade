@@ -1,0 +1,43 @@
+extends ./lib/jade/base.layout.jade
+block content
+  a(name='introduction')
+  .jumbotron
+    .container
+      h1.text-center(style='margin: 0 auto; max-width: 900px'): small.
+        #{t('site.tagline')}
+  .container
+    p!= '&nbsp;'
+    h4.text-center.
+      Put some content here!
+    a(name='beta')
+    p!= '&nbsp;'
+    .row
+      .col-xs-12(style='background-color: #393939;color:#fff;')
+        p!=marked('This is **an example** of rendering __markdown__.')
+        pre
+            code.hljs!= highlightJS('// This is code!\nvar x = 10, y = 10;\nconsole.log("x + y: " + (x + y).toString());')
+    p!= '&nbsp;'
+    p.text-center
+      a.bn.btn-primary.btn-lg(href=t('url.github') 
+        role='button')!= 'GitHub &raquo;'
+      br
+      br
+      em: strong (Project is currently in the beta.)
+    p!= '&nbsp;'
+  a(name='features')
+  .jumbotron: .container
+    h1 Features
+    p
+      | Here are some features...
+    ul
+      li Bundling of CSS and JS
+      li Minification with source maps
+      li LESS (SASS coming soon)
+      li Jade and Nunjucks
+      li Development Server
+      li i18n
+    p!= '&nbsp;'
+    p.text-center
+      a.bn.btn-primary.btn-lg(href=t('url.github') 
+        role='button')!= 'GitHub &raquo;'
+    p!= '&nbsp;'
