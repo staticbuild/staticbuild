@@ -1,6 +1,6 @@
 {
   "name": "staticbuild",
-  "version": "0.14.2",
+  "version": "0.14.3",
   "description": "A static website generator and development server.",
   "keywords": [
     "development",
