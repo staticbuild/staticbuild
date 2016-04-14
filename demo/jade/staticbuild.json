@@ -29,6 +29,11 @@
         "/lib/main/css/site.css"
       ]
     },
+    "test": {
+      "styles": [
+        "/lib/main/css/test.css"
+      ]
+    },
     "nguibs": {
       "scripts": [
         "/bower_components/angular/angular.js",
