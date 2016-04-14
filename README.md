@@ -216,7 +216,6 @@ markdown files, JSON, XML and so on.
 - Create Configuration documentation.
 - Improve API documentation.
   - Create examples.
-- Replace gulp-minify-css with gulp-clean-css as per the installation warning.
 - Improve the dev server code altogether to make it more plugabble.
   - Allow for per-view contexts that expand upon the global view context.
   - Replace less-middleware dependency with code to let the end-developer 

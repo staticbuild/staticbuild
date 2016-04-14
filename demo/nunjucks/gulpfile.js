@@ -11,7 +11,7 @@ var htmlmin = require('gulp-htmlmin');
 var jshint = require('gulp-jshint');
 var less = require('gulp-less');
 var lodash = require('lodash');
-var minifyCss = require('gulp-minify-css');
+var cleanCss = require('gulp-clean-css');
 var nunjucksApi = require('gulp-nunjucks-api');
 var order = require('gulp-order');
 var path = require('path');
@@ -99,7 +99,7 @@ lodash.forEach(build.bundle, function (bundle, name) {
   gulp.task(mts('css-bundle-' + name), function () {
     var bi = build.getBundleInfo(name, 'css');
     return gulp.src(bi.sources)
-    .pipe(gulpif(bi.minIf, minifyCss({ keepBreaks: false })))
+    .pipe(gulpif(bi.minIf, cleanCss({ keepBreaks: false })))
     .pipe(order(bi.sources, { base: process.cwd() }))
     .pipe(concat({ path: bi.fileName, cwd: '' }))
     .pipe(rev())
