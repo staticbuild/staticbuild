@@ -57,24 +57,18 @@
     <Content Include="bin\staticbuild" />
     <Content Include="content\error.htm" />
     <Content Include="content\error.jade" />
-    <Content Include="src\docs\StaticBuild.hbs" />
-    <Content Include="src\docs\README.hbs" />
-    <Content Include="docs\StaticBuild.md" />
     <Content Include="LICENSE" />
     <Content Include="package.json" />
     <Content Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="content\" />
-    <Folder Include="docs\" />
     <Folder Include="lib\" />
     <Folder Include="bin\" />
     <Folder Include="lib\devserver\" />
     <Folder Include="lib\bincmd\" />
     <Folder Include="lib\nunjucks\" />
     <Folder Include="lib\setup\" />
-    <Folder Include="src\" />
-    <Folder Include="src\docs\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />
