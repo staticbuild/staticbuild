@@ -11,7 +11,9 @@ var requireNew = require('require-new');
 var stream = require('stream');
 // #endregion
 /**
- * Creates a new StaticBuild.
+ * Creates a new StaticBuild with the given path and/or options.
+ * If no path is supplied, the default file path of './staticbuild.json' is 
+ * used.
  * @class
  * @param {string|object} pathOrOpt - Path string or options object.
  * @param {object} [opt] - Options object.
@@ -27,6 +29,8 @@ var stream = require('stream');
  * var build = new StaticBuild('./staticbuild.json');
  * @classdesc The StaticBuild class can be used in a gulp, grunt or other 
  * JS build pipeline to assist with paths, versioning, i18n and bundling.
+ * Most of the fields with primitive types are configurable from the JSON file
+ * specified in the constructor.
  */
 function StaticBuild(pathOrOpt, opt) {
   // #region Non-Constructor Call Handling
