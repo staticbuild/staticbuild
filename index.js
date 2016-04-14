@@ -190,6 +190,10 @@ function StaticBuild(pathOrOpt, opt) {
       filtersFile: '',
       functions: undefined,
       options: { autoescape: true }
+    },
+    sass: {
+      extension: 'sass',
+      map: { enabled: true, inline: false }
     }
   };
   // #endregion
@@ -427,13 +431,14 @@ function configureEngine(build, data) {
     configureJade(build, data.engine);
     configureLESS(build, data.engine);
     configureNunjucks(build, data.engine);
+    configureSASS(build, data.engine);
   }
-  if (
-    istype('String', data.defaultEngine) && 
-    data.defaultEngine in build.engine && 
-    data.defaultEngine !== build.defaultEngineName
-    )
-    build.defaultEngineName = data.defaultEngine;
+  if (istype('String', data.defaultEngine) && 
+      data.defaultEngine in build.engine && 
+      data.defaultEngine !== build.defaultEngineName
+  ) {
+      build.defaultEngineName = data.defaultEngine; 
+  }
 }
 
 function configureHashids(build, data) {
@@ -557,6 +562,23 @@ function configurePaths(build, data) {
     lodash.merge(build.pathTokens, data.pathTokens);
   if (istype('Boolean', data.usePkgVerHashDefault))
     build.usePkgVerHashDefault = data.usePkgVerHashDefault;
+}
+
+function configureSASS(build, data) {
+  var sass = data.sass;
+  if (!istype('Object', sass))
+    return;
+  // extension
+  if (istype('String', sass.extension))
+    build.engine.sass.extension = sass.extension;
+  if (istype('Object', sass.map)) {
+    // enabled
+    if (istype('Boolean', sass.map.enabled))
+      build.engine.sass.map.enabled = sass.map.enabled === true;
+    // inline
+    if (istype('Boolean', sass.map.inline))
+      build.engine.sass.map.inline = sass.map.inline === true;
+  }
 }
 
 function configureViews(build, data) {
