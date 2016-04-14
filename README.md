@@ -218,6 +218,4 @@ markdown files, JSON, XML and so on.
   - Create examples.
 - Improve the dev server code altogether to make it more plugabble.
   - Allow for per-view contexts that expand upon the global view context.
-  - Replace less-middleware dependency with code to let the end-developer 
-  choose less or sass.
 - Create a separate dev UI server command as an alternative to CLI commands.
