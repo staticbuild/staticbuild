@@ -5,6 +5,9 @@
   },
   "contextFile": "./view-context.js",
   "bundle": {
+    "hljs-monokai-sublime":  {
+      "styles": [ "/lib/css/monokai-sublime.css" ]
+    },
     "jqbs": {
       "scripts": [
         "/bower_components/jquery/dist/jquery.js",
@@ -24,7 +27,6 @@
         "/lib/js/site.js"
       ],
       "styles": [
-        "/lib/css/monokai-sublime.css",
         "/lib/css/site.css"
       ]
     }

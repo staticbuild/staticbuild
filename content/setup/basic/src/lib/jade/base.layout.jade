@@ -13,6 +13,8 @@ html(lang=t('site.lang') dir='auto')
     link(rel='apple-touch-icon' href='apple-touch-icon.png')
     block bundles
       |!{build.bundles(['jqbs', 'ko', 'main'])}
+    block hljs
+      |!{build.bundles(['hljs-monokai-sublime'])}
   body
     block navbar
       +navbar
