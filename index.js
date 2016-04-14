@@ -1085,6 +1085,8 @@ function (tofile) {
  */
 StaticBuild.prototype.link =
 function (srcPath) {
+  if (!srcPath)
+    return '';
   srcPath = this.runtimePath(srcPath);
   var ml = '\n    ' +
     '<link rel="stylesheet" type="text/css" href="' + 
@@ -1100,6 +1102,8 @@ function (srcPath) {
  */
 StaticBuild.prototype.script =
 function (srcPath) {
+  if (!srcPath)
+    return '';
   srcPath = this.runtimePath(srcPath);
   var ml = '\n    ' + 
     '<script type="text/javascript" src="' + 
