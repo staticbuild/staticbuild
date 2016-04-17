@@ -38,8 +38,9 @@ var gzipOpt = { append: false, threshold: false };
  * Disabled via cli flag `gulp [task] --no-gzip`.
  * Enable via cli flag `gulp [task] --gzip`.
  */
-var gzipOn = gutil.env.gzip === undefined || gutil.env.gzip === 'true';
-// To change default to false, use: `var gzipOn = gutil.env.gzip === 'true';`
+ var gzipOn = gutil.env.gzip === undefined || gutil.env.gzip === true;
+// Example for defaulting to `false`:
+//var gzipOn = gutil.env.gzip === true;
 
 /** Sets a default or specific locale via cli flag `gulp [task] --locale=en` */
 build.trySetLocale(gutil.env.locale, function (err) {
@@ -88,7 +89,10 @@ gulp.task(mts('images'), function () {
 });
 
 gulp.task(mts('less'), function () {
-  return gulp.src([build.src('/**/site.less')], { base: './' })
+  return gulp.src([
+    build.src('/**/*.less'),
+    build.src('!/**/*.part.less')
+  ], { base: './' })
   .pipe(sourcemaps.init())
   .pipe(less()).on('error', gutil.log)
   .pipe(sourcemaps.write('.'))
