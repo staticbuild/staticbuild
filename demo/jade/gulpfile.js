@@ -20,6 +20,7 @@ var rename = require('gulp-rename');
 var rev = require('gulp-rev');
 var runSequence = require('run-sequence').use(gulp);
 var s3 = require('gulp-s3');
+var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
 var StaticBuild = require('staticbuild');
 var uglify = require('gulp-uglify');
@@ -96,6 +97,19 @@ gulp.task(mts('less'), function () {
   ], { base: './' })
   .pipe(sourcemaps.init())
   .pipe(less()).on('error', gutil.log)
+  .pipe(sourcemaps.write('.'))
+  .pipe(gulp.dest('.'));
+});
+
+gulp.task(mts('sass'), function () {
+  return gulp.src([
+    build.src('/**/*.sass'),
+    build.src('/**/*.scss'),
+    build.src('!/**/*.part.sass'),
+    build.src('!/**/*.part.scss')
+  ], { base: './' })
+  .pipe(sourcemaps.init())
+  .pipe(sass()).on('error', gutil.log)
   .pipe(sourcemaps.write('.'))
   .pipe(gulp.dest('.'));
 });
