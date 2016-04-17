@@ -29,8 +29,8 @@ var stream = require('stream');
  * var build = new StaticBuild('./staticbuild.json');
  * @classdesc The StaticBuild class can be used in a gulp, grunt or other 
  * JS build pipeline to assist with paths, versioning, i18n and bundling.
- * Most of the fields with primitive types are configurable from the JSON file
- * specified in the constructor.
+ * Fields marked with `@configurable` are able to be loaded from the JSON 
+ * configuration file specified in the constructor.
  */
 function StaticBuild(pathOrOpt, opt) {
   // #region Non-Constructor Call Handling
@@ -42,7 +42,9 @@ function StaticBuild(pathOrOpt, opt) {
   
   // #region Base
   /** True or a Number to set the verbosity level.
-   * @type {(boolean|number)} */
+   * @type {(boolean|number)}
+   * @configurable Can only be set to true or a positive integer from a 
+   * configuration file. */
   this.verbose = opt.verbose || false;
   // #endregion
   
@@ -51,7 +53,9 @@ function StaticBuild(pathOrOpt, opt) {
   /** True if dev mode is active.
    * @type {boolean} */
   this.dev = opt.dev || false;
-  /** The dev server configuration. */
+  /** The dev server configuration.
+   * @configurable The `host` and `port` properties may be configured.
+   */
   this.devServer = {
     /** Host name or ip address. */
     host: undefined,
@@ -69,7 +73,9 @@ function StaticBuild(pathOrOpt, opt) {
    * @type {string} */
   this.baseDir = opt.baseDir || process.cwd();
   /** Path to the destination directory.
-   * @type {string} */
+   * @type {string}
+   * @default
+   * @configurable */
   this.destDir = 'dist';
   /** Name of the build config file.
    * @type {string} */
@@ -85,13 +91,19 @@ function StaticBuild(pathOrOpt, opt) {
     '*.part.htm',
     '*.map'
   ];
-  /** Contains paths that are mapped to the source directory. */
+  /** Contains paths that are mapped to the source directory.
+   * @default
+   * @configurable */
   this.pathMap = {
     // For example, to map fs `./bower_components` to url `/bower_components`.
     // bower: { fs: 'bower_components' } // url filled in automagically.
     // TODO: Change pathMap to an array, we don't need a key for each map.
   };
-  /** Sets of tokens for replacing different items in file or url paths. */
+  /** Sets of tokens for replacing different items in file or url paths.
+   * @default
+   * @configurable Items from the configuration file are merged into the 
+   * default set.
+   */
   this.pathTokens = {
     bundleName: [
       /\$\(bundle\)/g
@@ -113,13 +125,17 @@ function StaticBuild(pathOrOpt, opt) {
     ]
   };
   /** Path to the source directory.
-   * @type {string} */
+   * @type {string}
+   * @default
+   * @configurable */
   this.sourceDir = 'src';
   // #endregion
   
   // #region Package
   /** Path to the package file.
-   * @type {string} */
+   * @type {string}
+   * @default
+   * @configurable */
   this.packageFile = 'package.json';
   /** Data from package.json */
   this.pkg = {};
@@ -131,12 +147,16 @@ function StaticBuild(pathOrOpt, opt) {
   this.pkgVerHash = '';
   /** True if pkgVerHash should be used when replacing 
    * pathTokens.packageVersionDefault.
-   * @type {boolean} */
+   * @type {boolean}
+   * @default
+   * @configurable */
   this.usePkgVerHashDefault = true;
   // #endregion
   
   // #region Version Hashing
-  /** Configuration for hashing version strings. */
+  /** Configuration for hashing version strings.
+   * @configurable The `salt`, `alphabet` and `minLength` fields are configurable.
+   */
   this.versionHash = {
     alphabet: '0123456789abcdefghijklmnopqrstuvwxyz',
     minLength: 4,
@@ -150,7 +170,9 @@ function StaticBuild(pathOrOpt, opt) {
   
   // #region Locales
   /** Id of the default locale.
-   * @type {string} */
+   * @type {string}
+   * @default
+   * @configurable */
   this.defaultLocale = 'en';
   /** The i18n module used to provide translate and other functions. */
   this.i18n = i18n;
@@ -158,21 +180,28 @@ function StaticBuild(pathOrOpt, opt) {
    * @type {string} */
   this.locale = 'en';
   /** Array of available locale ids.
-   * @type {string[]} */
+   * @type {string[]}
+   * @configurable */
   this.locales = ['en'];
   /** True if locales have been supplied from the config file.
    * @type {boolean} */
   this.localesConfigured = false;
   /** Path to the locales directory containing translations.
-   * @type {string} */
+   * @type {string}
+   * @default
+   * @configurable */
   this.localesDir = 'locales';
   // #endregion
   
   // #region Engine
   /** Name of the default view engine.
-   * @type {string} */
+   * @type {string}
+   * @default
+   * @configurable */
   this.defaultEngineName = 'jade';
-  /** Contains view engine configurations. */
+  /** Contains view engine configurations.
+   * @configurable The jade, less, nunjucks and sass engines are all configurable here.
+   */
   this.engine = {
     jade: {
       extension: 'jade',
@@ -200,21 +229,31 @@ function StaticBuild(pathOrOpt, opt) {
   
   // #region Views
   /** True if a view context should be created automatically.
-   * @type {boolean} */
+   * @type {boolean}
+   * @default
+   * @configurable */
   this.autoContext = true;
   /** Name of the variable to expose StaticBuild in the view context.
-   * @type {string} */
+   * @type {string}
+   * @default
+   * @configurable */
   this.contextBuildVar = 'build';
   /** The view context. */
   this.context = {};
   /** Path to a separate file containing the view context.
-   * @type {string} */
+   * @type {string}
+   * @default
+   * @configurable */
   this.contextFile = '';
   /** Name of the default view file (without file extension).
-   * @type {string} */
+   * @type {string}
+   * @default
+   * @configurable */
   this.defaultView = 'index';
   /** Path to a favicon.
-   * @type {string} */
+   * @type {string}
+   * @default
+   * @configurable */
   this.favicon = 'favicon.ico';
   // #endregion
   
@@ -234,13 +273,18 @@ function StaticBuild(pathOrOpt, opt) {
   /** True if pre-minified sources should be located by default.
    * @type {boolean} */
   this.autoMinSrc = true;
-  /** Collection of bundles. */
+  /** Collection of bundles.
+   * @configurable
+   */
   this.bundle = {};
   /** Relative path where bundled files should be placed by default.
-   * @type {string} */
+   * @type {string}
+   * @default
+   * @configurable */
   this.bundlePath = '/lib/$(bundle)';
   /** True if the bundle should be rendered instead of the source paths.
-   * @type {boolean} */
+   * @type {boolean}
+   * @configurable */
   this.bundling = !this.dev || opt.bundling === true;
   // #endregion
   
