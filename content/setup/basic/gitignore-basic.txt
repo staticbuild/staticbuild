@@ -1,0 +1,17 @@
+## Folders ############################
+
+/dist
+bower_components/
+node_modules/
+
+## Files ###############################
+
+## - Metadata
+*.DS_Store
+[Tt]humbs.db
+
+## - Subversion
+.svn
+
+## - Office (Temp Files)
+~$*
