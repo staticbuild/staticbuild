@@ -1151,13 +1151,16 @@ function (tofile) {
 /**
  * Returns HTML for a link tag with a dynamic href attribute.
  * @param {string} srcPath - Relative path to the css file.
+ * @param {boolean} [relative] - True to output a relative path.
  * @returns {string} An HTML link tag string.
  */
 StaticBuild.prototype.link =
-function (srcPath) {
+function (srcPath, relative) {
   if (!srcPath)
     return '';
   srcPath = this.runtimePath(srcPath);
+  if (relative && srcPath && srcPath[0] === '/')
+    srcPath = srcPath.substr(1);
   var ml = '\n    ' +
     '<link rel="stylesheet" type="text/css" href="' + 
     srcPath + 
@@ -1168,13 +1171,16 @@ function (srcPath) {
 /**
  * Returns HTML for a script tag with a dynamic src attribute.
  * @param {string} srcPath - Relative path to the js file.
+ * @param {boolean} [relative] - True to output a relative path.
  * @returns {string} An HTML script tag string.
  */
 StaticBuild.prototype.script =
-function (srcPath) {
+function (srcPath, relative) {
   if (!srcPath)
     return '';
   srcPath = this.runtimePath(srcPath);
+  if (relative && srcPath && srcPath[0] === '/')
+    srcPath = srcPath.substr(1);
   var ml = '\n    ' + 
     '<script type="text/javascript" src="' + 
     srcPath + 
@@ -1246,16 +1252,21 @@ StaticBuild.prototype.bundledJsInStream = function (name, logger) {
  * Returns HTML for the given bundles name(s) with CSS link tags first, 
  * then JS script tags.
  * @param {string|string[]} nameOrNames - Bundle name or array of names.
- * @param {string} sourceType - The type of files to output ('css', 'js').
+ * @param {object|string} [opt] - Options object or .
+ * @param {string} [opt.sourceType] - The type of files to output ('css', 'js').
+ * @param {boolean} [opt.relative] - True to return a relative path.
  * @returns {string} HTML of link and script tags that comprise the bundle.
  */
 StaticBuild.prototype.bundles = 
-function (nameOrNames, sourceType) {
+function (nameOrNames, opt) {
   if (!nameOrNames)
     throw new Error('Argument missing: nameOrNames');
+  opt = opt || {}
   var ml = '';
   var names = [].concat(nameOrNames);
   var self = this;
+  var sourceType = opt.sourceType;
+  var relative = opt.relative || false;
   if (sourceType === undefined || sourceType === 'css') {
     // Output css for all bundles
     names.forEach(function (name) {
@@ -1265,9 +1276,9 @@ function (nameOrNames, sourceType) {
         return;
       }
       if (self.bundling)
-        ml += self.link(data.result.css);
+        ml += self.link(data.result.css, relative);
       else
-        data.styles.forEach(function (item) { ml += self.link(item.src); });
+        data.styles.forEach(function (item) { ml += self.link(item.src, relative); });
     });
   }
   if (sourceType === undefined || sourceType === 'js') {
@@ -1279,9 +1290,9 @@ function (nameOrNames, sourceType) {
         return;
       }
       if (self.bundling)
-        ml += self.script(data.result.js);
+        ml += self.script(data.result.js, relative);
       else
-        data.scripts.forEach(function (item) { ml += self.script(item.src); });
+        data.scripts.forEach(function (item) { ml += self.script(item.src, relative); });
     });
   }
   return ml;
