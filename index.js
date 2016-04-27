@@ -944,6 +944,8 @@ function () {
     paths.push(this.engine.nunjucks.filtersFile);
   if (this.packageFile)
     paths.push(this.packageFile);
+  if (this.localesDir)
+    paths.push(this.localesDir);
   return paths;
 };
 /**
