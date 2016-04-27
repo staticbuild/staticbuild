@@ -443,7 +443,9 @@ function configureBundles(build, data) {
     if (basePath) {
       if (!itemData.path)
         itemData.path = {};
-      if (typeof itemData.path !== 'string' && !itemData.path.base)
+      if (typeof itemData.path === 'string')
+        itemData.path = { base: itemData.path };
+      else if (!itemData.path.base)
         itemData.path.base = basePath;
     }
     build.createBundle(key, itemData);
@@ -1321,26 +1323,31 @@ function (name, data) {
     // }
     //],
     autoMinSrc: this.autoMinSrc,
+    /** CDNs URLs to output instead of the bundle result. */
     cdn: {
       css: '',
       js: ''
     },
+    /** The output directory paths. */
     path: {
       base: basePath,
       css: '',
       js: ''
     },
+    /** The result file paths. */
     result: {
       base: '',
       css: '',
       js: ''
     },
+    /** The input script paths or objects. */
     scripts: [
       // {
       // src: '/bower_components/angular/angular.js', 
       // min: '/bower_components/angular/angular.min.js'
       // }
     ],
+    /** THe input style paths or objects. */
     styles: [
       // {
       // src: '/bower_components/bootstrap/dist/css/bootstrap.css'
