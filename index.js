@@ -441,12 +441,14 @@ function configureBundles(build, data) {
     // The item is a bundle.
     // Apply the current base output path, if any.
     if (basePath) {
-      if (!itemData.path)
-        itemData.path = {};
       if (typeof itemData.path === 'string')
         itemData.path = { base: itemData.path };
-      else if (!itemData.path.base)
-        itemData.path.base = basePath;
+      else {
+        if (!itemData.path)
+          itemData.path = {};
+        if (typeof itemData.path.base !== 'string')
+          itemData.path.base = basePath;
+      }
     }
     build.createBundle(key, itemData);
   }
