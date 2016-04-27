@@ -1216,7 +1216,10 @@ StaticBuild.prototype.bundledCssInStream = function (name, logger) {
   function getBundledCssInStream(file, unused, cb) {
     var bundle = build.bundle[name];
     var rpath = build.runtimePath(bundle.path.css, { bundle: name });
-    rpath = path.dirname(rpath) + '/' + path.basename(file.path);
+    rpath = path.dirname(rpath);
+    if (!rpath.endsWith('/')) rpath += '/';
+    rpath += path.basename(file.path);
+
     build.bundledCss(name, rpath);
     if (logger)
       logger.log('Bundled  \'' + rpath + '\'');
@@ -1245,7 +1248,10 @@ StaticBuild.prototype.bundledJsInStream = function (name, logger) {
   function getBundledJsInStream(file, unused, cb) {
     var bundle = build.bundle[name];
     var rpath = build.runtimePath(bundle.path.js, { bundle: name });
-    rpath = path.dirname(rpath) + '/' + path.basename(file.path);
+    rpath = path.dirname(rpath);
+    if (!rpath.endsWith('/')) rpath += '/';
+    rpath += path.basename(file.path);
+
     build.bundledJs(name, rpath);
     if (logger)
       logger.log('Bundled  \'' + rpath + '\'');
