@@ -1,7 +1,7 @@
 {
   "versionHash": { "salt": "MDAEaMF8Q8rhwCGQuaeCC4Za9GLHUeZr" },
   "pathMap": {
-    "bower": { "fs": "bower_components" }
+    "/bower_components": { "fs": "bower_components" }
   },
   "contextFile": "./view-context.js",
   "bundle": {

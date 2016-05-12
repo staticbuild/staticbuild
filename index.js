@@ -614,11 +614,6 @@ function configurePaths(build, data) {
   if (istype('Object', data.pathMap)) {
     build.pathMap = data.pathMap;
   }
-  // TODO: Remove the following loop. Use the map key as the url path.
-  lodash.forEach(build.pathMap, function (mapping, name, pathMap) {
-    if (istype('String', mapping.fs) && mapping.url === undefined)
-      mapping.url = '/' + path.basename(mapping.fs);
-  });
   // pathTokens
   if (istype('Object', data.pathTokens))
     lodash.merge(build.pathTokens, data.pathTokens);
@@ -921,31 +916,48 @@ function (pattern) {
 /**
  * Returns a filesystem path for the given path string, taking any pathMap 
  * mappings into account.
- * @param {string} pathStr - The path string.
+ * @param {string} urlPath - The url path string.
  * @returns {string} The filesystem path.
  */
-StaticBuild.prototype.fsPath = function (pathStr) {
-  var mapping = this.getPathMapping('url', pathStr);
+StaticBuild.prototype.fsPath = function (urlPath) {
+  var baseUrlPath = '';
+  function matchUrlKey(item, key) {
+    if ((key && key.length > 0) && urlPath.substr(0, key.length) === key) {
+      baseUrlPath = key;
+      return true;
+    }
+    return false;
+  }
+  var mapping = lodash.find(this.pathMap, matchUrlKey);
   if (!mapping)
-    return this.src(pathStr);
-  return mapping.fs + pathStr.substr(mapping.url.length);
+    return this.src(urlPath);
+  return mapping.fs + urlPath.substr(baseUrlPath.length);
 };
 /**
- * Returns true if the given url path is mapped.
+ * Returns the mappings that match url path.
  * @param {string} pathType - The type of pathStr ('fs', 'url').
  * @param {string} pathStr - The path to get the mapping for.
  * @returns {object} The path mapping object with keys: 'fs', 'url'.
+ * @deprecated
  */
 StaticBuild.prototype.getPathMapping = 
 function (pathType, pathStr) {
   if (!pathStr)
     return;
-  function isMappedFrom(mapping) {
-    var fromPath = mapping[pathType];
-    return (fromPath && fromPath.length > 0) && 
-      (pathStr.substr(0, fromPath.length) === fromPath);
+  var baseUrlPath = '';
+  function isMappedFrom(mapping, urlPath) {
+    var fromPath = pathType === 'url' ? urlPath : mapping[pathType];
+    if ((fromPath && fromPath.length > 0) && (pathStr.substr(0, fromPath.length) === fromPath)) {
+      baseUrlPath = urlPath;
+      return true;
+    };
+    return false;
   }
-  return lodash.find(this.pathMap, isMappedFrom);
+  var mapping = lodash.find(this.pathMap, isMappedFrom);
+  // Convert to old mapping system until this deprecated function is removed.
+  if (mapping)
+    mapping = lodash.assign({url: baseUrlPath}, mapping);
+  return mapping;
 };
 /**
  * Returns an array of paths outside of src that are watched in dev mode.
