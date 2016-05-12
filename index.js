@@ -96,8 +96,7 @@ function StaticBuild(pathOrOpt, opt) {
    * @configurable */
   this.pathMap = {
     // For example, to map fs `./bower_components` to url `/bower_components`.
-    // bower: { fs: 'bower_components' } // url filled in automagically.
-    // TODO: Change pathMap to an array, we don't need a key for each map.
+    // "/bower_components": { "fs": "bower_components" }
   };
   /** Sets of tokens for replacing different items in file or url paths.
    * @default
@@ -123,6 +122,12 @@ function StaticBuild(pathOrOpt, opt) {
     packageVersionNumber: [
       /\$\(pkgVerNum\)/g
     ]
+  };
+  /** Contains url paths to map via an http proxy.
+   * @default
+   * @configurable */
+  this.proxyMap = {
+    // "/api": { "target": "http://localhost:4321/api", "changeOrigin": true }
   };
   /** Path to the source directory.
    * @type {string}
@@ -400,6 +405,7 @@ function configure(build) {
     return;
   configureBase(build, data);
   configurePaths(build, data);
+  configureApiProxy(build, data);
   configurePackage(build, data);
   configureDevServer(build, data);
   configureEngine(build, data);
@@ -407,6 +413,13 @@ function configure(build) {
   configureLocales(build, data);
   configureBundles(build, data);
   configureViews(build, data);
+}
+
+function configureApiProxy(build, data) {
+  // proxyMap
+  if (istype('Object', data.proxyMap)) {
+    build.proxyMap = data.proxyMap;
+  }
 }
 
 function configureBase(build, data) {
@@ -601,6 +614,7 @@ function configurePaths(build, data) {
   if (istype('Object', data.pathMap)) {
     build.pathMap = data.pathMap;
   }
+  // TODO: Remove the following loop. Use the map key as the url path.
   lodash.forEach(build.pathMap, function (mapping, name, pathMap) {
     if (istype('String', mapping.fs) && mapping.url === undefined)
       mapping.url = '/' + path.basename(mapping.fs);
