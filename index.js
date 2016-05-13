@@ -1479,8 +1479,8 @@ StaticBuild.prototype.getBundleInfo = function (name, sourceType) {
 };
 /**
  * Returns a minIf value for a new bundle-info object.
- * @param {[string]} - Array of pre-minified source paths.
- * @returns {boolean|[string]} - The minIf value.
+ * @param {string} - Array of pre-minified source paths.
+ * @returns {boolean|string} - The minIf value.
  */
 function getBundleMinIf(bundle, build, min) {
   // Disable minification?
